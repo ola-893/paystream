@@ -1,30 +1,83 @@
-# PayStream.CRO - Autonomous Payment Agents
+# PayStream x402 - Agent-Triggered Payments
 
-AI-powered payment streaming platform with autonomous decision-making agents on Cronos.
+AI agents with x402 payment capabilities for FlowPay streaming.
 
-## Agents
+## What This Does
 
-- **Risk Assessor** - Evaluates transaction risk scores
-- **Compliance Officer** - Checks AML/KYC/regulatory compliance  
-- **Treasury Manager** - Manages liquidity and spending limits
-- **Fraud Detector** - Identifies suspicious patterns
+Demonstrates the x402 payment protocol flow:
 
-## Setup
+1. **Agent makes HTTP request** to premium API
+2. **Receives HTTP 402** with x402 headers (`X-FlowPay-Mode`, `X-FlowPay-Rate`, etc.)
+3. **Parses payment requirements** from headers
+4. **Triggers payment** (streaming or per-request via FlowPay)
+5. **Retries request** with payment proof
+6. **Access granted** ✅
 
-1. Add your Gemini API key to `.env`:
-```
-GEMINI_API_KEY=your_key_here
-```
+## Quick Start
 
-2. Run:
 ```bash
+# Optional: Add Gemini API key
+echo "GEMINI_API_KEY=your_key" > .env
+
+# Run the demo
 cargo run
 ```
 
-## Architecture
+## Demo Output
 
 ```
-PaymentRequest → Orchestrator → [Agents evaluate in parallel] → Consensus → Final Decision
+🚀 PayStream x402 Agent Demo
+============================
+
+🤖 Agent weather-bot-abc123 initialized
+   ├─ Wallet: 0xABCD...5678
+   └─ Budget: 50.00 MNEE
+
+📡 Fetching: https://api.weather-service.com/forecast
+⚠️  HTTP 402 Payment Required
+   ├─ Recipient: 0x5678...9012
+   ├─ Mode: Streaming
+   ├─ Rate: 0.0001 MNEE/second
+   └─ Min Deposit: 1.00 MNEE
+
+💳 Creating payment stream...
+   ├─ Deposit: 1.00 MNEE
+   ├─ Rate: 0.0001/sec
+   └─ Stream ID: #1000
+
+🔄 Retrying request with payment proof...
+✅ HTTP 200 - Service accessed after payment
+   Response: {"temperature": 28, "condition": "Sunny", "city": "Lagos"}
 ```
 
-Each agent uses Gemini to analyze payments and returns a decision with confidence score. The orchestrator aggregates decisions - any rejection blocks the payment, otherwise requires 75% approval.
+## x402 Headers
+
+| Header | Description |
+|--------|-------------|
+| `X-Payment-Required` | Signals 402 payment needed |
+| `X-FlowPay-Mode` | `streaming` or `per-request` |
+| `X-FlowPay-Rate` | Rate per second (streaming) |
+| `X-FlowPay-Recipient` | Payment recipient address |
+| `X-FlowPay-MinDeposit` | Minimum deposit (streaming) |
+| `X-FlowPay-Amount` | Amount (per-request) |
+
+## Integration with FlowPay
+
+This connects to [FlowPay](https://github.com/ola-893/flowpay) for:
+- MNEE stablecoin payments
+- Payment streaming contracts
+- HTTP 402 middleware
+
+## Project Structure
+
+```
+src/
+├── main.rs           # Demo scenarios
+├── payment_agent.rs  # PaymentAgent - handles x402 flow
+├── x402.rs           # x402 protocol parser
+└── gemini.rs         # Gemini AI client
+```
+
+## License
+
+MIT

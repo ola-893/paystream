@@ -1,18 +1,15 @@
-mod agent;
-mod agents;
 mod gemini;
-mod orchestrator;
+mod payment_agent;
+mod x402;
 
 use std::sync::Arc;
 use dotenv::dotenv;
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
-use uuid::Uuid;
 
-use agent::{PaymentRequest, Urgency};
-use agents::{ComplianceOfficerAgent, FraudDetectorAgent, RiskAssessorAgent, TreasuryManagerAgent};
 use gemini::GeminiClient;
-use orchestrator::AgentOrchestrator;
+use payment_agent::{PaymentAgent, AgentConfig};
+use x402::{X402PaymentRequirement, PaymentMode};
 
 #[tokio::main]
 async fn main() {
@@ -24,83 +21,171 @@ async fn main() {
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
 
-    info!("🚀 PayStream.CRO - Autonomous Payment Agents");
-    info!("============================================");
+    println!();
+    info!("🚀 PayStream x402 Agent Demo");
+    info!("============================");
+    println!();
 
-    // Get API key
+    // Get API key (optional for demo)
     let api_key = std::env::var("GEMINI_API_KEY")
-        .expect("GEMINI_API_KEY must be set in .env file");
+        .unwrap_or_else(|_| "demo-key".to_string());
     
     let gemini = Arc::new(GeminiClient::new(api_key));
 
-    // Initialize agents
-    let risk_agent = Arc::new(RiskAssessorAgent::new(gemini.clone(), 0.7));
-    let compliance_agent = Arc::new(ComplianceOfficerAgent::new(gemini.clone()));
-    let treasury_agent = Arc::new(TreasuryManagerAgent::new(gemini.clone(), 100000.0, 50000.0));
-    let fraud_agent = Arc::new(FraudDetectorAgent::new(gemini.clone(), 0.6));
-
-    // Create orchestrator
-    let mut orchestrator = AgentOrchestrator::new(0.75); // 75% approval threshold
-    orchestrator.add_agent(risk_agent);
-    orchestrator.add_agent(compliance_agent);
-    orchestrator.add_agent(treasury_agent);
-    orchestrator.add_agent(fraud_agent);
-
-    info!("✅ {} agents initialized and ready", orchestrator.agent_count());
-
-    // Demo payment requests
-    let payments = vec![
-        PaymentRequest {
-            id: Uuid::new_v4(),
-            from: "0x1234...abcd".into(),
-            to: "0x5678...efgh".into(),
-            amount: 1000.0,
-            description: "Monthly subscription payment".into(),
-            urgency: Urgency::Medium,
-        },
-        PaymentRequest {
-            id: Uuid::new_v4(),
-            from: "0xaaaa...bbbb".into(),
-            to: "0xcccc...dddd".into(),
-            amount: 50000.0,
-            description: "Large vendor payment - Q4 services".into(),
-            urgency: Urgency::High,
-        },
-        PaymentRequest {
-            id: Uuid::new_v4(),
-            from: "0x9999...0000".into(),
-            to: "0x1111...2222".into(),
-            amount: 100.0,
-            description: "Urgent emergency fund transfer".into(),
-            urgency: Urgency::Critical,
-        },
+    // Create payment agents
+    let agents = vec![
+        PaymentAgent::new(
+            AgentConfig {
+                name: "weather-bot".to_string(),
+                wallet_address: "0xABCD1234567890ABCD1234567890ABCD12345678".to_string(),
+                daily_budget: 50.0,
+            },
+            gemini.clone(),
+        ),
+        PaymentAgent::new(
+            AgentConfig {
+                name: "data-collector".to_string(),
+                wallet_address: "0xEFGH9876543210EFGH9876543210EFGH98765432".to_string(),
+                daily_budget: 100.0,
+            },
+            gemini.clone(),
+        ),
     ];
 
-    // Process each payment
-    for payment in payments {
-        info!("\n📋 Processing Payment Request");
-        info!("   ID: {}", payment.id);
-        info!("   Amount: {} CRO", payment.amount);
-        info!("   To: {}", payment.to);
-        info!("   Description: {}", payment.description);
-        
-        let decision = orchestrator.process_payment(&payment).await;
-        
-        info!("\n📊 Agent Decisions:");
-        for agent_decision in &decision.agent_decisions {
-            info!("   [{}] {:?} - {} (confidence: {:.2})",
-                agent_decision.agent_id,
-                agent_decision.action,
-                agent_decision.reason,
-                agent_decision.confidence
-            );
-        }
-        
-        info!("\n🎯 Final Decision: {:?}", decision.final_action);
-        info!("   Consensus Score: {:.2}", decision.consensus_score);
-        info!("   Summary: {}", decision.summary);
-        info!("   ----------------------------------------");
+    // Display initialized agents
+    for agent in &agents {
+        info!("🤖 Agent {} initialized", agent.id);
+        info!("   ├─ Wallet: {}...{}", &agent.config.wallet_address[..6], &agent.config.wallet_address[38..]);
+        info!("   └─ Budget: {:.2} MNEE", agent.config.daily_budget);
+        println!();
     }
 
-    info!("\n✨ PayStream.CRO demo complete!");
+    // Demo scenarios - each agent fetches different services
+    let demo_scenarios = vec![
+        // Scenario 1: Weather API (Streaming mode)
+        (
+            0, // Agent index
+            "https://api.weather-service.com/forecast",
+            X402PaymentRequirement {
+                recipient: "0x5678EFGH9012IJKL5678EFGH9012IJKL56789012".to_string(),
+                amount: None,
+                mode: PaymentMode::Streaming,
+                rate_per_second: Some("0.0001".to_string()),
+                min_deposit: Some("1.00".to_string()),
+                description: Some("Real-time weather data API".to_string()),
+                network: Some("sepolia".to_string()),
+                token: Some("MNEE".to_string()),
+            },
+        ),
+        // Scenario 2: Translation API (Per-request mode)
+        (
+            0,
+            "https://api.translate-agent.com/translate",
+            X402PaymentRequirement {
+                recipient: "0xAAAABBBBCCCCDDDD1111222233334444AAAABBBB".to_string(),
+                amount: Some("0.005".to_string()),
+                mode: PaymentMode::PerRequest,
+                rate_per_second: None,
+                min_deposit: None,
+                description: Some("AI Translation Service".to_string()),
+                network: Some("sepolia".to_string()),
+                token: Some("MNEE".to_string()),
+            },
+        ),
+        // Scenario 3: Compute API (Streaming, different agent)
+        (
+            1,
+            "https://gpu.compute-cloud.io/v1/inference",
+            X402PaymentRequirement {
+                recipient: "0x1111222233334444555566667777888899990000".to_string(),
+                amount: None,
+                mode: PaymentMode::Streaming,
+                rate_per_second: Some("0.01".to_string()),
+                min_deposit: Some("5.00".to_string()),
+                description: Some("GPU Compute - ML Inference".to_string()),
+                network: Some("sepolia".to_string()),
+                token: Some("MNEE".to_string()),
+            },
+        ),
+        // Scenario 4: Data feed (Per-request)
+        (
+            1,
+            "https://api.market-data.io/prices",
+            X402PaymentRequirement {
+                recipient: "0xDATAFEED00001111222233334444555566667777".to_string(),
+                amount: Some("0.001".to_string()),
+                mode: PaymentMode::PerRequest,
+                rate_per_second: None,
+                min_deposit: None,
+                description: Some("Real-time market price feed".to_string()),
+                network: Some("sepolia".to_string()),
+                token: Some("MNEE".to_string()),
+            },
+        ),
+    ];
+
+    info!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    info!("Starting x402 Payment Flow Demo");
+    info!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    println!();
+
+    // Execute each scenario
+    for (agent_idx, url, requirement) in demo_scenarios {
+        let agent = &agents[agent_idx];
+        
+        info!("┌─────────────────────────────────────────────────────────┐");
+        info!("│ Agent: {:<50}│", agent.id);
+        info!("└─────────────────────────────────────────────────────────┘");
+
+        match agent.fetch_with_mock_402(url, requirement).await {
+            Ok(result) => {
+                if result.payment_made {
+                    info!("✅ HTTP {} - Service accessed after payment", result.status);
+                    info!("   Response: {}", result.body);
+                    if let Some(stream_id) = result.stream_id {
+                        info!("   Stream ID: #{}", stream_id);
+                    }
+                    if let Some(ref amount) = result.amount_spent {
+                        info!("   Amount: {} MNEE", amount);
+                    }
+                } else {
+                    info!("✅ HTTP {} - No payment required", result.status);
+                }
+            }
+            Err(e) => {
+                info!("❌ Error: {}", e);
+            }
+        }
+        
+        println!();
+        info!("────────────────────────────────────────────────────────────");
+        println!();
+        
+        // Small delay for readability
+        tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+    }
+
+    // Display final stats
+    println!();
+    info!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    info!("Demo Complete - Agent Stats");
+    info!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    println!();
+
+    for agent in &agents {
+        info!("🤖 {}", agent.id);
+        agent.display_stats();
+        println!();
+    }
+
+    info!("✨ PayStream x402 Demo Complete!");
+    info!("");
+    info!("💡 What you just saw:");
+    info!("   1. Agents made HTTP requests to premium APIs");
+    info!("   2. Received HTTP 402 Payment Required responses");
+    info!("   3. Parsed x402 headers (X-FlowPay-Mode, X-FlowPay-Rate, etc.)");
+    info!("   4. Created MNEE payment streams or made per-request payments");
+    info!("   5. Retried requests with payment proof");
+    info!("   6. Successfully accessed paid services");
+    println!();
 }
