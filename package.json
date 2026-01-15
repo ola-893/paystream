@@ -15,7 +15,9 @@
     "install:all": "npm install && npm --prefix sdk install && npm --prefix server install && npm --prefix vite-project install",
     "demo:provider": "npx ts-node --project demo/tsconfig.json demo/provider.ts",
     "demo:consumer": "npx ts-node --project demo/tsconfig.json demo/consumer.ts",
-    "demo:check": "npx ts-node --project demo/tsconfig.json demo/check-setup.ts"
+    "demo:check": "npx ts-node --project demo/tsconfig.json demo/check-setup.ts",
+    "demo:agent": "npm --prefix demo/agent-demo run start",
+    "demo:agent:check": "npm --prefix demo/agent-demo run check"
   },
   "keywords": [],
   "author": "",
