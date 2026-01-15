@@ -10,6 +10,7 @@ module.exports = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       chainId: 338,
+      gasPrice: 5000000000000, // 5000 gwei (Cronos typical)
     },
   },
   etherscan: {

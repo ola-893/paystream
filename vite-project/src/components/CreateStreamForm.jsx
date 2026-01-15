@@ -186,7 +186,7 @@ const RateCalculator = ({ amount, duration, token }) => {
         <div>
           <div className="text-white/50">Est. Gas</div>
           <div className="font-mono font-semibold text-warning-400">
-            ~0.002 ETH
+            ~0.002 TCRO
           </div>
         </div>
       </div>

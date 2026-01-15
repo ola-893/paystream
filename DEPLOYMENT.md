@@ -2,7 +2,7 @@
 
 ## Overview
 
-FlowPay is "The Streaming Extension for x402" - a hybrid payment protocol that solves the N+1 Signature Problem for AI agent payments. This guide covers deployment to Ethereum Sepolia testnet.
+FlowPay is "The Streaming Extension for x402" - a hybrid payment protocol that solves the N+1 Signature Problem for AI agent payments. This guide covers deployment to Cronos testnet.
 
 **Key Innovation**: 2 on-chain transactions (Open + Close) regardless of request volume.
 
@@ -11,7 +11,7 @@ FlowPay is "The Streaming Extension for x402" - a hybrid payment protocol that s
 - Node.js v18+
 - npm or yarn
 - MetaMask or compatible wallet
-- Sepolia testnet ETH (for gas fees)
+- Cronos testnet TCRO (for gas fees)
 - Environment variables configured
 
 ## Environment Setup
@@ -21,15 +21,13 @@ Create a `.env` file in the project root:
 ```bash
 # Required
 PRIVATE_KEY=0x...                    # Deployer wallet private key
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
+CRONOS_RPC_URL=https://evm-t3.cronos.org
 
 # Optional
-ETHERSCAN_API_KEY=...                # For contract verification
 GEMINI_API_KEY=...                   # For AI features
 
 # Frontend (vite-project/.env)
 VITE_CONTRACT_ADDRESS=0x...          # FlowPayStream contract address (after deployment)
-VITE_MNEE_TOKEN_ADDRESS=0x...        # MockMNEE address (after deployment)
 VITE_MNEE_TOKEN_ADDRESS=0x...        # MockMNEE address (after deployment)
 ```
 
@@ -51,26 +49,26 @@ cd server && npm install && cd ..
 cd vite-project && npm install && cd ..
 ```
 
-### 2. Deploy Contracts to Sepolia
+### 2. Deploy Contracts to Cronos Testnet
 
 ```bash
-npx hardhat run scripts/deploy.js --network sepolia
+npx hardhat run scripts/deploy.js --network cronos_testnet
 ```
 
 **Expected Output:**
 ```
 Deploying contracts with the account: 0x...
 Deploying MockMNEE...
-MockMNEE deployed to: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-Deploying FlowPayStream with MNEE address: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-FlowPayStream deployed to: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
+MockMNEE deployed to: 0x...
+Deploying FlowPayStream with MNEE address: 0x...
+FlowPayStream deployed to: 0x...
 ```
 
-**Current Sepolia Deployment (January 2026):**
+**Current Cronos Testnet Deployment (January 2026):**
 | Contract | Address |
 |----------|---------|
-| MockMNEE | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
-| FlowPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
+| MockMNEE | `TBD - Deploy yourself` |
+| FlowPayStream | `TBD - Deploy yourself` |
 
 **Save these addresses!** You'll need them for configuration.
 
@@ -93,7 +91,7 @@ const CONTRACT_ADDRESS = "0x5678...";
 ### 4. Verify Contracts (Optional)
 
 ```bash
-npx hardhat verify --network sepolia <CONTRACT_ADDRESS> <MNEE_ADDRESS>
+npx hardhat verify --network cronos_testnet <CONTRACT_ADDRESS> <MNEE_ADDRESS>
 ```
 
 ## Running the System
@@ -197,8 +195,8 @@ npx mocha -r ts-node/register test/load.test.ts
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
-│  │   Consumer  │───▶│  Provider   │───▶│  Ethereum   │     │
-│  │   Agent     │    │  (x402 MW)  │    │  Sepolia    │     │
+│  │   Consumer  │───▶│  Provider   │───▶│   Cronos    │     │
+│  │   Agent     │    │  (x402 MW)  │    │  Testnet    │     │
 │  │   + SDK     │◀───│             │◀───│             │     │
 │  └─────────────┘    └─────────────┘    └─────────────┘     │
 │        │                  │                  │              │

@@ -38,7 +38,7 @@ export function WalletProvider({ children }) {
 
   const getNetworkName = (id) => {
     if (!id) return '...';
-    const mapping = { 11155111: 'Ethereum Sepolia' };
+    const mapping = { 338: 'Cronos Testnet' };
     return mapping[id] || `Chain ${id}`;
   };
 
@@ -53,9 +53,9 @@ export function WalletProvider({ children }) {
           await eth.request({
             method: 'wallet_addEthereumChain',
             params: [{
-              chainId: TARGET_CHAIN_ID_HEX, chainName: 'Ethereum Sepolia',
-              nativeCurrency: { name: 'SepoliaETH', symbol: 'ETH', decimals: 18 },
-              rpcUrls: ['https://rpc.sepolia.org'], blockExplorerUrls: ['https://sepolia.etherscan.io']
+              chainId: TARGET_CHAIN_ID_HEX, chainName: 'Cronos Testnet',
+              nativeCurrency: { name: 'TCRO', symbol: 'TCRO', decimals: 18 },
+              rpcUrls: ['https://evm-t3.cronos.org'], blockExplorerUrls: ['https://explorer.cronos.org/testnet']
             }],
           });
         } else throw switchError;

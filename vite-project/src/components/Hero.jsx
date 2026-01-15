@@ -173,7 +173,7 @@ const StatisticsBanner = ({ stats }) => {
   );
 };
 
-export default function Hero({ networkName = 'Ethereum Sepolia', stats }) {
+export default function Hero({ networkName = 'Cronos Testnet', stats }) {
   // Default mock stats if not provided
   const defaultStats = {
     totalStreams: 1247,

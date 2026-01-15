@@ -1,6 +1,6 @@
 # Agent-First CLI Demo
 
-A CLI-first demonstration of AI agents autonomously triggering and streaming payments via the x402 protocol and FlowPay. This demo showcases real agents making real HTTP requests, receiving real 402 responses, and creating real on-chain payment streams on Sepolia.
+A CLI-first demonstration of AI agents autonomously triggering and streaming payments via the x402 protocol and FlowPay. This demo showcases real agents making real HTTP requests, receiving real 402 responses, and creating real on-chain payment streams on Cronos Testnet.
 
 ## Quick Start
 
@@ -30,10 +30,10 @@ Create a `.env` file in the project root (or `demo/agent-demo/`) with the follow
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `PRIVATE_KEY` | Your Ethereum wallet private key (with Sepolia ETH and MNEE) | `0xabc123...` |
-| `SEPOLIA_RPC_URL` | Sepolia RPC endpoint | `https://ethereum-sepolia-rpc.publicnode.com` |
-| `FLOWPAY_CONTRACT` | FlowPayStream contract address on Sepolia | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
-| `MNEE_TOKEN` | MNEE token contract address on Sepolia | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
+| `PRIVATE_KEY` | Your Ethereum wallet private key (with TCRO and MNEE) | `0xabc123...` |
+| `CRONOS_RPC_URL` | Cronos Testnet RPC endpoint | `https://evm-t3.cronos.org` |
+| `FLOWPAY_CONTRACT` | FlowPayStream contract address on Cronos Testnet | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
+| `MNEE_TOKEN` | MNEE token contract address on Cronos Testnet | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
 
 ### Optional Variables
 
@@ -48,7 +48,7 @@ Create a `.env` file in the project root (or `demo/agent-demo/`) with the follow
 ```env
 # Required
 PRIVATE_KEY=0xYourPrivateKeyHere
-SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+CRONOS_RPC_URL=https://evm-t3.cronos.org
 FLOWPAY_CONTRACT=0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
 MNEE_TOKEN=0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
 
@@ -169,7 +169,7 @@ The demo includes four scenarios that demonstrate different aspects of the x402 
 📡 Making request to http://localhost:3001/api/weather
 ⚠️  Received 402 Payment Required
 💳 Creating payment stream...
-   Transaction: https://sepolia.etherscan.io/tx/0xabc...
+   Transaction: https://explorer.cronos.org/testnet/tx/0xabc...
 ✅ Stream created: ID 12345
 📡 Retrying request with payment proof...
 ✅ Request successful!
@@ -269,19 +269,18 @@ demo/agent-demo/
 Before running the demo, ensure you have:
 
 1. **Node.js** (v18 or later)
-2. **Sepolia ETH** in your wallet (for gas fees)
-3. **MNEE tokens** on Sepolia (for payments)
+2. **TCRO** in your wallet (for gas fees on Cronos Testnet)
+3. **MNEE tokens** on Cronos Testnet (for payments)
 4. **x402 Server** running locally (see `server/` directory)
 
-### Getting Sepolia ETH
+### Getting TCRO
 
-Use a Sepolia faucet:
-- [Alchemy Sepolia Faucet](https://sepoliafaucet.com/)
-- [Infura Sepolia Faucet](https://www.infura.io/faucet/sepolia)
+Use the Cronos faucet:
+- [Cronos Testnet Faucet](https://cronos.org/faucet)
 
 ### Getting MNEE Tokens
 
-The MockMNEE contract on Sepolia allows minting test tokens. Contact the FlowPay team or use the contract's mint function if available.
+The MockMNEE contract on Cronos Testnet allows minting test tokens. Contact the FlowPay team or use the contract's mint function if available.
 
 ## Troubleshooting
 
@@ -292,7 +291,7 @@ The MockMNEE contract on Sepolia allows minting test tokens. Contact the FlowPay
 
 Missing required environment variables:
   ✗ PRIVATE_KEY
-  ✗ SEPOLIA_RPC_URL
+  ✗ CRONOS_RPC_URL
 
 See .env.example for reference configuration.
 ```
@@ -305,7 +304,7 @@ See .env.example for reference configuration.
 ❌ Insufficient balance: need 0.01 MNEE, have 0.0 MNEE
 ```
 
-**Solution**: Ensure your wallet has MNEE tokens on Sepolia.
+**Solution**: Ensure your wallet has MNEE tokens on Cronos Testnet.
 
 ### Server Unreachable
 
@@ -326,7 +325,7 @@ npm start
 ❌ Transaction failed: insufficient funds for gas
 ```
 
-**Solution**: Ensure your wallet has Sepolia ETH for gas fees.
+**Solution**: Ensure your wallet has TCRO for gas fees on Cronos Testnet.
 
 ## Development
 

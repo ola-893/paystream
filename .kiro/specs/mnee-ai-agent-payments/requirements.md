@@ -10,7 +10,7 @@ FlowPay solves this by using x402 as the "Menu" (service discovery and price neg
 - **Zero Per-Request Overhead**: Only 2 on-chain transactions (Open and Close) regardless of request volume
 - **AI-Powered Decisions**: Gemini analyzes usage patterns to recommend optimal payment modes
 
-The system uses MNEE stablecoin for payments, deployed on Ethereum Sepolia testnet for development.
+The system uses MNEE stablecoin for payments, deployed on Cronos testnet for development.
 
 ## Glossary
 
@@ -42,17 +42,17 @@ The system uses MNEE stablecoin for payments, deployed on Ethereum Sepolia testn
 4. THE FlowPay_System SHALL integrate with MNEE token contract (mainnet: 0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF, testnet: mock contract for development)
 5. WHEN calculating stream rates, THE FlowPay_System SHALL use MNEE token decimals (18) for precision
 
-### Requirement 2: Ethereum Testnet Migration
+### Requirement 2: Cronos Testnet Migration
 
-**User Story:** As a developer, I want to deploy on Ethereum Sepolia testnet, so that I can test MNEE integration safely before any mainnet deployment.
+**User Story:** As a developer, I want to deploy on Cronos testnet, so that I can test MNEE integration safely with lower gas fees before any mainnet deployment.
 
 #### Acceptance Criteria
 
-1. THE FlowPay_System SHALL deploy smart contracts to Ethereum Sepolia testnet for development and testing
-2. WHEN users connect wallets, THE FlowPay_System SHALL prompt network switching to Sepolia if on wrong network
-3. THE Web_Dashboard SHALL display Sepolia testnet information and block explorer links
-4. THE FlowPay_System SHALL use Sepolia-compatible RPC endpoints for blockchain interactions
-5. WHEN estimating gas costs, THE FlowPay_System SHALL calculate fees using Sepolia gas prices
+1. THE FlowPay_System SHALL deploy smart contracts to Cronos testnet for development and testing
+2. WHEN users connect wallets, THE FlowPay_System SHALL prompt network switching to Cronos Testnet if on wrong network
+3. THE Web_Dashboard SHALL display Cronos testnet information and block explorer links
+4. THE FlowPay_System SHALL use Cronos-compatible RPC endpoints for blockchain interactions
+5. WHEN estimating gas costs, THE FlowPay_System SHALL calculate fees using Cronos gas prices
 6. THE FlowPay_System SHALL use testnet MNEE tokens or mock MNEE contract for testing purposes
 
 ### Requirement 3: AI Agent SDK Development

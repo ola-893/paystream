@@ -3,7 +3,10 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![MNEE](https://img.shields.io/badge/Powered%20by-MNEE%20Stablecoin-green.svg)
 ![x402](https://img.shields.io/badge/x402-Compatible-purple.svg)
-![Ethereum](https://img.shields.io/badge/Network-Ethereum%20Sepolia-blue.svg)
+![Cronos](https://img.shields.io/badge/Network-Cronos%20Testnet-blue.svg)
+
+> **🔄 Network Migration Notice**  
+> FlowPay has migrated from Ethereum Sepolia to Cronos Testnet for lower fees and faster transactions. If you're upgrading from a previous version, please see the [**Cronos Migration Guide**](CRONOS_MIGRATION.md) for detailed instructions on updating your environment, deploying contracts, and configuring MetaMask.
 
 FlowPay combines **x402's HTTP-native service discovery** with **continuous payment streaming** for AI agents using MNEE stablecoin. The best of both worlds: standardized discovery + efficient streaming.
 
@@ -59,16 +62,16 @@ Open http://localhost:5173 in your browser.
 
 4. **Create a stream** and watch payments flow in real-time!
 
-That's it! The contracts are already deployed on Sepolia - no deployment needed.
+That's it! The contracts are already deployed on Cronos Testnet - no deployment needed.
 
 ---
 
-## 📋 Deployed Contracts (Sepolia)
+## 📋 Deployed Contracts (Cronos Testnet)
 
 | Contract | Address |
 |----------|---------|
-| FlowPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
-| MockMNEE | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
+| FlowPayStream | `TBD - Deploy yourself` |
+| MockMNEE | `TBD - Deploy yourself` |
 
 ---
 
@@ -84,7 +87,7 @@ cp .env.example .env
 
 ```env
 # Only needed if deploying your own contracts
-SEPOLIA_RPC_URL="https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY"
+CRONOS_RPC_URL="https://evm-t3.cronos.org"
 PRIVATE_KEY="YOUR_DEPLOYER_PRIVATE_KEY"
 
 # AI Features (Optional)
@@ -94,8 +97,10 @@ GEMINI_API_KEY="your_gemini_api_key"
 ### Deploy Your Own Contracts
 
 ```bash
-npx hardhat run scripts/deploy.js --network sepolia
+npm run deploy:cronos
 ```
+
+This will deploy both MockMNEE and FlowPayStream contracts to Cronos Testnet.
 
 ### Run Tests
 
@@ -112,9 +117,10 @@ npm run test:sdk           # SDK tests only
 | `npm run dev` | Start frontend dev server |
 | `npm run build:web` | Build for production |
 | `npm run test` | Run all tests |
-| `npm run deploy:sepolia` | Deploy contracts to Sepolia |
+| `npm run deploy:cronos` | Deploy contracts to Cronos Testnet |
 | `npm run demo:provider` | Run provider demo |
 | `npm run demo:consumer` | Run consumer demo |
+| `npm run demo:agent` | Run AI agent demo |
 
 ---
 
@@ -348,7 +354,7 @@ await computeStream.cancel(); // Refunds remaining deposit
 │  │  (Streams)  │    │  (ERC-20)   │    │ (Oversight) │       │
 │  └─────────────┘    └─────────────┘    └─────────────┘       │
 │                                                                  │
-│                    Ethereum Sepolia Testnet                      │
+│                    Cronos Testnet                                │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -383,7 +389,7 @@ Consumer Agent                Provider API                FlowPay Contract
 
 | Component | Technology |
 |-----------|------------|
-| Blockchain | Ethereum Sepolia Testnet |
+| Blockchain | Cronos Testnet |
 | Token | MNEE Stablecoin (ERC-20) |
 | Discovery Protocol | x402 (HTTP 402 standard) |
 | Smart Contracts | Solidity, Hardhat |
@@ -404,7 +410,7 @@ When ready for production with real MNEE:
 |---------|-------------------|---------|
 | Token | MockMNEE (free mint) | Real MNEE |
 | Network | Cronos Testnet (338) | Cronos Mainnet (25) |
-| Gas | Free testnet TCRO | Real CRO |
+| Gas | Free testnet TCRO | Real TCRO |
 
 **MNEE Mainnet Contract:** `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`
 
@@ -421,7 +427,7 @@ import { FlowPayAgent } from 'flowpay-sdk';
 
 const agent = new FlowPayAgent({
   privateKey: process.env.AGENT_PRIVATE_KEY,
-  network: 'sepolia'
+  network: 'cronos_testnet'
 });
 
 // Create a payment stream
@@ -493,7 +499,7 @@ console.log(response);
 flowpay/
 ├── contracts/
 │   ├── FlowPayStream.sol      # MNEE streaming contract
-│   └── MockMNEE.sol           # Test token for Sepolia
+│   └── MockMNEE.sol           # Test token for Cronos Testnet
 ├── scripts/
 │   └── deploy.js              # Deployment script
 ├── sdk/
@@ -533,8 +539,8 @@ flowpay/
 FlowPay uses MNEE stablecoin as the payment token for all streaming payments:
 - **Payment Streams**: MNEE tokens are locked in the FlowPayStream smart contract and streamed per-second to recipients
 - **x402 Protocol**: AI agents pay for API access using MNEE via the x402 HTTP payment negotiation standard
-- **Testnet**: Uses MockMNEE (`0x96B1FE54Ee89811f46ecE4a347950E0D682D3896`) on Sepolia
-- **Mainnet Ready**: Designed to work with real MNEE (`0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`) on Ethereum mainnet
+- **Testnet**: Uses MockMNEE (TBD - Deploy yourself) on Cronos Testnet
+- **Mainnet Ready**: Designed to work with real MNEE (`0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`) on Cronos Mainnet
 
 FlowPay demonstrates:
 - ✅ x402-compatible service discovery (HTTP 402 standard)

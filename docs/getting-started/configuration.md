@@ -10,9 +10,9 @@ import { FlowPaySDK } from './sdk/src/FlowPaySDK';
 const sdk = new FlowPaySDK({
   // Required
   privateKey: process.env.PRIVATE_KEY,
-  rpcUrl: 'https://rpc.sepolia.org',
-  contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-  mneeAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896',
+  rpcUrl: 'https://evm-t3.cronos.org',
+  contractAddress: 'TBD_YOUR_FLOWPAYSTREAM_ADDRESS',
+  mneeAddress: 'TBD_YOUR_MNEE_ADDRESS',
   
   // Optional
   agentId: 'my-agent-001',
@@ -77,8 +77,8 @@ app.use('/api/premium', flowPayMiddleware({
   pricingModel: 'per-request', // 'per-request' | 'per-byte' | 'per-second'
   
   // Contract
-  contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-  mneeAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896',
+  contractAddress: 'TBD_YOUR_FLOWPAYSTREAM_ADDRESS',
+  mneeAddress: 'TBD_YOUR_MNEE_ADDRESS',
   recipientAddress: '0x...',
   
   // Verification
@@ -128,8 +128,7 @@ const RPC_URLS = {
   cronos_testnet: {
     primary: 'https://evm-t3.cronos.org',
     fallback: [
-      'https://sepolia.infura.io/v3/YOUR_KEY',
-      'https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY'
+      'https://evm-t3.cronos.org'
     ]
   }
 };

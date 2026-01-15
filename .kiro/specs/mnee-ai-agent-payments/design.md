@@ -123,12 +123,12 @@ sequenceDiagram
 
 ### Network Architecture
 
-The system operates on Ethereum Sepolia testnet for development and testing, with the following network configuration:
+The system operates on Cronos testnet for development and testing, with the following network configuration:
 
-- **Blockchain**: Ethereum Sepolia Testnet (Chain ID: 11155111)
+- **Blockchain**: Cronos Testnet (Chain ID: 338)
 - **MNEE Token**: Mock ERC-20 contract for testing (production uses mainnet contract)
-- **RPC Provider**: Alchemy/Infura Sepolia endpoints
-- **Block Explorer**: Sepolia Etherscan integration
+- **RPC Provider**: https://evm-t3.cronos.org
+- **Block Explorer**: Cronos Explorer integration
 
 ### Data Flow
 
@@ -162,7 +162,7 @@ interface FlowPayMiddlewareConfig {
             mode: 'per-request' | 'streaming' | 'both';
             minDeposit?: string;     // Minimum stream deposit for streaming mode
             description: string;
-            network: 'ethereum-sepolia' | 'ethereum-mainnet';
+            network: 'cronos-testnet' | 'cronos-mainnet';
         }
     };
     mneeAddress: string;
@@ -178,13 +178,13 @@ app.use(flowPayMiddleware({
             mode: "streaming",      // Streaming preferred for high-volume
             minDeposit: "1.00",     // Minimum 1 MNEE deposit
             description: "Real-time weather data API",
-            network: "ethereum-sepolia"
+            network: "cronos-testnet"
         },
         "POST /api/translate": {
             price: "0.001",         // $0.001 per request
             mode: "both",           // Accept either mode
             description: "AI translation service",
-            network: "ethereum-sepolia"
+            network: "cronos-testnet"
         }
     },
     mneeAddress: "0x...",
@@ -203,7 +203,7 @@ interface PaymentRequiredHeaders {
     'X-FlowPay-Address': string;   // Recipient address for streams
     'X-FlowPay-Min-Deposit': string;
     'X-FlowPay-Contract': string;  // FlowPay contract address
-    'X-FlowPay-Network': string;   // ethereum-sepolia or ethereum-mainnet
+    'X-FlowPay-Network': string;   // cronos-testnet or cronos-mainnet
 }
 
 // PaymentRequirements object (x402 compatible, Base64 encoded in header)
@@ -375,7 +375,7 @@ import { FlowPayAgent } from 'flowpay-sdk';
 const agent = new FlowPayAgent({
     privateKey: process.env.AGENT_PRIVATE_KEY,
     geminiApiKey: process.env.GEMINI_API_KEY,
-    network: 'sepolia'
+    network: 'cronos_testnet'
 });
 
 // The agent just tries to fetch - SDK handles everything
@@ -672,7 +672,7 @@ Example test tag format:
 ### Testing Environment Setup
 
 **Testnet Configuration**:
-- Ethereum Sepolia testnet deployment
+- Cronos testnet deployment
 - Mock MNEE token contract for testing
 - Test agent configurations with limited spending
 - Isolated testing environment for AI integration

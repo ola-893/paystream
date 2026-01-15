@@ -16,8 +16,12 @@ Demonstrates the x402 payment protocol flow:
 ## Quick Start
 
 ```bash
-# Optional: Add Gemini API key
-echo "GEMINI_API_KEY=your_key" > .env
+# Set up environment variables
+cp .env.example .env
+
+# Add your Gemini API key (optional)
+# Add Cronos RPC URL (required for actual transactions)
+# Get TCRO from: https://cronos.org/faucet
 
 # Run the demo
 cargo run
@@ -64,9 +68,14 @@ cargo run
 ## Integration with FlowPay
 
 This connects to [FlowPay](https://github.com/ola-893/flowpay) for:
-- MNEE stablecoin payments
+- MNEE stablecoin payments on Cronos Testnet
 - Payment streaming contracts
 - HTTP 402 middleware
+
+**Network:** Cronos Testnet (Chain ID: 338)  
+**RPC:** https://evm-t3.cronos.org  
+**Faucet:** https://cronos.org/faucet  
+**Explorer:** https://explorer.cronos.org/testnet
 
 ## Project Structure
 

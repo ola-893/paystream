@@ -13,7 +13,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
   - Add MNEE token interface and approval mechanisms
   - Implement metadata storage for agent identification
   - Add `isStreamActive()` function for middleware verification
-  - Deploy to Ethereum Sepolia testnet
+  - Deploy to Cronos testnet
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1_
 
 - [x]* 1.1 Write property test for MNEE token operations
@@ -22,7 +22,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
   - Tests exist in `test/FlowPayStream.test.js` (MNEE token integration tests)
 
 - [x] 2. Network Configuration Update
-  - Update hardhat config for Ethereum Sepolia deployment
+  - Update hardhat config for Cronos testnet deployment
   - Modify frontend network detection and switching
   - Update RPC endpoints and block explorer links
   - Configure testnet MNEE token contract address
@@ -30,9 +30,9 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 
 - [x]* 2.1 Write unit tests for network configuration
   - Test network switching prompts
-  - Test Sepolia configuration validation
+  - Test Cronos configuration validation
   - _Requirements: 2.2, 2.3_
-  - Hardhat config includes Sepolia network; frontend App.jsx handles network switching
+  - Hardhat config includes Cronos network; frontend App.jsx handles network switching
 
 - [x] 3. x402 Express Middleware (The Gatekeeper)
   - Create Express.js middleware `flowPayMiddleware` for x402 payment requirements
@@ -254,9 +254,9 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
   - Tests exist in `sdk/test/integration.test.ts` and `sdk/test/demo.test.ts`
 
 - [x] 16. Final Integration and Testing
-  - [x] 16.1 Deploy complete system to Sepolia testnet
-    - Deploy MockMNEE contract to Sepolia
-    - Deploy FlowPayStream contract to Sepolia
+  - [x] 16.1 Deploy complete system to Cronos testnet
+    - Deploy MockMNEE contract to Cronos
+    - Deploy FlowPayStream contract to Cronos
     - Update frontend with deployed contract addresses
     - _Requirements: 2.1, 2.6_
     - Hardhat config ready; deploy script exists at `scripts/deploy.js`
@@ -487,10 +487,10 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 ## Frontend-Backend Integration Tasks
 
 - [ ] 29. Smart Contract Deployment & Configuration
-  - [ ] 29.1 Deploy MockMNEE and FlowPayStream contracts to Sepolia
-    - Run `npx hardhat run scripts/deploy.js --network sepolia`
+  - [ ] 29.1 Deploy MockMNEE and FlowPayStream contracts to Cronos
+    - Run `npx hardhat run scripts/deploy.js --network cronos_testnet`
     - Record deployed contract addresses
-    - Verify contracts on Etherscan
+    - Verify contracts on Cronos Explorer
     - _Requirements: 1.4, 2.1, 2.6_
   - [ ] 29.2 Configure Netlify environment variables
     - Set VITE_CONTRACT_ADDRESS with FlowPayStream address
@@ -501,7 +501,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 - [ ] 30. Wallet Connection Integration
   - [ ] 30.1 Fix MetaMask connection flow
     - Ensure proper error handling for missing MetaMask
-    - Add network detection and auto-switch to Sepolia
+    - Add network detection and auto-switch to Cronos Testnet
     - Display connection status in Header component
     - Show wallet balance after connection
     - _Requirements: 2.2, 2.3, 7.1_
@@ -617,7 +617,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
     - _Requirements: 10.1, 10.5_
 
 - [ ] 38. Checkpoint - Full Integration Complete
-  - Verify wallet connection works on Sepolia
+  - Verify wallet connection works on Cronos
   - Test stream creation end-to-end
   - Confirm real-time balance updates
   - Validate backend API integration

@@ -44,12 +44,15 @@ FlowPay implements the x402 protocol for HTTP-based payment negotiation. AI agen
 | 3 | SDK auto-handles 402, creates stream |
 | 4 | Subsequent requests reuse stream (0 signatures!) |
 
-## Current Deployment (Sepolia Testnet)
+## Current Deployment (Cronos Testnet)
 
 | Contract | Address |
 |----------|---------|
-| MockMNEE | \`0x96B1FE54Ee89811f46ecE4a347950E0D682D3896\` |
-| FlowPayStream | \`0x155A00fBE3D290a8935ca4Bf5244283685Bb0035\` |
+| MockMNEE | \`TBD - Deploy yourself\` |
+| FlowPayStream | \`TBD - Deploy yourself\` |
+
+**Network:** Cronos Testnet (Chain ID: 338)  
+**RPC URL:** https://evm-t3.cronos.org
 
 ## Features
 
@@ -76,7 +79,7 @@ Get FlowPay running in under 5 minutes.
 1. Open the FlowPay dashboard at the home page
 2. Click **Connect Wallet** in the header
 3. Select MetaMask and approve the connection
-4. Ensure you're on **Sepolia testnet** (the app will prompt you to switch if needed)
+4. Ensure you're on **Cronos testnet** (the app will prompt you to switch if needed)
 
 ### Step 2: Get Test Tokens
 
@@ -117,7 +120,7 @@ Create a \`.env\` file with your agent's private key:
 \`\`\`bash
 PRIVATE_KEY_1=0x...your_private_key
 GEMINI_API_KEY=your_gemini_key  # Optional: for AI payment decisions
-SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+CRONOS_RPC_URL=https://evm-t3.cronos.org
 \`\`\`
 
 ### Step 3: Initialize the SDK
@@ -128,7 +131,7 @@ import { ethers } from 'ethers';
 
 const sdk = new FlowPaySDK({
     privateKey: process.env.PRIVATE_KEY_1,
-    rpcUrl: process.env.SEPOLIA_RPC_URL,
+    rpcUrl: process.env.CRONOS_RPC_URL,
     agentId: 'my-ai-agent',
     spendingLimits: {
         dailyLimit: ethers.parseEther("100"),
@@ -171,7 +174,7 @@ Simply visit the FlowPay dashboard and connect your wallet. No downloads or inst
 ### Requirements
 
 - **MetaMask** browser extension (or compatible Web3 wallet)
-- **Sepolia ETH** for gas fees
+- **TCRO** for gas fees (get from https://cronos.org/faucet)
 - **MNEE tokens** for creating streams (can be minted from the dashboard)
 
 ---
@@ -204,7 +207,7 @@ PRIVATE_KEY_1=0x...your_private_key
 GEMINI_API_KEY=your_gemini_api_key
 
 # Optional: Custom RPC endpoint
-SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+CRONOS_RPC_URL=https://evm-t3.cronos.org
 \`\`\`
 
 > ⚠️ **Security:** Never commit your private key to version control!
@@ -243,12 +246,12 @@ npm run dev
 npx ts-node demo/provider.ts
 \`\`\`
 
-### Contract Addresses (Sepolia)
+### Contract Addresses (Cronos Testnet)
 
 | Contract | Address |
 |----------|---------|
-| FlowPayStream | \`0x155A00fBE3D290a8935ca4Bf5244283685Bb0035\` |
-| MockMNEE | \`0x96B1FE54Ee89811f46ecE4a347950E0D682D3896\` |
+| FlowPayStream | \`TBD - Deploy yourself\` |
+| MockMNEE | \`TBD - Deploy yourself\` |
 `
   },
   'architecture': {
@@ -268,8 +271,8 @@ FlowPay is designed as a simple, user-friendly payment streaming platform.
 │                                                              │
 │  ┌──────────────┐                       ┌──────────────┐    │
 │  │    User      │                       │  Blockchain  │    │
-│  │   Browser    │◀─────────────────────▶│  (Sepolia)   │    │
-│  │  + MetaMask  │                       │              │    │
+│  │   Browser    │◀─────────────────────▶│   (Cronos    │    │
+│  │  + MetaMask  │                       │   Testnet)   │    │
 │  └──────────────┘                       └──────────────┘    │
 │         │                                      │            │
 │         ▼                                      ▼            │
@@ -290,6 +293,16 @@ FlowPay is designed as a simple, user-friendly payment streaming platform.
 | **FlowPayStream** | Smart contract for payment streams |
 | **MockMNEE** | Test ERC-20 token for payments |
 | **MetaMask** | User's wallet for signing transactions |
+
+## Network Details
+
+| Property | Value |
+|----------|-------|
+| Network | Cronos Testnet |
+| Chain ID | 338 |
+| RPC URL | https://evm-t3.cronos.org |
+| Explorer | https://explorer.cronos.org/testnet |
+| Gas Token | TCRO |
 
 ## User Flow
 
@@ -350,8 +363,8 @@ X-Payment-Types: stream,direct
 X-Payment-Amount: 0.001
 X-Payment-Currency: MNEE
 X-Payment-Recipient: 0x1234...
-X-Payment-Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
-X-Payment-Network: sepolia
+X-Payment-Contract: 0xTBD_FLOWPAY_ADDRESS
+X-Payment-Network: cronos_testnet
 \`\`\`
 
 ## Request Headers (With Payment)
@@ -465,9 +478,9 @@ flowRate = totalAmount / duration
 
 The smart contract that powers FlowPay payment streams.
 
-**Address:** \`0x155A00fBE3D290a8935ca4Bf5244283685Bb0035\`
+**Address:** \`TBD - Deploy yourself\`
 
-**Network:** Sepolia Testnet
+**Network:** Cronos Testnet
 
 ## What Does It Do?
 
@@ -505,17 +518,17 @@ The contract emits events that the dashboard listens to:
 
 ## Gas Costs (Approximate)
 
-| Action | Gas Cost | ~USD at 20 gwei |
+| Action | Gas Cost | ~USD at 5000 gwei |
 |--------|----------|-----------------|
-| Create Stream | ~150,000 | ~$0.50 |
-| Withdraw | ~80,000 | ~$0.25 |
-| Cancel Stream | ~100,000 | ~$0.35 |
+| Create Stream | ~150,000 | ~$0.75 TCRO |
+| Withdraw | ~80,000 | ~$0.40 TCRO |
+| Cancel Stream | ~100,000 | ~$0.50 TCRO |
 
-> 💡 **Tip:** On Sepolia testnet, gas is free! Just get test ETH from a faucet.
+> 💡 **Tip:** On Cronos testnet, gas is free! Just get test TCRO from https://cronos.org/faucet
 
 ## View on Block Explorer
 
-[View FlowPayStream on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x155A00fBE3D290a8935ca4Bf5244283685Bb0035)
+[View FlowPayStream on Cronos Explorer](https://explorer.cronos.org/testnet/address/TBD)
 `
   },
   'mnee-token': {
@@ -524,9 +537,9 @@ The contract emits events that the dashboard listens to:
     content: `
 # MockMNEE Token
 
-Test ERC-20 token for FlowPay on Sepolia testnet.
+Test ERC-20 token for FlowPay on Cronos testnet.
 
-**Address:** \`0x96B1FE54Ee89811f46ecE4a347950E0D682D3896\`
+**Address:** \`TBD - Deploy yourself\`
 
 ## Token Details
 
@@ -535,7 +548,7 @@ Test ERC-20 token for FlowPay on Sepolia testnet.
 | Name | Mock MNEE |
 | Symbol | MNEE |
 | Decimals | 18 |
-| Network | Sepolia Testnet |
+| Network | Cronos Testnet |
 
 ## Getting Test Tokens
 
@@ -561,7 +574,7 @@ MNEE tokens are used for:
 
 ## Important Notes
 
-> ⚠️ **Testnet Only:** MockMNEE is for testing on Sepolia. It has no real value.
+> ⚠️ **Testnet Only:** MockMNEE is for testing on Cronos Testnet. It has no real value.
 
 > ℹ️ **Free Minting:** Anyone can mint unlimited test tokens for development.
 
@@ -569,7 +582,7 @@ MNEE tokens are used for:
 
 ## View on Block Explorer
 
-[View MockMNEE on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x96B1FE54Ee89811f46ecE4a347950E0D682D3896)
+[View MockMNEE on Cronos Explorer](https://explorer.cronos.org/testnet/address/TBD)
 
 ---
 
@@ -582,7 +595,7 @@ When you're ready to move from testnet to mainnet, you'll need to replace MockMN
 | Property | Value |
 |----------|-------|
 | Contract Address | \`0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF\` |
-| Network | Ethereum Mainnet |
+| Network | Cronos Mainnet |
 | Symbol | MNEE |
 | Decimals | 18 |
 
@@ -610,10 +623,10 @@ export const mneeTokenAddress = '0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF';
 |---------|-------------------|----------------|
 | Free minting | ✅ Yes | ❌ No |
 | Real value | ❌ No | ✅ Yes |
-| Gas costs | Free (testnet ETH) | Real ETH required |
-| Network | Sepolia | Ethereum Mainnet |
+| Gas costs | Free (testnet TCRO) | Real CRO required |
+| Network | Cronos Testnet | Cronos Mainnet |
 
-> ⚠️ **Important:** Always test thoroughly on Sepolia before deploying to mainnet. Mainnet transactions use real funds and cannot be reversed.
+> ⚠️ **Important:** Always test thoroughly on Cronos Testnet before deploying to mainnet. Mainnet transactions use real funds and cannot be reversed.
 
 ### Acquiring Real MNEE
 
@@ -648,7 +661,7 @@ import { ethers } from 'ethers';
 
 const sdk = new FlowPaySDK({
     privateKey: process.env.PRIVATE_KEY_1,
-    rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
+    rpcUrl: 'https://evm-t3.cronos.org',
     agentId: 'my-agent-id',  // Optional: identifies your agent
     spendingLimits: {
         dailyLimit: ethers.parseEther("100"),
@@ -684,8 +697,8 @@ Manually create a payment stream.
 
 \`\`\`typescript
 const stream = await sdk.createStream(
-    '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',  // FlowPayStream
-    '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896',  // MockMNEE
+    '0xTBD_FLOWPAY_ADDRESS',  // FlowPayStream
+    '0xTBD_MNEE_ADDRESS',  // MockMNEE
     ethers.parseEther("10"),  // 10 MNEE
     3600,  // 1 hour
     { type: 'manual', purpose: 'API access' }
@@ -780,14 +793,14 @@ npx ts-node demo/consumer.ts
     content: `
 # Deployment Guide
 
-Deploy FlowPay to Ethereum networks.
+Deploy FlowPay to Cronos testnet.
 
-## Current Deployment (Sepolia)
+## Current Deployment (Cronos Testnet)
 
 | Contract | Address |
 |----------|---------|
-| MockMNEE | \`0x96B1FE54Ee89811f46ecE4a347950E0D682D3896\` |
-| FlowPayStream | \`0x155A00fBE3D290a8935ca4Bf5244283685Bb0035\` |
+| MockMNEE | \`TBD - Deploy yourself\` |
+| FlowPayStream | \`TBD - Deploy yourself\` |
 
 ## Deploy Your Own
 
@@ -796,7 +809,7 @@ Deploy FlowPay to Ethereum networks.
 \`\`\`bash
 # .env
 PRIVATE_KEY=0x...
-SEPOLIA_RPC_URL=https://rpc.sepolia.org
+CRONOS_RPC_URL=https://evm-t3.cronos.org
 \`\`\`
 
 ### 2. Install Dependencies
@@ -808,13 +821,13 @@ npm install
 ### 3. Deploy
 
 \`\`\`bash
-npx hardhat run scripts/deploy.js --network sepolia
+npx hardhat run scripts/deploy.js --network cronos_testnet
 \`\`\`
 
 ### 4. Verify (Optional)
 
 \`\`\`bash
-npx hardhat verify --network sepolia <CONTRACT_ADDRESS>
+npx hardhat verify --network cronos_testnet <CONTRACT_ADDRESS>
 \`\`\`
 
 ## Network Configuration
@@ -851,7 +864,7 @@ FlowPay is a payment streaming platform that enables continuous MNEE token trans
 FlowPay enables flexible, time-based payments where funds are released gradually. This is useful for subscriptions, salaries, or any scenario where you want to pay over time with the ability to cancel.
 
 ### Which networks are supported?
-Currently Ethereum Sepolia testnet only. Mainnet deployment is planned for the future.
+Currently Cronos testnet only. Mainnet deployment is planned for the future.
 
 ### Is there an SDK or API?
 Yes! FlowPay provides:
@@ -901,9 +914,8 @@ No! Streams run on the blockchain, not in your browser. Once created, the stream
 ## Troubleshooting
 
 ### "Insufficient funds for gas"
-You need Sepolia ETH for gas fees. Get free testnet ETH from:
-- https://sepoliafaucet.com
-- https://faucet.sepolia.dev
+You need TCRO for gas fees. Get free testnet TCRO from:
+- https://cronos.org/faucet
 
 ### "MNEE transfer failed"
 Check that you have enough MNEE balance and have approved the token allowance.
@@ -912,10 +924,10 @@ Check that you have enough MNEE balance and have approved the token allowance.
 The stream may have expired (reached stop time) or been cancelled by either party.
 
 ### "Wrong network"
-Make sure MetaMask is connected to Sepolia testnet. The app will prompt you to switch if needed.
+Make sure MetaMask is connected to Cronos testnet. The app will prompt you to switch if needed.
 
 ### Transactions are slow
-Sepolia testnet can sometimes be congested. Wait a few minutes and try again, or check the transaction status on Sepolia Etherscan.
+Cronos testnet can sometimes be congested. Wait a few minutes and try again, or check the transaction status on Cronos Explorer.
 `
   }
 };

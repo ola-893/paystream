@@ -182,7 +182,7 @@ export function ToastProvider({ children }) {
         message,
         action: txHash ? {
           label: 'View on Explorer →',
-          onClick: () => window.open(`https://sepolia.etherscan.io/tx/${txHash}`, '_blank')
+          onClick: () => window.open(`https://explorer.cronos.org/testnet/tx/${txHash}`, '_blank')
         } : undefined
       }),
     error: (message = 'Transaction failed') => 
