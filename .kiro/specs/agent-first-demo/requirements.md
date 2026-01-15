@@ -9,7 +9,7 @@ This feature creates a production-ready, CLI-first agent demo that showcases AI 
 - **Agent**: An autonomous AI entity that can make HTTP requests, evaluate payment requirements, and trigger blockchain payments
 - **x402_Protocol**: HTTP-based payment protocol using 402 Payment Required status with FlowPay-specific headers
 - **Payment_Stream**: A continuous flow of MNEE tokens from sender to recipient over time via the FlowPayStream contract
-- **FlowPay_Contract**: The FlowPayStream smart contract that manages payment streams on Sepolia
+- **FlowPay_Contract**: The FlowPayStream smart contract that manages payment streams on Cronos Testnet
 - **MNEE**: The stablecoin token used for payments in the FlowPay ecosystem
 - **Payment_Proof**: Evidence of payment (stream ID or transaction hash) included in retry requests
 - **Service_Provider**: An HTTP server that requires payment via x402 headers before granting access
@@ -26,7 +26,7 @@ This feature creates a production-ready, CLI-first agent demo that showcases AI 
 
 1. WHEN the demo starts, THE Payment_Agent SHALL initialize with a real Ethereum wallet (private key from environment)
 2. WHEN the Payment_Agent is initialized, THE System SHALL display the agent's wallet address and MNEE balance
-3. WHEN the Payment_Agent needs to make a payment, THE Payment_Agent SHALL sign and submit real transactions to Sepolia
+3. WHEN the Payment_Agent needs to make a payment, THE Payment_Agent SHALL sign and submit real transactions to Cronos Testnet
 4. THE Payment_Agent SHALL track its spending against a configurable daily budget
 5. IF the Payment_Agent exceeds its daily budget, THEN THE Payment_Agent SHALL refuse further payments and log the reason
 

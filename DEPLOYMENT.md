@@ -228,12 +228,12 @@ npx mocha -r ts-node/register test/load.test.ts
 
 | Network | Chain ID | RPC URL |
 |---------|----------|---------|
-| Sepolia | 11155111 | https://rpc.sepolia.org |
+| Cronos Testnet | 338 | https://evm-t3.cronos.org |
 
 ## Troubleshooting
 
 ### "Insufficient funds for gas"
-- Get Sepolia ETH from faucet: https://sepoliafaucet.com
+- Get TCRO from faucet: https://cronos.org/faucet
 
 ### "MNEE transfer failed"
 - Ensure MockMNEE is deployed

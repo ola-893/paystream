@@ -25,8 +25,8 @@ import {
   WalletNotConnected
 } from './components/ui';
 
-const TARGET_CHAIN_ID_DEC = 11155111; // Sepolia
-const ALT_CHAIN_ID_DEC = 11155111; // Allow same for now
+const TARGET_CHAIN_ID_DEC = 338; // Cronos Testnet
+const ALT_CHAIN_ID_DEC = 338; // Allow same for now
 const TARGET_CHAIN_ID_HEX = '0x' + TARGET_CHAIN_ID_DEC.toString(16);
 const ALT_CHAIN_ID_HEX = '0x' + ALT_CHAIN_ID_DEC.toString(16);
 
@@ -143,7 +143,7 @@ function AppContent() {
   const getNetworkName = (id) => {
     if (!id) return '...';
     const mapping = {
-      11155111: 'Ethereum Sepolia',
+      338: 'Cronos Testnet',
     };
     return mapping[id] || `Chain ${id}`;
   };
@@ -165,10 +165,10 @@ function AppContent() {
             params: [
               {
                 chainId: TARGET_CHAIN_ID_HEX,
-                chainName: 'Ethereum Sepolia',
-                nativeCurrency: { name: 'SepoliaETH', symbol: 'ETH', decimals: 18 },
-                rpcUrls: ['https://rpc.sepolia.org'],
-                blockExplorerUrls: ['https://sepolia.etherscan.io']
+                chainName: 'Cronos Testnet',
+                nativeCurrency: { name: 'TCRO', symbol: 'TCRO', decimals: 18 },
+                rpcUrls: ['https://evm-t3.cronos.org'],
+                blockExplorerUrls: ['https://explorer.cronos.org/testnet']
               },
             ],
           });
@@ -225,7 +225,7 @@ function AppContent() {
       }
       const code = await provider.getCode(contractAddress);
       if (!code || code === '0x') {
-        setStatus('Contract not deployed on this network. Switch to Sepolia.');
+        setStatus('Contract not deployed on this network. Switch to Cronos Testnet.');
         return;
       }
       setStatus('Approving MNEE...');

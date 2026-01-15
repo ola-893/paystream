@@ -7,7 +7,7 @@ This design describes a CLI-first demonstration of AI agents autonomously trigge
 The architecture follows a clean separation between:
 - **Agent Layer**: Autonomous payment decision-making and wallet management
 - **Protocol Layer**: x402 header parsing and payment proof handling
-- **Blockchain Layer**: Real Sepolia transactions via ethers.js
+- **Blockchain Layer**: Real Cronos Testnet transactions via ethers.js
 - **CLI Layer**: Rich terminal output with colors, spinners, and formatted tables
 
 ## Architecture
@@ -37,8 +37,8 @@ The architecture follows a clean separation between:
 ┌──────────────────────────────────────────────────────────────────┐
 │                     External Services                            │
 │  ┌────────────────┐  ┌────────────────┐  ┌────────────────────┐ │
-│  │ x402 Server    │  │ Sepolia RPC    │  │ FlowPayStream      │ │
-│  │ (localhost)    │  │ (Alchemy/etc)  │  │ Contract           │ │
+│  │ x402 Server    │  │ Cronos RPC     │  │ FlowPayStream      │ │
+│  │ (localhost)    │  │ (Public Node)  │  │ Contract           │ │
 │  └────────────────┘  └────────────────┘  └────────────────────┘ │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -200,7 +200,7 @@ class DemoRunner {
 // Required environment variables
 interface EnvConfig {
   PRIVATE_KEY: string;           // Agent wallet private key
-  SEPOLIA_RPC_URL: string;       // Sepolia RPC endpoint
+  CRONOS_RPC_URL: string;        // Cronos Testnet RPC endpoint
   FLOWPAY_CONTRACT: string;      // FlowPayStream contract address
   MNEE_TOKEN: string;            // MNEE token address
   
@@ -333,9 +333,9 @@ interface X402Response {
 
 **Validates: Requirements 5.5**
 
-### Property 14: Etherscan URL Format
+### Property 14: Cronos Explorer URL Format
 
-*For any* transaction hash displayed by the CLI_Demo, the output SHALL contain a valid Etherscan URL in the format `https://sepolia.etherscan.io/tx/{txHash}`.
+*For any* transaction hash displayed by the CLI_Demo, the output SHALL contain a valid Cronos Explorer URL in the format `https://explorer.cronos.org/testnet/tx/{txHash}`.
 
 **Validates: Requirements 6.3**
 

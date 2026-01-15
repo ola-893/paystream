@@ -100,12 +100,12 @@ Create `vite-project/.env`:
 
 ```bash
 # Contract addresses
-VITE_CONTRACT_ADDRESS=0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
-VITE_MNEE_TOKEN_ADDRESS=0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+VITE_CONTRACT_ADDRESS=TBD_YOUR_FLOWPAYSTREAM_ADDRESS
+VITE_MNEE_TOKEN_ADDRESS=TBD_YOUR_MNEE_ADDRESS
 
 # Network
-VITE_CHAIN_ID=11155111
-VITE_RPC_URL=https://rpc.sepolia.org
+VITE_CHAIN_ID=338
+VITE_RPC_URL=https://evm-t3.cronos.org
 
 # Features
 VITE_ENABLE_ANALYTICS=true
@@ -118,15 +118,15 @@ VITE_ENABLE_AI_CONSOLE=true
 
 | Network | Chain ID | Status |
 |---------|----------|--------|
-| Sepolia | 11155111 | ✅ Active |
-| Mainnet | 1 | 🔜 Coming Soon |
+| Cronos Testnet | 338 | ✅ Active |
+| Cronos Mainnet | 25 | 🔜 Coming Soon |
 
 ### Custom RPC Endpoints
 
 ```javascript
 const RPC_URLS = {
-  sepolia: {
-    primary: 'https://rpc.sepolia.org',
+  cronos_testnet: {
+    primary: 'https://evm-t3.cronos.org',
     fallback: [
       'https://sepolia.infura.io/v3/YOUR_KEY',
       'https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY'

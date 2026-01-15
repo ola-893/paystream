@@ -121,7 +121,7 @@ async function main(): Promise<void> {
     const agentConfig: AgentConfig = {
       name: 'FlowPay Demo Agent',
       privateKey: config.PRIVATE_KEY,
-      rpcUrl: config.SEPOLIA_RPC_URL,
+      rpcUrl: config.CRONOS_RPC_URL,
       dailyBudget: ethers.parseEther(config.DAILY_BUDGET),
       flowPayContract: config.FLOWPAY_CONTRACT,
       mneeToken: config.MNEE_TOKEN,
@@ -159,7 +159,7 @@ async function main(): Promise<void> {
   const agentConfig: AgentConfig = {
     name: 'FlowPay Demo Agent',
     privateKey: config.PRIVATE_KEY,
-    rpcUrl: config.SEPOLIA_RPC_URL,
+    rpcUrl: config.CRONOS_RPC_URL,
     dailyBudget: ethers.parseEther(config.DAILY_BUDGET),
     flowPayContract: config.FLOWPAY_CONTRACT,
     mneeToken: config.MNEE_TOKEN,
@@ -170,7 +170,7 @@ async function main(): Promise<void> {
   const agent = new PaymentAgent(agentConfig);
   
   // Initialize agent and fetch balance
-  cli.startSpinner('Connecting to Sepolia and fetching MNEE balance...');
+  cli.startSpinner('Connecting to Cronos Testnet and fetching MNEE balance...');
   
   try {
     await agent.initialize();

@@ -15,7 +15,7 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
 
 - [x] 2. Implement environment configuration and validation
   - [x] 2.1 Create config loader from .env file
-    - Load PRIVATE_KEY, SEPOLIA_RPC_URL, FLOWPAY_CONTRACT, MNEE_TOKEN
+    - Load PRIVATE_KEY, CRONOS_RPC_URL, FLOWPAY_CONTRACT, MNEE_TOKEN
     - Support optional GEMINI_API_KEY, DAILY_BUDGET, SERVER_URL
     - _Requirements: 9.1_
   - [x] 2.2 Implement environment validation with clear error messages
@@ -53,18 +53,18 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
     - Use cli-table3 for summary tables
     - Implement box() for scenario separation
     - _Requirements: 6.5, 6.7_
-  - [x] 4.4 Implement Etherscan link formatting
+  - [x] 4.4 Implement Cronos Explorer link formatting
     - Generate clickable URLs for transaction hashes
-    - Format: https://sepolia.etherscan.io/tx/{hash}
+    - Format: https://explorer.cronos.org/testnet/tx/{hash}
     - _Requirements: 6.3_
-  - [ ]* 4.5 Write property test for Etherscan URL format
-    - **Property 14: Etherscan URL Format**
+  - [ ]* 4.5 Write property test for Cronos Explorer URL format
+    - **Property 14: Cronos Explorer URL Format**
     - **Validates: Requirements 6.3**
 
 - [x] 5. Implement PaymentAgent class
   - [x] 5.1 Create PaymentAgent with wallet initialization
     - Initialize ethers.Wallet from private key
-    - Connect to Sepolia provider
+    - Connect to Cronos Testnet provider
     - Fetch initial MNEE balance
     - _Requirements: 1.1, 1.2_
   - [ ]* 5.2 Write property test for wallet address derivation

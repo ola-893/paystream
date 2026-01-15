@@ -226,7 +226,7 @@ export class DemoRunner {
           
           if (fetchResult.txHash) {
             if (isDryRunPayment) {
-              // For dry-run, show mock tx hash without Etherscan link
+              // For dry-run, show mock tx hash without Cronos Explorer link
               this.cli.info(`   Mock Transaction: ${fetchResult.txHash}`);
             } else {
               this.cli.displayTxHash(fetchResult.txHash, 'Transaction');

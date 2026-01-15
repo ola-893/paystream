@@ -592,13 +592,13 @@ When you're ready to move from testnet to mainnet, you'll need to replace MockMN
 
 \`\`\`javascript
 // Change from testnet MockMNEE
-export const mneeTokenAddress = '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896';
+export const mneeTokenAddress = 'TBD_YOUR_MNEE_ADDRESS';
 
 // To mainnet MNEE
 export const mneeTokenAddress = '0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF';
 \`\`\`
 
-2. **Update the network configuration** to target Ethereum Mainnet (Chain ID: 1) instead of Sepolia (Chain ID: 11155111)
+2. **Update the network configuration** to target Cronos Mainnet (Chain ID: 25) instead of Cronos Testnet (Chain ID: 338)
 
 3. **Deploy FlowPayStream to mainnet** - The streaming contract needs to be deployed to mainnet and its address updated
 
@@ -821,18 +821,17 @@ npx hardhat verify --network sepolia <CONTRACT_ADDRESS>
 
 | Network | Chain ID | RPC URL |
 |---------|----------|---------|
-| Sepolia | 11155111 | https://rpc.sepolia.org |
+| Cronos Testnet | 338 | https://evm-t3.cronos.org |
 
-## Getting Sepolia ETH
+## Getting TCRO
 
-Free testnet ETH:
-- https://sepoliafaucet.com
-- https://faucet.sepolia.dev
+Free testnet TCRO:
+- https://cronos.org/faucet
 
 ## Post-Deployment
 
 1. Update frontend with new addresses
-2. Verify contracts on Etherscan
+2. Verify contracts on Cronos Explorer
 3. Test all functionality
 4. Update documentation
 `

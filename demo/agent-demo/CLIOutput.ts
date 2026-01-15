@@ -37,7 +37,7 @@ export interface DemoStats {
  * CLIOutput class for rich terminal output
  * 
  * Provides methods for displaying agent activity with emoji indicators,
- * progress spinners, formatted tables, and Etherscan links.
+ * progress spinners, formatted tables, and Cronos Explorer links.
  */
 export class CLIOutput {
   private config: CLIConfig;
@@ -266,28 +266,28 @@ export class CLIOutput {
 
 
   // ============================================
-  // Etherscan Link Formatting (Requirements: 6.3)
+  // Cronos Explorer Link Formatting (Requirements: 6.3)
   // ============================================
 
   /**
-   * Generate an Etherscan URL for a transaction hash
-   * Format: https://sepolia.etherscan.io/tx/{hash}
+   * Generate a Cronos Explorer URL for a transaction hash
+   * Format: https://explorer.cronos.org/testnet/tx/{hash}
    * @param txHash - The transaction hash
-   * @returns Formatted Etherscan URL
+   * @returns Formatted Cronos Explorer URL
    */
-  etherscanLink(txHash: string): string {
-    return `https://sepolia.etherscan.io/tx/${txHash}`;
+  cronosExplorerLink(txHash: string): string {
+    return `https://explorer.cronos.org/testnet/tx/${txHash}`;
   }
 
   /**
-   * Display a transaction hash with Etherscan link
+   * Display a transaction hash with Cronos Explorer link
    * @param txHash - The transaction hash
    * @param label - Optional label for the transaction
    */
   displayTxHash(txHash: string, label?: string): void {
     if (this.config.quiet) return;
     
-    const url = this.etherscanLink(txHash);
+    const url = this.cronosExplorerLink(txHash);
     const prefix = label ? `${label}: ` : 'Transaction: ';
     
     console.log(chalk.gray(`   ${prefix}${chalk.underline.blue(url)}`));

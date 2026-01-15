@@ -12,7 +12,7 @@ async function main() {
   // You might want to hardcode the address if you already have one on the network
   // const EXISTING_MNEE_ADDRESS = "0x..."; 
 
-  if (hre.network.name === "sepolia" || hre.network.name === "hardhat" || hre.network.name === "localhost") {
+  if (hre.network.name === "cronos_testnet" || hre.network.name === "hardhat" || hre.network.name === "localhost") {
     console.log("Deploying MockMNEE...");
     const MockMNEE = await hre.ethers.getContractFactory("MockMNEE");
     const mockMNEE = await MockMNEE.deploy();

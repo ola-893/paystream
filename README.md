@@ -47,14 +47,13 @@ Open http://localhost:5173 in your browser.
 
 ### Step 3: Connect & Test
 
-1. **Add Sepolia to MetaMask** (if not already added):
-   - Network: Sepolia
-   - RPC: `https://sepolia.infura.io/v3/YOUR_KEY` or use MetaMask's default
-   - Chain ID: `11155111`
+1. **Add Cronos Testnet to MetaMask** (if not already added):
+   - Network: Cronos Testnet
+   - RPC: `https://evm-t3.cronos.org`
+   - Chain ID: `338`
 
-2. **Get Sepolia ETH** for gas fees:
-   - [Sepolia Faucet](https://sepoliafaucet.com/)
-   - [Alchemy Faucet](https://sepoliafaucet.com/)
+2. **Get TCRO** for gas fees:
+   - [Cronos Faucet](https://cronos.org/faucet)
 
 3. **Connect wallet** and click "Mint MNEE" to get free test tokens
 
@@ -401,11 +400,11 @@ Consumer Agent                Provider API                FlowPay Contract
 
 When ready for production with real MNEE:
 
-| Feature | Testnet (Sepolia) | Mainnet |
+| Feature | Testnet (Cronos) | Mainnet |
 |---------|-------------------|---------|
 | Token | MockMNEE (free mint) | Real MNEE |
-| Network | Sepolia (11155111) | Ethereum (1) |
-| Gas | Free testnet ETH | Real ETH |
+| Network | Cronos Testnet (338) | Cronos Mainnet (25) |
+| Gas | Free testnet TCRO | Real CRO |
 
 **MNEE Mainnet Contract:** `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`
 

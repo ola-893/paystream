@@ -15,8 +15,8 @@ import {
 
 // Chain icons using Lucide
 const ChainIcon = ({ chainId }) => {
-  const isEthereum = chainId === 11155111 || chainId === 1;
-  return isEthereum 
+  const isCronos = chainId === 338;
+  return isCronos 
     ? <Hexagon className="w-4 h-4 text-white/70" />
     : <LinkIcon className="w-4 h-4 text-white/70" />;
 };

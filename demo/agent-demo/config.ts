@@ -17,7 +17,7 @@ import * as path from 'path';
 export interface EnvConfig {
   // Required variables
   PRIVATE_KEY: string;
-  SEPOLIA_RPC_URL: string;
+  CRONOS_RPC_URL: string;
   FLOWPAY_CONTRACT: string;
   MNEE_TOKEN: string;
   
@@ -42,7 +42,7 @@ export interface ValidationResult {
  */
 const REQUIRED_VARIABLES = [
   'PRIVATE_KEY',
-  'SEPOLIA_RPC_URL',
+  'CRONOS_RPC_URL',
   'FLOWPAY_CONTRACT',
   'MNEE_TOKEN',
 ] as const;
@@ -105,7 +105,7 @@ export function validateEnvironment(): ValidationResult {
   // Build the config object with validated values
   const config: EnvConfig = {
     PRIVATE_KEY: process.env.PRIVATE_KEY!,
-    SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL!,
+    CRONOS_RPC_URL: process.env.CRONOS_RPC_URL!,
     FLOWPAY_CONTRACT: process.env.FLOWPAY_CONTRACT!,
     MNEE_TOKEN: process.env.MNEE_TOKEN!,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
@@ -191,7 +191,7 @@ export function formatValidationError(result: ValidationResult): string {
 export function getConfigSummary(config: EnvConfig): Record<string, string> {
   return {
     PRIVATE_KEY: maskPrivateKey(config.PRIVATE_KEY),
-    SEPOLIA_RPC_URL: config.SEPOLIA_RPC_URL,
+    CRONOS_RPC_URL: config.CRONOS_RPC_URL,
     FLOWPAY_CONTRACT: config.FLOWPAY_CONTRACT,
     MNEE_TOKEN: config.MNEE_TOKEN,
     GEMINI_API_KEY: config.GEMINI_API_KEY ? '***configured***' : 'not set',
