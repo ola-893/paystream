@@ -138,12 +138,12 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
 - [x] 9. Checkpoint - Verify payment flow works end-to-end
   - Ensure all tests pass, ask the user if questions arise.
 
-- [-] 10. Enhance server middleware for demo
-  - [ ] 10.1 Add X-FlowPay-Recipient header to 402 responses
+- [x] 10. Enhance server middleware for demo
+  - [x] 10.1 Add X-FlowPay-Recipient header to 402 responses
     - Update flowPayMiddleware to include recipient address
     - Ensure all required x402 headers are present
     - _Requirements: 2.2_
-  - [ ] 10.2 Add stream verification logging
+  - [x] 10.2 Add stream verification logging
     - Log stream ID verification attempts
     - Log verification results (active/inactive)
     - _Requirements: 2.3_
@@ -154,17 +154,17 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
     - **Property 7: Inactive Stream Requires New Payment**
     - **Validates: Requirements 2.5**
 
-- [ ] 11. Implement DemoRunner for scenario orchestration
-  - [ ] 11.1 Create DemoRunner class
+- [x] 11. Implement DemoRunner for scenario orchestration
+  - [x] 11.1 Create DemoRunner class
     - Accept PaymentAgent and CLIOutput instances
     - Define demo scenarios with different pricing
     - _Requirements: 7.1, 7.2_
-  - [ ] 11.2 Implement runScenario method
+  - [x] 11.2 Implement runScenario method
     - Display scenario header with box formatting
     - Execute fetch and display results
     - Track success/failure stats
     - _Requirements: 6.1, 6.5_
-  - [ ] 11.3 Implement runAll method with summary
+  - [x] 11.3 Implement runAll method with summary
     - Run all scenarios (or filtered by --scenario)
     - Display summary table at end
     - _Requirements: 6.7, 7.1_
@@ -172,8 +172,8 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
     - **Property 15: Summary Totals Accuracy**
     - **Validates: Requirements 6.7**
 
-- [ ] 12. Implement dry-run mode
-  - [ ] 12.1 Add dry-run flag handling to PaymentAgent
+- [x] 12. Implement dry-run mode
+  - [x] 12.1 Add dry-run flag handling to PaymentAgent
     - Skip actual blockchain transactions in dry-run
     - Generate mock stream IDs and tx hashes
     - Display clear indication of simulation mode
@@ -182,12 +182,12 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
     - **Property 16: Dry-Run No Transactions**
     - **Validates: Requirements 9.3**
 
-- [ ] 13. Implement error handling and recovery
-  - [ ] 13.1 Add try-catch wrappers to scenario execution
+- [x] 13. Implement error handling and recovery
+  - [x] 13.1 Add try-catch wrappers to scenario execution
     - Catch and log errors without crashing
     - Continue to next scenario on error
     - _Requirements: 8.1, 8.5_
-  - [ ] 13.2 Implement exponential backoff for retries
+  - [x] 13.2 Implement exponential backoff for retries
     - Base delay of 1 second
     - Double delay on each retry
     - Maximum 3 attempts
@@ -198,38 +198,38 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
   - [ ]* 13.4 Write property test for exponential backoff timing
     - **Property 20: Exponential Backoff Timing**
     - **Validates: Requirements 8.2**
-  - [ ] 13.5 Add balance check before payments
+  - [x] 13.5 Add balance check before payments
     - Check MNEE balance before attempting payment
     - Report shortfall if insufficient
     - _Requirements: 8.3_
 
-- [ ] 14. Implement setup check command
-  - [ ] 14.1 Create checkSetup method in DemoRunner
+- [x] 14. Implement setup check command
+  - [x] 14.1 Create checkSetup method in DemoRunner
     - Verify wallet has MNEE balance
     - Verify FlowPay contract is accessible
     - Verify server is running and responding
     - _Requirements: 9.6_
-  - [ ] 14.2 Add --check flag to CLI
+  - [x] 14.2 Add --check flag to CLI
     - Run setup check and display results
     - Exit with appropriate code
     - _Requirements: 9.6_
 
-- [ ] 15. Create demo scenarios
-  - [ ] 15.1 Define streaming mode scenario (Weather API)
+- [x] 15. Create demo scenarios
+  - [x] 15.1 Define streaming mode scenario (Weather API)
     - Endpoint: /api/weather
     - Price: 0.0001 MNEE/second
     - Expected: Stream creation and reuse
     - _Requirements: 7.1, 7.2_
-  - [ ] 15.2 Define per-request mode scenario (Premium API)
+  - [x] 15.2 Define per-request mode scenario (Premium API)
     - Endpoint: /api/premium
     - Price: 0.01 MNEE per request
     - Expected: Direct payment
     - _Requirements: 7.1, 7.2_
-  - [ ] 15.3 Define stream reuse scenario
+  - [x] 15.3 Define stream reuse scenario
     - Multiple requests to same endpoint
     - Expected: Single stream, multiple accesses
     - _Requirements: 7.3_
-  - [ ] 15.4 Define budget exceeded scenario
+  - [x] 15.4 Define budget exceeded scenario
     - Set low budget, attempt expensive payment
     - Expected: Payment declined
     - _Requirements: 7.5_
@@ -237,11 +237,11 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
     - **Property 11: Stream Isolation Between Hosts**
     - **Validates: Requirements 7.4**
 
-- [ ] 16. Final checkpoint - Full integration test
+- [x] 16. Final checkpoint - Full integration test
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 17. Create demo documentation and README
-  - [ ] 17.1 Update demo/agent-demo/README.md
+- [-] 17. Create demo documentation and README
+  - [-] 17.1 Update demo/agent-demo/README.md
     - Quick start instructions
     - Environment setup guide
     - CLI usage examples

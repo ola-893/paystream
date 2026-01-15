@@ -21,6 +21,7 @@ export interface AgentConfig {
   flowPayContract: string;
   mneeToken: string;
   geminiApiKey?: string;      // optional for AI decisions
+  dryRun?: boolean;           // optional: simulate without real transactions (Requirements: 9.3, 9.7)
 }
 
 /**
@@ -117,6 +118,7 @@ const FLOWPAY_ABI = [
  * - Track spending against a daily budget
  * - Cache and reuse payment streams
  * - Make autonomous payment decisions
+ * - Run in dry-run mode for simulation (Requirements: 9.3, 9.7)
  */
 export class PaymentAgent {
   private config: AgentConfig;
@@ -135,9 +137,17 @@ export class PaymentAgent {
   
   // Initialization flag
   private _initialized: boolean = false;
+  
+  // Dry-run mode tracking (Requirements: 9.3, 9.7)
+  private _dryRun: boolean = false;
+  private _mockStreamCounter: number = 0;
+  private _mockTxCounter: number = 0;
 
   constructor(config: AgentConfig) {
     this.config = config;
+    
+    // Set dry-run mode (Requirements: 9.3, 9.7)
+    this._dryRun = config.dryRun || false;
     
     // Initialize provider and wallet (Requirements: 1.1)
     this.provider = new JsonRpcProvider(config.rpcUrl);
@@ -150,11 +160,19 @@ export class PaymentAgent {
 
   /**
    * Initialize the agent by fetching initial balances
-   * Requirements: 1.1, 1.2
+   * Requirements: 1.1, 1.2, 9.3, 9.7
+   * 
+   * In dry-run mode, uses a mock balance instead of fetching from chain.
    */
   async initialize(): Promise<void> {
-    // Fetch initial MNEE balance
-    this._mneeBalance = await this.mneeContract.balanceOf(this.wallet.address);
+    if (this._dryRun) {
+      // In dry-run mode, use a mock balance (100 MNEE)
+      // This allows testing budget logic without real chain interaction
+      this._mneeBalance = ethers.parseEther('100');
+    } else {
+      // Fetch initial MNEE balance from chain
+      this._mneeBalance = await this.mneeContract.balanceOf(this.wallet.address);
+    }
     this._initialized = true;
   }
 
@@ -257,12 +275,51 @@ export class PaymentAgent {
       );
     }
     
+    // Also check balance (Requirements: 8.3)
+    this.checkBalance(amount);
+  }
+
+  /**
+   * Check MNEE balance before attempting payment
+   * Requirements: 8.3 - Check MNEE balance before attempting payment, report shortfall if insufficient
+   * 
+   * @param amount - Amount to check
+   * @throws Error if balance is insufficient, with shortfall details
+   */
+  checkBalance(amount: bigint): void {
     if (amount > this._mneeBalance) {
+      const shortfall = amount - this._mneeBalance;
       throw new Error(
-        `Insufficient balance: need ${ethers.formatEther(amount)} MNEE, ` +
-        `have ${ethers.formatEther(this._mneeBalance)} MNEE`
+        `Insufficient MNEE balance: need ${ethers.formatEther(amount)} MNEE, ` +
+        `have ${ethers.formatEther(this._mneeBalance)} MNEE, ` +
+        `shortfall ${ethers.formatEther(shortfall)} MNEE`
       );
     }
+  }
+
+  /**
+   * Get balance shortfall for a given amount
+   * Requirements: 8.3 - Report shortfall if insufficient
+   * 
+   * @param amount - Amount to check
+   * @returns Shortfall amount (0 if balance is sufficient)
+   */
+  getBalanceShortfall(amount: bigint): bigint {
+    if (amount > this._mneeBalance) {
+      return amount - this._mneeBalance;
+    }
+    return 0n;
+  }
+
+  /**
+   * Check if agent has sufficient balance for a payment
+   * Requirements: 8.3
+   * 
+   * @param amount - Amount to check
+   * @returns true if balance is sufficient, false otherwise
+   */
+  hasSufficientBalance(amount: bigint): boolean {
+    return amount <= this._mneeBalance;
   }
 
   /**
@@ -372,8 +429,15 @@ export class PaymentAgent {
 
   /**
    * Refresh MNEE balance from chain
+   * Requirements: 9.3, 9.7
+   * 
+   * In dry-run mode, returns the current mock balance without chain interaction.
    */
   async refreshBalance(): Promise<bigint> {
+    if (this._dryRun) {
+      // In dry-run mode, just return current balance (no chain interaction)
+      return this._mneeBalance;
+    }
     this._mneeBalance = await this.mneeContract.balanceOf(this.wallet.address);
     return this._mneeBalance;
   }
@@ -383,6 +447,38 @@ export class PaymentAgent {
    */
   get isInitialized(): boolean {
     return this._initialized;
+  }
+
+  /**
+   * Check if agent is running in dry-run mode
+   * Requirements: 9.3, 9.7
+   */
+  get isDryRun(): boolean {
+    return this._dryRun;
+  }
+
+  /**
+   * Generate a mock stream ID for dry-run mode
+   * Requirements: 9.3
+   * @returns Mock stream ID string
+   */
+  private generateMockStreamId(): string {
+    this._mockStreamCounter++;
+    return `mock-stream-${Date.now()}-${this._mockStreamCounter}`;
+  }
+
+  /**
+   * Generate a mock transaction hash for dry-run mode
+   * Requirements: 9.3
+   * @returns Mock transaction hash (64 hex chars with 0x prefix)
+   */
+  private generateMockTxHash(): string {
+    this._mockTxCounter++;
+    // Generate a deterministic but realistic-looking tx hash
+    const timestamp = Date.now().toString(16).padStart(12, '0');
+    const counter = this._mockTxCounter.toString(16).padStart(4, '0');
+    const padding = '0'.repeat(48 - timestamp.length - counter.length);
+    return `0xdryrun${timestamp}${counter}${padding}`;
   }
 
   /**
@@ -415,7 +511,9 @@ export class PaymentAgent {
 
   /**
    * Create a payment stream to a recipient
-   * Requirements: 4.1, 4.2, 4.3, 4.4
+   * Requirements: 4.1, 4.2, 4.3, 4.4, 8.3, 9.3, 9.7
+   * 
+   * In dry-run mode, skips actual blockchain transactions and generates mock IDs.
    * 
    * @param requirement - The x402 payment requirement
    * @param serviceUrl - The URL of the service being paid for
@@ -446,8 +544,55 @@ export class PaymentAgent {
         duration = 60; // 1 minute for per-request payments
       }
 
+      // Check MNEE balance before attempting payment (Requirements: 8.3)
+      // This provides early failure with clear shortfall reporting
+      if (!this.hasSufficientBalance(amount)) {
+        const shortfall = this.getBalanceShortfall(amount);
+        return {
+          success: false,
+          error: `Insufficient MNEE balance: need ${ethers.formatEther(amount)} MNEE, ` +
+                 `have ${ethers.formatEther(this._mneeBalance)} MNEE, ` +
+                 `shortfall ${ethers.formatEther(shortfall)} MNEE`,
+        };
+      }
+
       // Check budget before proceeding (Requirements: 1.5, 3.4)
       this.checkBudget(amount);
+
+      // DRY-RUN MODE: Skip actual blockchain transactions (Requirements: 9.3, 9.7)
+      if (this._dryRun) {
+        // Generate mock stream ID and tx hash
+        const mockStreamId = this.generateMockStreamId();
+        const mockTxHash = this.generateMockTxHash();
+        
+        // Record the payment (still track spending in dry-run for budget testing)
+        this.recordPayment(amount);
+
+        // Calculate stream expiration
+        const startTime = Math.floor(Date.now() / 1000);
+        const expiresAt = startTime + duration;
+
+        // Cache the mock stream for reuse (Requirements: 4.5)
+        const host = new URL(serviceUrl).host;
+        const streamInfo: StreamInfo = {
+          streamId: mockStreamId,
+          recipient: requirement.recipient,
+          amount,
+          rate: requirement.rate ? ethers.parseEther(requirement.rate) : 0n,
+          startTime,
+          expiresAt,
+        };
+        this.cacheStream(host, streamInfo);
+
+        return {
+          success: true,
+          txHash: mockTxHash,
+          streamId: mockStreamId,
+          amount,
+        };
+      }
+
+      // REAL MODE: Execute actual blockchain transactions
 
       // Step 1: Approve MNEE tokens to FlowPay contract (Requirements: 4.1)
       const currentAllowance = await this.mneeContract.allowance(
@@ -685,10 +830,11 @@ export class PaymentAgent {
         lastError = error.message || 'Network error';
         retryCount++;
         
-        // If we haven't exhausted retries, continue
+        // If we haven't exhausted retries, continue with exponential backoff
+        // Requirements: 8.2 - Base delay of 1 second, double delay on each retry
         if (retryCount < maxRetries) {
-          // Exponential backoff
-          await this.delay(1000 * Math.pow(2, retryCount - 1));
+          const backoffDelay = this.calculateExponentialBackoff(retryCount);
+          await this.delay(backoffDelay);
           continue;
         }
       }
@@ -712,5 +858,25 @@ export class PaymentAgent {
    */
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Calculate exponential backoff delay
+   * Requirements: 8.2 - Base delay of 1 second, double delay on each retry
+   * 
+   * Formula: delay_n = base * 2^(n-1)
+   * - Attempt 1: 1000ms (1 second)
+   * - Attempt 2: 2000ms (2 seconds)
+   * - Attempt 3: 4000ms (4 seconds)
+   * 
+   * @param attempt - Current retry attempt number (1-based)
+   * @param baseDelayMs - Base delay in milliseconds (default: 1000)
+   * @returns Delay in milliseconds
+   */
+  calculateExponentialBackoff(attempt: number, baseDelayMs: number = 1000): number {
+    // Ensure attempt is at least 1
+    const safeAttempt = Math.max(1, attempt);
+    // Calculate delay: base * 2^(attempt-1)
+    return baseDelayMs * Math.pow(2, safeAttempt - 1);
   }
 }

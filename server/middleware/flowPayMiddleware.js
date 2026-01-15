@@ -7,6 +7,7 @@ const { ethers } = require('ethers');
  * @param {string} config.mneeAddress MNEE Token Address
  * @param {string} config.flowPayContractAddress FlowPayStream Contract Address
  * @param {string} config.rpcUrl RPC URL for blockchain connection
+ * @param {string} config.recipientAddress Payment recipient address (defaults to mneeAddress if not provided)
  * @param {string} config.apiKey Optional API Key for authentication
  * @param {string} config.privateKey Optional private key for server-side signing if needed (not used for verification)
  */
@@ -107,15 +108,23 @@ const flowPayMiddleware = (config) => {
         try {
             // 2. Verify Stream ID
             const streamId = BigInt(streamIdHeader);
+            
+            // Log stream verification attempt (Requirement 2.3)
+            console.log(`[FlowPay] Verifying stream #${streamId} for ${path}...`);
+            
             const isActive = await flowPayContract.isStreamActive(streamId);
 
+            // Log verification result (Requirement 2.3)
             if (!isActive) {
+                console.log(`[FlowPay] Stream #${streamId} verification result: INACTIVE`);
                 // Stream exists but is inactive
                 return res.status(402).json({
                     error: "Stream is inactive",
                     detail: "The provided stream ID is not active. Please open a new stream or top up."
                 });
             }
+            
+            console.log(`[FlowPay] Stream #${streamId} verification result: ACTIVE`);
 
             // Optional: Verify recipient is this server (if we tracked our address)
             // Optional: Verify balance is sufficient (via getClaimableBalance or local tracking)
@@ -131,6 +140,7 @@ const flowPayMiddleware = (config) => {
             next();
         } catch (error) {
             console.error("[FlowPay] Stream verification failed:", error);
+            console.log(`[FlowPay] Stream #${streamIdHeader} verification result: ERROR - ${error.message}`);
             // Fallback to 402 if verification crashes (safe default)
             const requiredAmountFallback = ethers.parseEther(routeConfig.price || '0');
             return send402Response(res, routeConfig, config, requiredAmountFallback);
@@ -139,20 +149,26 @@ const flowPayMiddleware = (config) => {
 };
 
 function send402Response(res, routeConfig, config, requiredAmount) {
+    // Set all required x402 headers per Requirements 2.2
     res.set('X-Payment-Required', 'true');
     res.set('X-FlowPay-Mode', routeConfig.mode || 'streaming');
-    res.set('X-FlowPay-Rate', ethers.formatEther(requiredAmount)); // Send resolved rate
-    res.set('X-MNEE-Address', config.mneeAddress || '');
+    res.set('X-FlowPay-Rate', ethers.formatEther(requiredAmount));
+    res.set('X-FlowPay-Recipient', config.recipientAddress || config.mneeAddress || '');
     res.set('X-FlowPay-Contract', config.flowPayContractAddress || '');
+    res.set('X-FlowPay-MinDeposit', routeConfig.minDeposit || '0.001');
+    // Legacy header for backwards compatibility
+    res.set('X-MNEE-Address', config.mneeAddress || '');
+    
     // Standard 402 body
     res.status(402).json({
         message: "Payment Required",
         requirements: {
             mode: routeConfig.mode || 'streaming',
-            price: ethers.formatEther(requiredAmount), // Use the resolved rate
+            price: ethers.formatEther(requiredAmount),
             currency: "MNEE",
             contract: config.flowPayContractAddress,
-            recipient: config.mneeAddress // Assuming server wallet is MNEE recipient
+            recipient: config.recipientAddress || config.mneeAddress,
+            minDeposit: routeConfig.minDeposit || '0.001'
         }
     });
 }

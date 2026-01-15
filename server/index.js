@@ -19,14 +19,20 @@ const defaultConfig = {
     mneeAddress: MNEE_ADDRESS,
     routes: {
         '/api/weather': {
-            price: '0.0001', // MNEE per second
+            price: '0.0001', // MNEE per second (streaming mode)
             mode: 'streaming',
-            description: 'Real-time weather data'
+            description: 'Real-time weather data',
+            minDeposit: '0.36' // 1 hour of streaming at 0.0001/sec
         },
         '/api/premium': {
-            price: '1.0',
+            price: '0.01', // MNEE per request
             mode: 'per-request',
             description: 'Premium content'
+        },
+        '/api/expensive': {
+            price: '1000', // Very expensive - for budget exceeded testing
+            mode: 'per-request',
+            description: 'Expensive API for budget testing'
         }
     }
 };
@@ -53,6 +59,14 @@ const createApp = (config = defaultConfig) => {
     app.get('/api/premium', (req, res) => {
         res.json({
             content: "This is premium content.",
+            paidWithStream: req.flowPay.streamId
+        });
+    });
+
+    // Protected Route (Expensive - for budget exceeded testing)
+    app.get('/api/expensive', (req, res) => {
+        res.json({
+            content: "This is very expensive premium content.",
             paidWithStream: req.flowPay.streamId
         });
     });

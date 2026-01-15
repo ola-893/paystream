@@ -59,6 +59,18 @@ describe('x402 Middleware Integration', function () {
             expect(res.header['x-flowpay-mode']).to.equal('per-request');
             expect(res.header['x-flowpay-rate']).to.equal('1.0');
         });
+
+        it('should include all required x402 headers in 402 response', async function () {
+            const res = await request(app).get('/api/weather');
+            expect(res.status).to.equal(402);
+            // Verify all required headers per Requirements 2.2
+            expect(res.header['x-payment-required']).to.equal('true');
+            expect(res.header['x-flowpay-mode']).to.exist;
+            expect(res.header['x-flowpay-rate']).to.exist;
+            expect(res.header['x-flowpay-recipient']).to.exist;
+            expect(res.header['x-flowpay-contract']).to.exist;
+            expect(res.header['x-flowpay-mindeposit']).to.exist;
+        });
     });
 
     describe('Protected Routes (With Payment)', function () {

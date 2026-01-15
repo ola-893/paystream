@@ -29,6 +29,7 @@ import {
 } from './config';
 import { CLIOutput, CLIConfig } from './CLIOutput';
 import { PaymentAgent, AgentConfig } from './PaymentAgent';
+import { DemoRunner } from './DemoRunner';
 
 const program = new Command();
 
@@ -109,14 +110,34 @@ async function main(): Promise<void> {
   }
   
   if (options.dryRun) {
-    cli.warning('Dry-run mode: No real transactions will be made\n');
+    cli.warning('🔸 DRY-RUN MODE: No real blockchain transactions will be made');
+    cli.info('   Mock stream IDs and transaction hashes will be generated\n');
   }
 
   if (options.check) {
     cli.request('Running setup check...\n');
-    // Setup check will be implemented in task 14
-    cli.info('Setup check not yet implemented');
-    return;
+    
+    // Initialize agent first for setup check
+    const agentConfig: AgentConfig = {
+      name: 'FlowPay Demo Agent',
+      privateKey: config.PRIVATE_KEY,
+      rpcUrl: config.SEPOLIA_RPC_URL,
+      dailyBudget: ethers.parseEther(config.DAILY_BUDGET),
+      flowPayContract: config.FLOWPAY_CONTRACT,
+      mneeToken: config.MNEE_TOKEN,
+      geminiApiKey: config.GEMINI_API_KEY,
+      dryRun: options.dryRun || false,
+    };
+    
+    const agent = new PaymentAgent(agentConfig);
+    await agent.initialize();
+    
+    const runner = new DemoRunner(agent, cli, config.SERVER_URL);
+    const status = await runner.checkSetup();
+    
+    // Exit with appropriate code
+    const allGood = status.walletConnected && status.contractAccessible && status.serverReachable;
+    process.exit(allGood ? 0 : 1);
   }
 
   if (options.scenario) {
@@ -132,7 +153,7 @@ async function main(): Promise<void> {
     cli.debug(`  Scenario: ${options.scenario || 'all'}`);
   }
   
-  // Initialize PaymentAgent (Requirements: 1.1, 1.2)
+  // Initialize PaymentAgent (Requirements: 1.1, 1.2, 9.3, 9.7)
   cli.agent('Initializing PaymentAgent...\n');
   
   const agentConfig: AgentConfig = {
@@ -143,6 +164,7 @@ async function main(): Promise<void> {
     flowPayContract: config.FLOWPAY_CONTRACT,
     mneeToken: config.MNEE_TOKEN,
     geminiApiKey: config.GEMINI_API_KEY,
+    dryRun: options.dryRun || false,
   };
   
   const agent = new PaymentAgent(agentConfig);
@@ -154,16 +176,24 @@ async function main(): Promise<void> {
     await agent.initialize();
     cli.stopSpinner(true, 'Agent initialized successfully');
     
-    // Display agent info (Requirements: 1.2)
+    // Display agent info (Requirements: 1.2, 9.7)
     const state = agent.getState();
-    cli.info('');
-    cli.box('Agent Information', [
+    const agentInfoLines = [
       `Name: ${agent.name}`,
       `Wallet: ${agent.walletAddress}`,
       `MNEE Balance: ${ethers.formatEther(state.mneeBalance)} MNEE`,
       `Daily Budget: ${ethers.formatEther(agent.dailyBudget)} MNEE`,
       `Remaining Budget: ${ethers.formatEther(agent.getRemainingBudget())} MNEE`,
-    ]);
+    ];
+    
+    // Add dry-run indicator if in dry-run mode (Requirements: 9.7)
+    if (agent.isDryRun) {
+      agentInfoLines.push('');
+      agentInfoLines.push('⚠️  DRY-RUN MODE - No real transactions');
+    }
+    
+    cli.info('');
+    cli.box('Agent Information', agentInfoLines);
     
     if (options.verbose) {
       cli.debug('Agent State:');
@@ -227,7 +257,27 @@ async function main(): Promise<void> {
     }
     
     cli.success('\nPaymentAgent initialized and ready\n');
-    cli.info('Next steps: Implement x402 protocol handler and DemoRunner');
+    
+    // Create DemoRunner for scenario orchestration
+    const runner = new DemoRunner(agent, cli, config.SERVER_URL);
+    
+    // Run scenarios
+    if (options.scenario) {
+      // Run filtered scenarios
+      const filteredScenarios = runner.filterScenarios(options.scenario);
+      if (filteredScenarios.length === 0) {
+        cli.warning(`No scenarios match filter: "${options.scenario}"`);
+        cli.info('Available scenarios: streaming, per-request, stream-reuse, budget-exceeded');
+        return;
+      }
+      
+      cli.info(`Running ${filteredScenarios.length} scenario(s) matching "${options.scenario}"\n`);
+      await runner.runAll(options.scenario);
+    } else {
+      // Run all scenarios
+      cli.info('Running all demo scenarios...\n');
+      await runner.runAll();
+    }
     
   } catch (error: any) {
     cli.stopSpinner(false, 'Failed to initialize agent');
