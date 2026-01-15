@@ -104,10 +104,13 @@ const ERC20_ABI = [
 
 // FlowPayStream contract ABI
 const FLOWPAY_ABI = [
-  'function createStream(address recipient, uint256 duration, uint256 amount, string metadata) external',
+  'function createStream(address recipient, uint256 duration, uint256 amount, string memory metadata) external',
+  'function cancelStream(uint256 streamId) external',
   'function isStreamActive(uint256 streamId) external view returns (bool)',
-  'function streams(uint256 streamId) external view returns (address sender, address recipient, uint256 totalAmount, uint256 flowRate, uint256 startTime, uint256 stopTime, uint256 amountWithdrawn, bool isActive, string metadata)',
+  'function getClaimableBalance(uint256 streamId) external view returns (uint256)',
+  'function streams(uint256 streamId) external view returns (address sender, address recipient, uint256 totalAmount, uint256 flowRate, uint256 startTime, uint256 stopTime, uint256 amountWithdrawn, bool isActive, string memory metadata)',
   'event StreamCreated(uint256 indexed streamId, address indexed sender, address indexed recipient, uint256 totalAmount, uint256 startTime, uint256 stopTime, string metadata)',
+  'event StreamCancelled(uint256 indexed streamId, address sender, address recipient, uint256 senderBalance, uint256 recipientBalance)',
 ];
 
 /**
@@ -858,6 +861,162 @@ export class PaymentAgent {
    */
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Cancel a specific payment stream and get refund for unused funds
+   * 
+   * When cancelled:
+   * - Recipient gets the amount already streamed (based on elapsed time)
+   * - Sender (agent) gets refund for unused portion
+   * 
+   * @param streamId - The stream ID to cancel
+   * @returns PaymentResult with cancellation details
+   */
+  async cancelStream(streamId: string): Promise<PaymentResult> {
+    try {
+      // DRY-RUN MODE: Skip actual blockchain transactions
+      if (this._dryRun) {
+        // Remove from cache
+        for (const [host, stream] of this._activeStreams.entries()) {
+          if (stream.streamId === streamId) {
+            this._activeStreams.delete(host);
+            break;
+          }
+        }
+        
+        return {
+          success: true,
+          txHash: this.generateMockTxHash(),
+          streamId,
+        };
+      }
+
+      // Check if stream is still active
+      const streamIdBigInt = BigInt(streamId);
+      const isActive = await this.flowPayContract.isStreamActive(streamIdBigInt);
+      if (!isActive) {
+        return {
+          success: false,
+          error: `Stream ${streamId} is not active (already cancelled or expired)`,
+          streamId,
+        };
+      }
+
+      // Cancel the stream on-chain
+      // Manually encode and send to ensure data is properly included
+      const cancelData = this.flowPayContract.interface.encodeFunctionData('cancelStream', [streamIdBigInt]);
+      
+      const cancelTx = await this.wallet.sendTransaction({
+        to: this.config.flowPayContract,
+        data: cancelData,
+        gasLimit: 100000n, // Set explicit gas limit
+      });
+      
+      const receipt = await cancelTx.wait();
+      
+      if (!receipt) {
+        throw new Error('Transaction receipt is null');
+      }
+
+      // Extract refund amount from StreamCancelled event
+      let refundAmount = 0n;
+      for (const log of receipt.logs) {
+        try {
+          const parsed = this.flowPayContract.interface.parseLog({
+            topics: log.topics as string[],
+            data: log.data,
+          });
+          
+          if (parsed && parsed.name === 'StreamCancelled') {
+            // StreamCancelled event: (streamId, sender, recipient, senderBalance, recipientBalance)
+            refundAmount = parsed.args[3]; // senderBalance is the refund
+            break;
+          }
+        } catch {
+          continue;
+        }
+      }
+
+      // Update balance with refund
+      if (refundAmount > 0n) {
+        this._mneeBalance += refundAmount;
+        // Reduce daily spent by refund amount (since we got it back)
+        if (this._dailySpent >= refundAmount) {
+          this._dailySpent -= refundAmount;
+        }
+      }
+
+      // Remove from cache
+      for (const [host, stream] of this._activeStreams.entries()) {
+        if (stream.streamId === streamId) {
+          this._activeStreams.delete(host);
+          break;
+        }
+      }
+
+      return {
+        success: true,
+        txHash: receipt.hash,
+        streamId,
+        amount: refundAmount,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Unknown error during stream cancellation',
+        streamId,
+      };
+    }
+  }
+
+  /**
+   * Cancel all active streams and get refunds
+   * 
+   * This should be called when the agent is done using APIs to:
+   * 1. Close all open streams
+   * 2. Get refunds for unused streaming time
+   * 3. Clean up resources
+   * 
+   * @returns Array of PaymentResults for each cancellation
+   */
+  async cancelAllStreams(): Promise<PaymentResult[]> {
+    const results: PaymentResult[] = [];
+    
+    // Get all active streams
+    const streams = Array.from(this._activeStreams.entries());
+    
+    for (const [host, streamInfo] of streams) {
+      const result = await this.cancelStream(streamInfo.streamId);
+      results.push(result);
+    }
+    
+    return results;
+  }
+
+  /**
+   * Get the claimable balance for a stream (how much has been streamed so far)
+   * 
+   * @param streamId - The stream ID to check
+   * @returns Claimable balance in wei, or null if error
+   */
+  async getStreamClaimableBalance(streamId: string): Promise<bigint | null> {
+    try {
+      if (this._dryRun) {
+        // In dry-run mode, calculate based on elapsed time
+        for (const stream of this._activeStreams.values()) {
+          if (stream.streamId === streamId) {
+            const elapsed = Math.floor(Date.now() / 1000) - stream.startTime;
+            return stream.rate * BigInt(elapsed);
+          }
+        }
+        return 0n;
+      }
+      
+      return await this.flowPayContract.getClaimableBalance(streamId);
+    } catch {
+      return null;
+    }
   }
 
   /**

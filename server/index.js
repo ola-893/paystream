@@ -4,9 +4,12 @@ const flowPayMiddleware = require('./middleware/flowPayMiddleware');
 require('dotenv').config({ path: '../.env' }); // Load from root .env if available
 
 // Mock Config if env vars missing
-const MNEE_ADDRESS = process.env.VITE_MNEE_TOKEN_ADDRESS || "0x0000000000000000000000000000000000000000";
-const CONTRACT_ADDRESS = process.env.VITE_CONTRACT_ADDRESS || "0x0000000000000000000000000000000000000000";
-const RPC_URL = process.env.SEPOLIA_RPC_URL || "https://rpc.sepolia.org";
+const PORT = process.env.PORT || 3001;
+const MNEE_ADDRESS = process.env.VITE_MNEE_TOKEN_ADDRESS || process.env.MNEE_TOKEN || "0x96B1FE54Ee89811f46ecE4a347950E0D682D3896";
+const CONTRACT_ADDRESS = process.env.VITE_CONTRACT_ADDRESS || process.env.FLOWPAY_CONTRACT || "0x155A00fBE3D290a8935ca4Bf5244283685Bb0035";
+const RPC_URL = process.env.SEPOLIA_RPC_URL || "https://ethereum-sepolia-rpc.publicnode.com";
+// Recipient address for payments - use a dedicated server wallet or fallback to a test address
+const RECIPIENT_ADDRESS = process.env.RECIPIENT_ADDRESS || "0x1f973bc13Fe975570949b09C022dCCB46944F5ED";
 
 const app = express();
 app.use(cors());
@@ -17,6 +20,7 @@ const defaultConfig = {
     rpcUrl: RPC_URL,
     flowPayContractAddress: CONTRACT_ADDRESS,
     mneeAddress: MNEE_ADDRESS,
+    recipientAddress: RECIPIENT_ADDRESS,
     routes: {
         '/api/weather': {
             price: '0.0001', // MNEE per second (streaming mode)

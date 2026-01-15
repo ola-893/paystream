@@ -436,7 +436,94 @@ export class DemoRunner {
     // Display summary table (Requirements: 6.7)
     this.displaySummary(results);
     
+    // Cancel all active streams and get refunds
+    await this.cancelAllActiveStreams();
+    
     return this.stats;
+  }
+
+  /**
+   * Cancel all active streams at the end of the demo
+   * 
+   * This ensures:
+   * 1. All streams are properly closed
+   * 2. Unused funds are refunded to the agent
+   * 3. Resources are cleaned up
+   */
+  private async cancelAllActiveStreams(): Promise<void> {
+    const activeStreams = this.agent.getActiveStreams();
+    
+    if (activeStreams.size === 0) {
+      return;
+    }
+    
+    this.cli.info('\n');
+    this.cli.box('Closing Payment Streams', [
+      `Active streams to close: ${activeStreams.size}`,
+      'Cancelling streams and refunding unused funds...',
+    ]);
+    
+    let totalRefunded = 0n;
+    let successCount = 0;
+    let failCount = 0;
+    
+    for (const [host, streamInfo] of activeStreams) {
+      this.cli.startSpinner(`Cancelling stream #${streamInfo.streamId} for ${host}...`);
+      
+      try {
+        const result = await this.agent.cancelStream(streamInfo.streamId);
+        
+        if (result.success) {
+          successCount++;
+          const refundAmount = result.amount || 0n;
+          totalRefunded += refundAmount;
+          
+          this.cli.stopSpinner(true, `Stream #${streamInfo.streamId} cancelled`);
+          
+          if (result.txHash) {
+            // Check if dry-run
+            if (result.txHash.startsWith('0xdryrun')) {
+              this.cli.info(`   Mock cancellation TX: ${result.txHash}`);
+            } else {
+              this.cli.displayTxHash(result.txHash, '   Cancellation TX');
+            }
+          }
+          
+          if (refundAmount > 0n) {
+            this.cli.success(`   Refunded: ${ethers.formatEther(refundAmount)} MNEE`);
+          }
+        } else {
+          failCount++;
+          this.cli.stopSpinner(false, `Failed to cancel stream #${streamInfo.streamId}`);
+          this.cli.error(`   Error: ${result.error}`);
+        }
+      } catch (error: any) {
+        failCount++;
+        this.cli.stopSpinner(false, `Error cancelling stream #${streamInfo.streamId}`);
+        this.cli.error(`   Error: ${error.message}`);
+      }
+    }
+    
+    // Display stream closure summary
+    this.cli.info('');
+    const closureSummary = [
+      `Streams closed: ${successCount}/${activeStreams.size}`,
+      `Total refunded: ${ethers.formatEther(totalRefunded)} MNEE`,
+    ];
+    
+    if (failCount > 0) {
+      closureSummary.push(`Failed to close: ${failCount}`);
+    }
+    
+    this.cli.box('Stream Closure Summary', closureSummary);
+    
+    // Update stats with refund
+    if (totalRefunded > 0n) {
+      this.stats.totalSpent -= totalRefunded;
+      if (this.stats.totalSpent < 0n) {
+        this.stats.totalSpent = 0n;
+      }
+    }
   }
 
   /**
