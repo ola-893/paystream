@@ -52,16 +52,28 @@ cd vite-project && npm install && cd ..
 ### 2. Deploy Contracts to Cronos Testnet
 
 ```bash
+# Using npm script (recommended)
+npm run deploy:cronos
+
+# Or using hardhat directly
 npx hardhat run scripts/deploy.js --network cronos_testnet
 ```
 
 **Expected Output:**
 ```
 Deploying contracts with the account: 0x...
-Deploying MockMNEE...
-MockMNEE deployed to: 0x...
-Deploying FlowPayStream with MNEE address: 0x...
-FlowPayStream deployed to: 0x...
+Network: cronos_testnet
+
+📝 Deploying MockMNEE to Cronos Testnet...
+✅ MockMNEE deployed to: 0x...
+   View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x...
+
+📝 Deploying FlowPayStream to Cronos Testnet...
+   Using MNEE address: 0x...
+✅ FlowPayStream deployed to: 0x...
+   View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x...
+
+🎉 Deployment complete!
 ```
 
 **Current Cronos Testnet Deployment (January 2026):**
@@ -90,9 +102,15 @@ const CONTRACT_ADDRESS = "0x5678...";
 
 ### 4. Verify Contracts (Optional)
 
+Verify your contracts on Cronos Explorer:
+
 ```bash
 npx hardhat verify --network cronos_testnet <CONTRACT_ADDRESS> <MNEE_ADDRESS>
 ```
+
+You can also view your contracts directly on Cronos Explorer:
+- MockMNEE: `https://explorer.cronos.org/testnet/address/<MNEE_ADDRESS>`
+- FlowPayStream: `https://explorer.cronos.org/testnet/address/<CONTRACT_ADDRESS>`
 
 ## Running the System
 

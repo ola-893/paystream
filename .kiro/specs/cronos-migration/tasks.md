@@ -242,7 +242,7 @@ This implementation plan systematically migrates FlowPay from Ethereum Sepolia t
     - _Requirements: 12.1, 12.4, 12.5_
 
 - [-] 12. Testing and Validation
-  - [-] 12.1 Test contract deployment
+  - [x] 12.1 Test contract deployment
     - Deploy MockMNEE to Cronos testnet
     - Deploy FlowPayStream to Cronos testnet
     - Verify contracts on Cronos Explorer
@@ -266,7 +266,7 @@ This implementation plan systematically migrates FlowPay from Ethereum Sepolia t
     - Verify connection to Cronos
     - Check transaction links
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
-  - [ ] 12.5 Validate documentation
+  - [x] 12.5 Validate documentation
     - Check all links work
     - Verify faucet link provides TCRO
     - Test deployment instructions

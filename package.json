@@ -9,6 +9,8 @@
     "test:sdk": "npm --prefix sdk run test:all",
     "test:integration": "npm --prefix sdk run test:integration",
     "deploy:cronos": "npx hardhat run scripts/deploy.js --network cronos_testnet",
+    "check:deployment": "node scripts/check-deployment-readiness.js",
+    "validate:docs": "node scripts/validate-docs.js",
     "dev": "npm --prefix vite-project run dev",
     "build:web": "npm --prefix vite-project run build",
     "preview": "npm --prefix vite-project run preview",
