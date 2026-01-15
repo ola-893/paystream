@@ -240,8 +240,8 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
 - [x] 16. Final checkpoint - Full integration test
   - Ensure all tests pass, ask the user if questions arise.
 
-- [-] 17. Create demo documentation and README
-  - [-] 17.1 Update demo/agent-demo/README.md
+- [x] 17. Create demo documentation and README
+  - [x] 17.1 Update demo/agent-demo/README.md
     - Quick start instructions
     - Environment setup guide
     - CLI usage examples
