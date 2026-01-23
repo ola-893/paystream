@@ -1,13 +1,13 @@
 import { expect } from 'chai';
-import { FlowPaySDK, StreamMetadata } from '../src/FlowPaySDK';
+import { PayStreamSDK, StreamMetadata } from '../src/PayStreamSDK';
 import { Wallet, ethers } from 'ethers';
 
-describe('FlowPaySDK Real-time Calculations', () => {
-    let sdk: FlowPaySDK;
+describe('PayStreamSDK Real-time Calculations', () => {
+    let sdk: PayStreamSDK;
     let originalDateNow: any;
 
     beforeEach(() => {
-        sdk = new FlowPaySDK({
+        sdk = new PayStreamSDK({
             privateKey: Wallet.createRandom().privateKey,
             rpcUrl: 'http://localhost:8545'
         });

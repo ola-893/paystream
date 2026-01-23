@@ -1,9 +1,9 @@
 // Deployed contract address on Cronos testnet
 export const contractAddress = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_CONTRACT_ADDRESS)
   ? import.meta.env.VITE_CONTRACT_ADDRESS
-  : "0x6aEe6d1564FA029821576055A5420cAac06cF4F3"; // FlowPayStream on Cronos Testnet
+  : "0x6aEe6d1564FA029821576055A5420cAac06cF4F3"; // PayStreamStream on Cronos Testnet
 
-// Contract ABI for FlowPayStream (Native TCRO version)
+// Contract ABI for PayStreamStream (Native TCRO version)
 const hardcodedABI = [
   {
     "inputs": [],
@@ -112,5 +112,5 @@ export const contractABI = (typeof import.meta !== 'undefined' && import.meta.en
   ? JSON.parse(import.meta.env.VITE_CONTRACT_ABI)
   : hardcodedABI;
 
-// Note: FlowPay now uses native TCRO tokens instead of ERC-20 tokens
+// Note: PayStream now uses native TCRO tokens instead of ERC-20 tokens
 // No token contract address needed - TCRO is the native currency of Cronos

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This design describes a CLI-first demonstration of AI agents autonomously triggering and streaming payments via the x402 protocol and FlowPay. The demo is built in TypeScript/Node.js to leverage the existing FlowPaySDK and provide a polished developer experience with rich terminal output.
+This design describes a CLI-first demonstration of AI agents autonomously triggering and streaming payments via the x402 protocol and PayStream. The demo is built in TypeScript/Node.js to leverage the existing PayStreamSDK and provide a polished developer experience with rich terminal output.
 
 The architecture follows a clean separation between:
 - **Agent Layer**: Autonomous payment decision-making and wallet management
@@ -27,7 +27,7 @@ The architecture follows a clean separation between:
 │           │                      │                     │        │
 │           ▼                      ▼                     ▼        │
 │  ┌─────────────────────────────────────────────────────────────┐│
-│  │                    FlowPaySDK (existing)                    ││
+│  │                    PayStreamSDK (existing)                    ││
 │  │  - createStream()  - makeRequest()  - monitor spending      ││
 │  └─────────────────────────────────────────────────────────────┘│
 │                              │                                  │
@@ -37,7 +37,7 @@ The architecture follows a clean separation between:
 ┌──────────────────────────────────────────────────────────────────┐
 │                     External Services                            │
 │  ┌────────────────┐  ┌────────────────┐  ┌────────────────────┐ │
-│  │ x402 Server    │  │ Cronos RPC     │  │ FlowPayStream      │ │
+│  │ x402 Server    │  │ Cronos RPC     │  │ PayStreamStream      │ │
 │  │ (localhost)    │  │ (Public Node)  │  │ Contract           │ │
 │  └────────────────┘  └────────────────┘  └────────────────────┘ │
 └──────────────────────────────────────────────────────────────────┘
@@ -55,7 +55,7 @@ interface AgentConfig {
   privateKey: string;
   rpcUrl: string;
   dailyBudget: bigint;        // in wei
-  flowPayContract: string;
+  payStreamContract: string;
   mneeToken: string;
   geminiApiKey?: string;      // optional for AI decisions
 }
@@ -201,7 +201,7 @@ class DemoRunner {
 interface EnvConfig {
   PRIVATE_KEY: string;           // Agent wallet private key
   CRONOS_RPC_URL: string;        // Cronos Testnet RPC endpoint
-  FLOWPAY_CONTRACT: string;      // FlowPayStream contract address
+  PAYSTREAM_CONTRACT: string;      // PayStreamStream contract address
   MNEE_TOKEN: string;            // MNEE token address
   
   // Optional
@@ -235,12 +235,12 @@ interface X402Response {
   status: 402;
   headers: {
     'X-Payment-Required': 'true';
-    'X-FlowPay-Mode': 'streaming' | 'per-request';
-    'X-FlowPay-Rate': string;
-    'X-FlowPay-Recipient': string;
-    'X-FlowPay-Contract': string;
-    'X-FlowPay-MinDeposit'?: string;
-    'X-FlowPay-Amount'?: string;
+    'X-PayStream-Mode': 'streaming' | 'per-request';
+    'X-PayStream-Rate': string;
+    'X-PayStream-Recipient': string;
+    'X-PayStream-Contract': string;
+    'X-PayStream-MinDeposit'?: string;
+    'X-PayStream-Amount'?: string;
   };
   body: {
     message: string;
@@ -275,25 +275,25 @@ interface X402Response {
 
 ### Property 4: 402 Response Without Payment Proof
 
-*For any* HTTP request to a protected endpoint that does not include payment proof headers (X-FlowPay-Stream-ID or X-FlowPay-Tx-Hash), the Service_Provider SHALL return HTTP 402.
+*For any* HTTP request to a protected endpoint that does not include payment proof headers (X-PayStream-Stream-ID or X-PayStream-Tx-Hash), the Service_Provider SHALL return HTTP 402.
 
 **Validates: Requirements 2.1**
 
 ### Property 5: 402 Header Completeness
 
-*For any* HTTP 402 response from the Service_Provider, the response SHALL include all required x402 headers: X-Payment-Required, X-FlowPay-Mode, X-FlowPay-Rate, X-FlowPay-Recipient, X-FlowPay-Contract.
+*For any* HTTP 402 response from the Service_Provider, the response SHALL include all required x402 headers: X-Payment-Required, X-PayStream-Mode, X-PayStream-Rate, X-PayStream-Recipient, X-PayStream-Contract.
 
 **Validates: Requirements 2.2**
 
 ### Property 6: Active Stream Grants Access
 
-*For any* HTTP request with a valid X-FlowPay-Stream-ID header where the stream is active on-chain, the Service_Provider SHALL return HTTP 200.
+*For any* HTTP request with a valid X-PayStream-Stream-ID header where the stream is active on-chain, the Service_Provider SHALL return HTTP 200.
 
 **Validates: Requirements 2.4**
 
 ### Property 7: Inactive Stream Requires New Payment
 
-*For any* HTTP request with an X-FlowPay-Stream-ID header where the stream is inactive or depleted, the Service_Provider SHALL return HTTP 402.
+*For any* HTTP request with an X-PayStream-Stream-ID header where the stream is inactive or depleted, the Service_Provider SHALL return HTTP 402.
 
 **Validates: Requirements 2.5**
 
@@ -323,7 +323,7 @@ interface X402Response {
 
 ### Property 12: Retry Includes Stream ID
 
-*For any* retry request after stream creation, the request SHALL include the X-FlowPay-Stream-ID header with the stream ID from the createStream transaction.
+*For any* retry request after stream creation, the request SHALL include the X-PayStream-Stream-ID header with the stream ID from the createStream transaction.
 
 **Validates: Requirements 5.1, 5.2**
 

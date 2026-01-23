@@ -67,7 +67,7 @@ cargo run
 
 ## Integration with FlowPay
 
-This connects to [FlowPay](https://github.com/ola-893/flowpay) for:
+This connects to [FlowPay](https://github.com/ola-893/paystream) for:
 - TCRO native payments on Cronos Testnet
 - Payment streaming contracts
 - HTTP 402 middleware

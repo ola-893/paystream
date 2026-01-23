@@ -35,7 +35,7 @@ npm run deploy:cronos
 
 # 3. Save the deployed addresses to .env
 # Legacy token address removed - using native TCRO now
-FLOWPAY_CONTRACT=0x...
+PAYSTREAM_CONTRACT=0x...
 ```
 
 **Expected Time:** 5-10 minutes (including faucet wait time)
@@ -73,7 +73,7 @@ FLOWPAY_CONTRACT=0x...
 - [ ] TCRO in wallet for gas
 
 **How to Complete:**
-1. Mint MNEE tokens in frontend
+1. Get TCRO tokens from Cronos faucet
 2. Create a payment stream
 3. Verify transaction on Cronos Explorer
 4. Check explorer link format

@@ -1,24 +1,24 @@
 const { ethers } = require('ethers');
 
 /**
- * FlowPay x402 Express Middleware (TCRO Native Version)
+ * PayStream x402 Express Middleware (TCRO Native Version)
  * @param {Object} config Middleware configuration
  * @param {Object} config.routes Map of routes to pricing config
- * @param {string} config.flowPayContractAddress FlowPayStream Contract Address
+ * @param {string} config.payStreamContractAddress PayStreamStream Contract Address
  * @param {string} config.rpcUrl RPC URL for blockchain connection
  * @param {string} config.recipientAddress Payment recipient address
  * @param {string} config.apiKey Optional API Key for authentication
  */
-const flowPayMiddleware = (config) => {
+const payStreamMiddleware = (config) => {
     // Initialize provider and contract OR use mock
-    let flowPayContract;
+    let payStreamContract;
 
     if (config.mockContract) {
-        flowPayContract = config.mockContract;
+        payStreamContract = config.mockContract;
     } else {
         const provider = new ethers.JsonRpcProvider(config.rpcUrl);
-        flowPayContract = new ethers.Contract(
-            config.flowPayContractAddress,
+        payStreamContract = new ethers.Contract(
+            config.payStreamContractAddress,
             [
                 "function isStreamActive(uint256 streamId) external view returns (bool)",
                 "function getClaimableBalance(uint256 streamId) external view returns (uint256)",
@@ -54,8 +54,8 @@ const flowPayMiddleware = (config) => {
             }
         }
 
-        const streamIdHeader = req.headers['x-flowpay-stream-id'];
-        const txHashHeader = req.headers['x-flowpay-tx-hash'];
+        const streamIdHeader = req.headers['x-paystream-stream-id'];
+        const txHashHeader = req.headers['x-paystream-tx-hash'];
 
         // 1. Check for Direct Payment (Native TCRO Tx Hash)
         if (txHashHeader) {
@@ -64,7 +64,7 @@ const flowPayMiddleware = (config) => {
                 if (config.mockContract) {
                     // Mock validation
                     isValidPayment = true;
-                    console.log(`[FlowPay] Validated Direct TCRO Payment Tx: ${txHashHeader}`);
+                    console.log(`[PayStream] Validated Direct TCRO Payment Tx: ${txHashHeader}`);
                 } else {
                     // Real provider validation - check tx hash format
                     if (txHashHeader.startsWith('0x') && txHashHeader.length === 66) {
@@ -73,8 +73,8 @@ const flowPayMiddleware = (config) => {
                 }
 
                 if (isValidPayment) {
-                    console.log(`[FlowPay] Request accepted for ${path} using Direct TCRO Payment Tx: ${txHashHeader}`);
-                    req.flowPay = { txHash: txHashHeader, mode: 'direct' };
+                    console.log(`[PayStream] Request accepted for ${path} using Direct TCRO Payment Tx: ${txHashHeader}`);
+                    req.payStream = { txHash: txHashHeader, mode: 'direct' };
                     return next();
                 }
             } catch (e) {
@@ -94,30 +94,30 @@ const flowPayMiddleware = (config) => {
             // 2. Verify Stream ID
             const streamId = BigInt(streamIdHeader);
 
-            console.log(`[FlowPay] Verifying stream #${streamId} for ${path}...`);
+            console.log(`[PayStream] Verifying stream #${streamId} for ${path}...`);
 
-            const isActive = await flowPayContract.isStreamActive(streamId);
+            const isActive = await payStreamContract.isStreamActive(streamId);
 
             if (!isActive) {
-                console.log(`[FlowPay] Stream #${streamId} verification result: INACTIVE`);
+                console.log(`[PayStream] Stream #${streamId} verification result: INACTIVE`);
                 return res.status(402).json({
                     error: "Stream is inactive",
                     detail: "The provided stream ID is not active. Please open a new stream."
                 });
             }
 
-            console.log(`[FlowPay] Stream #${streamId} verification result: ACTIVE`);
-            console.log(`[FlowPay] Request accepted for ${path} using Stream #${streamId}`);
+            console.log(`[PayStream] Stream #${streamId} verification result: ACTIVE`);
+            console.log(`[PayStream] Request accepted for ${path} using Stream #${streamId}`);
 
             // Attach stream info to request for downstream use
-            req.flowPay = {
+            req.payStream = {
                 streamId: streamId.toString()
             };
 
             next();
         } catch (error) {
-            console.error("[FlowPay] Stream verification failed:", error);
-            console.log(`[FlowPay] Stream #${streamIdHeader} verification result: ERROR - ${error.message}`);
+            console.error("[PayStream] Stream verification failed:", error);
+            console.log(`[PayStream] Stream #${streamIdHeader} verification result: ERROR - ${error.message}`);
             const requiredAmountFallback = ethers.parseEther(routeConfig.price || '0');
             return send402Response(res, routeConfig, config, requiredAmountFallback);
         }
@@ -127,12 +127,12 @@ const flowPayMiddleware = (config) => {
 function send402Response(res, routeConfig, config, requiredAmount) {
     // Set all required x402 headers for native TCRO
     res.set('X-Payment-Required', 'true');
-    res.set('X-FlowPay-Mode', routeConfig.mode || 'streaming');
-    res.set('X-FlowPay-Rate', ethers.formatEther(requiredAmount));
-    res.set('X-FlowPay-Recipient', config.recipientAddress || '');
-    res.set('X-FlowPay-Contract', config.flowPayContractAddress || '');
-    res.set('X-FlowPay-Currency', 'TCRO');
-    res.set('X-FlowPay-MinDeposit', routeConfig.minDeposit || '0.001');
+    res.set('X-PayStream-Mode', routeConfig.mode || 'streaming');
+    res.set('X-PayStream-Rate', ethers.formatEther(requiredAmount));
+    res.set('X-PayStream-Recipient', config.recipientAddress || '');
+    res.set('X-PayStream-Contract', config.payStreamContractAddress || '');
+    res.set('X-PayStream-Currency', 'TCRO');
+    res.set('X-PayStream-MinDeposit', routeConfig.minDeposit || '0.001');
 
     // Standard 402 body
     res.status(402).json({
@@ -141,11 +141,11 @@ function send402Response(res, routeConfig, config, requiredAmount) {
             mode: routeConfig.mode || 'streaming',
             price: ethers.formatEther(requiredAmount),
             currency: "TCRO",
-            contract: config.flowPayContractAddress,
+            contract: config.payStreamContractAddress,
             recipient: config.recipientAddress,
             minDeposit: routeConfig.minDeposit || '0.001'
         }
     });
 }
 
-module.exports = flowPayMiddleware;
+module.exports = payStreamMiddleware;

@@ -8,7 +8,7 @@
 
 ### Quick Summary
 
-The FlowPay ecosystem has been successfully migrated from Ethereum Sepolia testnet to Cronos testnet. All smart contracts, frontend code, documentation, agent demos, and supporting infrastructure have been updated.
+The PayStream ecosystem has been successfully migrated from Ethereum Sepolia testnet to Cronos testnet. All smart contracts, frontend code, documentation, agent demos, and supporting infrastructure have been updated.
 
 **Key Achievements:**
 - ✅ Contracts deployed to Cronos testnet (Chain ID: 338)
@@ -20,7 +20,7 @@ The FlowPay ecosystem has been successfully migrated from Ethereum Sepolia testn
 
 **Deployed Contracts:**
 - MockMNEE: `0x8DA26C2b004f5962c0846f57d193de12f2F62612`
-- FlowPayStream: `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
+- PayStreamStream: `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
 
 **Validation Results:**
 - 22/22 frontend tests passing
@@ -32,7 +32,7 @@ The FlowPay ecosystem has been successfully migrated from Ethereum Sepolia testn
 
 ## Overview
 
-This implementation plan systematically migrates FlowPay from Ethereum Sepolia to Cronos testnet across all system components: smart contracts, frontend, backend, documentation, and demos.
+This implementation plan systematically migrates PayStream from Ethereum Sepolia to Cronos testnet across all system components: smart contracts, frontend, backend, documentation, and demos.
 
 ## Tasks
 
@@ -212,7 +212,7 @@ This implementation plan systematically migrates FlowPay from Ethereum Sepolia t
 
 - [x] 8. Update Spec Documentation
   - [x] 8.1 Update .kiro/specs/agent-first-demo/requirements.md
-    - Update FlowPay_Contract glossary definition
+    - Update PayStream_Contract glossary definition
     - Change "Sepolia" to "Cronos Testnet"
     - Update Requirement 1 acceptance criteria
     - _Requirements: 10.1, 10.5_
@@ -274,11 +274,11 @@ This implementation plan systematically migrates FlowPay from Ethereum Sepolia t
 - [x] 12. Testing and Validation
   - [x] 12.1 Test contract deployment
     - Deploy MockMNEE to Cronos testnet
-    - Deploy FlowPayStream to Cronos testnet
+    - Deploy PayStreamStream to Cronos testnet
     - Verify contracts on Cronos Explorer
     - Record deployed addresses
     - _Requirements: 1.1, 1.2, 1.3_
-    - **Status:** ✅ Complete - Contracts deployed at 0x8DA26C2b004f5962c0846f57d193de12f2F62612 (MNEE) and 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87 (FlowPay)
+    - **Status:** ✅ Complete - Contracts deployed at 0x8DA26C2b004f5962c0846f57d193de12f2F62612 (MNEE) and 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87 (PayStream)
   - [x] 12.2 Test frontend connection
     - Connect MetaMask to Cronos testnet
     - Verify network detection works
@@ -366,14 +366,14 @@ After completing all tasks:
 
 ## Migration Status: ✅ COMPLETE
 
-All implementation tasks have been completed successfully. The FlowPay system has been fully migrated from Ethereum Sepolia to Cronos testnet.
+All implementation tasks have been completed successfully. The PayStream system has been fully migrated from Ethereum Sepolia to Cronos testnet.
 
 ### Deployed Contracts
 
 - **MockMNEE Token:** `0x8DA26C2b004f5962c0846f57d193de12f2F62612`
   - Explorer: https://explorer.cronos.org/testnet/address/0x8DA26C2b004f5962c0846f57d193de12f2F62612
 
-- **FlowPayStream Contract:** `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
+- **PayStreamStream Contract:** `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
   - Explorer: https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
 ### Validation Results

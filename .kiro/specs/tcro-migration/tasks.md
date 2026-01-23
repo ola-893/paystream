@@ -7,7 +7,7 @@ This implementation plan completes the TCRO migration by updating the remaining 
 ## Tasks
 
 - [x] 1. Update Smart Contracts for Native TCRO
-- [x] 1.1 Modify FlowPayStream contract to use payable functions
+- [x] 1.1 Modify PayStreamStream contract to use payable functions
   - ✅ Contract uses payable functions with msg.value
   - ✅ No ERC-20 token dependencies
   - ✅ Native TCRO refund mechanisms implemented
@@ -15,7 +15,7 @@ This implementation plan completes the TCRO migration by updating the remaining 
 
 - [x] 1.2 Remove legacy token contract deployment
   - ✅ Legacy token contracts removed
-  - ✅ Deployment scripts only deploy FlowPayStream
+  - ✅ Deployment scripts only deploy PayStreamStream
   - ✅ No token contract deployment
   - _Requirements: 8.1_
 
@@ -41,7 +41,7 @@ This implementation plan completes the TCRO migration by updating the remaining 
 
 - [x] 2.3 Modify stream creation to use payable contract calls
   - Remove token approval steps from createStream
-  - Add value parameter to FlowPayStream contract calls
+  - Add value parameter to PayStreamStream contract calls
   - Update transaction construction for payable functions
   - _Requirements: 3.2_
 
@@ -75,11 +75,36 @@ This implementation plan completes the TCRO migration by updating the remaining 
   - ✅ Transaction signing works with TCRO transfers
   - _Requirements: 6.1, 6.2, 6.3, 6.5_
 
+- [x] 4.3 Remove all MNEE references from StreamCard component
+  - Replace "MNEE" text with "TCRO" in display labels
+  - Update flow rate display to show "TCRO/sec"
+  - Update claimable balance display to show "TCRO"
+  - _Requirements: 6.1, 6.2_
+
+- [x] 4.4 Update documentation content to use TCRO
+  - Replace all MNEE token references with TCRO in Docs.jsx
+  - Remove MockMNEE token documentation section
+  - Update user flow descriptions to use native TCRO
+  - Remove token minting instructions
+  - Update x402 protocol examples to use TCRO currency
+  - _Requirements: 5.1, 5.3, 6.1_
+
+- [x] 4.5 Clean up token-related UI components
+  - Remove any remaining token approval UI elements
+  - Update CreateStreamForm to reflect TCRO-only usage
+  - Ensure all amount displays use TCRO labels
+  - _Requirements: 6.1, 6.2_
+
+- [x] 4.6 Clean up built frontend files
+  - Remove MNEE references from vite-project/dist/ directory
+  - Rebuild frontend after MNEE cleanup to ensure clean distribution
+  - _Requirements: 6.1, 6.2_
+
 - [x] 5. Environment Variable Cleanup
 - [x] 5.1 Remove legacy token variables from .env file
   - Remove legacy token contract and token variables
   - Clean up old Sepolia network references
-  - Ensure only CRONOS_RPC_URL and FLOWPAY_CONTRACT remain
+  - Ensure only CRONOS_RPC_URL and PAYSTREAM_CONTRACT remain
   - _Requirements: 1.4, 8.2_
 
 - [x] 5.2 Update demo agent configuration
@@ -112,16 +137,17 @@ This implementation plan completes the TCRO migration by updating the remaining 
   - Update mock configurations to exclude token addresses
   - _Requirements: 7.1, 7.4_
 
-- [x] 8. Documentation Updates
+- [-] 8. Documentation Updates
 - [x] 8.1 Update deployment script messages
   - ✅ Deploy script already shows TCRO usage message
   - Verify all console output references TCRO correctly
   - _Requirements: 5.1, 5.2_
 
-- [x] 8.2 Scan and update remaining documentation
+- [-] 8.2 Scan and update remaining documentation
   - Search for any remaining legacy token references in README files
   - Update code comments to reference TCRO
   - Ensure setup instructions mention TCRO faucet
+  - Remove any remaining MNEE references from project documentation
   - _Requirements: 5.1, 5.3, 5.5_
 
 - [ ]* 8.3 Write property test for documentation consistency
@@ -145,14 +171,14 @@ This implementation plan completes the TCRO migration by updating the remaining 
   - **Property 3: Stream Lifecycle Preservation**
   - **Validates: Requirements 9.1, 9.2**
 
-- [-] 10. Final Migration Validation
+- [x] 10. Final Migration Validation
 - [x] 10.1 Comprehensive legacy token reference scan
   - Search entire codebase for remaining legacy token strings
   - Update any remaining references to use "TCRO"
   - Verify no legacy token contract addresses remain
   - _Requirements: 1.1, 1.3, 5.1_
 
-- [-] 10.2 Test system initialization without token dependencies
+- [x] 10.2 Test system initialization without token dependencies
   - Verify system starts without legacy token environment variables
   - Test that all components work with TCRO-only configuration
   - Validate deployment creates fully TCRO-compatible system

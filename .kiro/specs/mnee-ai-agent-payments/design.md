@@ -2,7 +2,7 @@
 
 ## Overview
 
-FlowPay is a hybrid payment protocol that positions itself as "The Streaming Extension for x402." The system solves the fundamental limitation of standard x402: the N+1 Signature Problem where every HTTP request requires a unique cryptographic signature and settlement event.
+PayStream is a hybrid payment protocol that positions itself as "The Streaming Extension for x402." The system solves the fundamental limitation of standard x402: the N+1 Signature Problem where every HTTP request requires a unique cryptographic signature and settlement event.
 
 **The Core Innovation**: x402 as the "Menu" + Streaming as the "Tab"
 - **x402 Discovery (Menu)**: Standard HTTP 402 responses tell agents "Here is what I cost"
@@ -15,11 +15,11 @@ This hybrid approach provides:
 - **Intelligent Decisions**: Gemini AI integration for optimal payment mode selection
 - **N+1 Problem Solved**: One signature opens the stream, unlimited requests follow
 
-By leveraging both x402's open standard and MNEE's instant settlement, FlowPay makes micropayments economically viable while maintaining compatibility with the broader agent payment ecosystem.
+By leveraging both x402's open standard and MNEE's instant settlement, PayStream makes micropayments economically viable while maintaining compatibility with the broader agent payment ecosystem.
 
-### Comparison: Pure x402 vs FlowPay Streaming
+### Comparison: Pure x402 vs PayStream Streaming
 
-| Feature | x402 (Standard) | FlowPay Streaming |
+| Feature | x402 (Standard) | PayStream Streaming |
 |---------|-----------------|-------------------|
 | Best For | Single article, One-off API call | GPU rental, Real-time data, High-freq trading |
 | Overhead | High (1 Signature per Request) | Low (1 Signature per Session) |
@@ -35,7 +35,7 @@ By leveraging both x402's open standard and MNEE's instant settlement, FlowPay m
 graph TB
     subgraph "Ethereum Network"
         MNEE[MNEE Token Contract<br/>0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF]
-        FlowPay[FlowPay Stream Contract<br/>FlowPayStream]
+        PayStream[PayStream Stream Contract<br/>PayStreamStream]
     end
     
     subgraph "x402 Layer"
@@ -49,7 +49,7 @@ graph TB
     end
     
     subgraph "AI Agent Layer"
-        SDK[FlowPay Agent SDK<br/>x402 + Streaming]
+        SDK[PayStream Agent SDK<br/>x402 + Streaming]
         Gemini[Google Gemini API<br/>Decision Engine]
     end
     
@@ -63,16 +63,16 @@ graph TB
     Middleware -->|402 Payment Required| AgentA
     AgentA -->|Create Stream| SDK
     SDK --> MNEE
-    SDK --> FlowPay
+    SDK --> PayStream
     SDK --> Gemini
     Middleware --> Verifier
-    Verifier --> FlowPay
-    Dashboard --> FlowPay
+    Verifier --> PayStream
+    Dashboard --> PayStream
     Dashboard --> MNEE
     AgentB --> Middleware
     AgentC --> SDK
     
-    FlowPay --> MNEE
+    PayStream --> MNEE
 ```
 
 ### Hybrid Payment Flow (The x402 Handshake)
@@ -82,15 +82,15 @@ sequenceDiagram
     participant Client as Consumer Agent
     participant Server as Provider API
     participant MW as x402 Middleware<br/>(The Gatekeeper)
-    participant SDK as FlowPay SDK
+    participant SDK as PayStream SDK
     participant Gemini as Gemini AI
-    participant Contract as FlowPay Contract
+    participant Contract as PayStream Contract
     participant MNEE as MNEE Token
 
     Note over Client,Server: Step 1: The Blind Request
     Client->>Server: GET /api/weather
     Server->>MW: Check payment headers
-    MW-->>Client: 402 Payment Required<br/>X-Payment-Required: true<br/>X-FlowPay-Mode: streaming<br/>X-FlowPay-Rate: 0.0001<br/>X-MNEE-Address: 0x...
+    MW-->>Client: 402 Payment Required<br/>X-Payment-Required: true<br/>X-PayStream-Mode: streaming<br/>X-PayStream-Rate: 0.0001<br/>X-MNEE-Address: 0x...
     
     Note over Client,Gemini: Step 2: AI Decision
     Client->>SDK: handlePaymentRequired(402 response)
@@ -98,13 +98,13 @@ sequenceDiagram
     Gemini-->>SDK: "Streaming. 600 requests × $0.0001 = $0.06<br/>vs Stream setup once = $0.001 gas"
     
     Note over SDK,MNEE: Step 3: Stream Creation (1 signature)
-    SDK->>MNEE: approve(FlowPay, amount)
+    SDK->>MNEE: approve(PayStream, amount)
     MNEE-->>SDK: Approved
     SDK->>Contract: createStream(recipient, rate, deposit)
     Contract-->>SDK: Stream #1234 created
     
     Note over Client,Server: Step 4: Retry with Stream ID
-    Client->>Server: GET /api/weather<br/>X-FlowPay-Stream-ID: 1234
+    Client->>Server: GET /api/weather<br/>X-PayStream-Stream-ID: 1234
     Server->>MW: Verify stream
     MW->>Contract: isStreamActive(1234)
     Contract-->>MW: Active, Balance OK
@@ -113,7 +113,7 @@ sequenceDiagram
     
     Note over Client,Server: Step 5: Unlimited Requests (0 signatures)
     loop Every subsequent request
-        Client->>Server: GET /api/weather<br/>X-FlowPay-Stream-ID: 1234
+        Client->>Server: GET /api/weather<br/>X-PayStream-Stream-ID: 1234
         Server-->>Client: 200 OK + Data
     end
     
@@ -155,7 +155,7 @@ Express.js middleware that wraps API endpoints with x402 payment requirements. T
 
 ```typescript
 // x402 Middleware Configuration
-interface FlowPayMiddlewareConfig {
+interface PayStreamMiddlewareConfig {
     endpoints: {
         [route: string]: {
             price: string;           // MNEE per request or per second
@@ -166,12 +166,12 @@ interface FlowPayMiddlewareConfig {
         }
     };
     mneeAddress: string;
-    flowPayContract: string;
+    payStreamContract: string;
     verifyStream: boolean;
 }
 
 // Usage Example - The Gatekeeper in action
-app.use(flowPayMiddleware({
+app.use(payStreamMiddleware({
     endpoints: {
         "GET /api/weather": {
             price: "0.0001",        // $0.0001 per second
@@ -188,7 +188,7 @@ app.use(flowPayMiddleware({
         }
     },
     mneeAddress: "0x...",
-    flowPayContract: "0x...",
+    payStreamContract: "0x...",
     verifyStream: true
 }));
 ```
@@ -198,17 +198,17 @@ app.use(flowPayMiddleware({
 // HTTP 402 Response Headers
 interface PaymentRequiredHeaders {
     'X-Payment-Required': 'true';
-    'X-FlowPay-Mode': 'streaming' | 'per-request' | 'both';
-    'X-FlowPay-Rate': string;      // MNEE per second (streaming) or per request
-    'X-FlowPay-Address': string;   // Recipient address for streams
-    'X-FlowPay-Min-Deposit': string;
-    'X-FlowPay-Contract': string;  // FlowPay contract address
-    'X-FlowPay-Network': string;   // cronos-testnet or cronos-mainnet
+    'X-PayStream-Mode': 'streaming' | 'per-request' | 'both';
+    'X-PayStream-Rate': string;      // MNEE per second (streaming) or per request
+    'X-PayStream-Address': string;   // Recipient address for streams
+    'X-PayStream-Min-Deposit': string;
+    'X-PayStream-Contract': string;  // PayStream contract address
+    'X-PayStream-Network': string;   // cronos-testnet or cronos-mainnet
 }
 
 // PaymentRequirements object (x402 compatible, Base64 encoded in header)
 interface PaymentRequirements {
-    scheme: 'flowpay-stream' | 'exact';
+    scheme: 'paystream-stream' | 'exact';
     network: string;
     maxAmountRequired: string;
     resource: string;
@@ -217,7 +217,7 @@ interface PaymentRequirements {
     payTo: string;
     maxTimeoutSeconds: number;
     extra: {
-        flowPayMode: 'streaming' | 'per-request' | 'both';
+        payStreamMode: 'streaming' | 'per-request' | 'both';
         ratePerSecond?: string;
         minDeposit?: string;
         streamContract: string;
@@ -227,9 +227,9 @@ interface PaymentRequirements {
 
 **Stream Verification Flow**:
 ```typescript
-// When request includes X-FlowPay-Stream-ID
+// When request includes X-PayStream-Stream-ID
 async function verifyStream(streamId: string, recipient: string): Promise<boolean> {
-    const stream = await flowPayContract.getStream(streamId);
+    const stream = await payStreamContract.getStream(streamId);
     return (
         stream.isActive &&
         stream.recipient === recipient &&
@@ -238,13 +238,13 @@ async function verifyStream(streamId: string, recipient: string): Promise<boolea
 }
 ```
 
-### FlowPay Smart Contract (FlowPayStream)
+### PayStream Smart Contract (PayStreamStream)
 
-The core smart contract is the FlowPayStream implementation:
+The core smart contract is the PayStreamStream implementation:
 
 ```solidity
-// FlowPayStream contract
-contract FlowPayStream {
+// PayStreamStream contract
+contract PayStreamStream {
     IERC20 public mneeToken; // MNEE token interface
     
     struct Stream {
@@ -276,7 +276,7 @@ contract FlowPayStream {
 }
 ```
 
-**Key Features of FlowPayStream**:
+**Key Features of PayStreamStream**:
 - Replace `payable` ETH functions with MNEE token transfers
 - Add `transferFrom` for MNEE deposits
 - Include metadata field for agent identification
@@ -289,7 +289,7 @@ The SDK handles the x402 handshake automatically - agents don't need to know pri
 
 ```typescript
 // Core SDK Interface with x402 Handshake Support
-interface FlowPayAgent {
+interface PayStreamAgent {
     // Authentication
     authenticate(apiKey: string): Promise<void>;
     
@@ -332,7 +332,7 @@ interface EfficiencyMetrics {
 }
 
 // x402-aware HTTP Client (The Negotiator in action)
-interface FlowPayFetch {
+interface PayStreamFetch {
     // Automatically handles 402 responses
     fetch(url: string, options?: RequestInit): Promise<Response>;
     
@@ -370,9 +370,9 @@ interface PaymentModeDecision {
 
 **SDK Usage Example - The Complete x402 Handshake**:
 ```typescript
-import { FlowPayAgent } from 'flowpay-sdk';
+import { PayStreamAgent } from 'paystream-sdk';
 
-const agent = new FlowPayAgent({
+const agent = new PayStreamAgent({
     privateKey: process.env.AGENT_PRIVATE_KEY,
     geminiApiKey: process.env.GEMINI_API_KEY,
     network: 'cronos_testnet'
@@ -383,10 +383,10 @@ const response = await agent.makeRequest('https://api.weather-agent.com/forecast
 
 // Behind the scenes, the SDK:
 // 1. Makes blind request → receives 402
-// 2. Parses x402 headers (X-FlowPay-Mode, X-FlowPay-Rate, etc.)
+// 2. Parses x402 headers (X-PayStream-Mode, X-PayStream-Rate, etc.)
 // 3. Asks Gemini: "Is streaming or per-request cheaper?"
 // 4. Creates MNEE stream if streaming mode selected (1 signature)
-// 5. Retries request with X-FlowPay-Stream-ID header
+// 5. Retries request with X-PayStream-Stream-ID header
 // 6. Returns successful response
 
 console.log(await response.json()); // Weather data
@@ -512,19 +512,19 @@ Property-based testing validates software correctness by testing universal prope
 **Validates: Requirements 4.1, 4.3, 4.5**
 
 **Property 3: x402 Service Discovery (The Menu)**
-*For any* HTTP request to a protected endpoint without payment headers, the system should return HTTP 402 with x402-compatible headers including X-Payment-Required, X-FlowPay-Mode, X-FlowPay-Rate, and X-MNEE-Address
+*For any* HTTP request to a protected endpoint without payment headers, the system should return HTTP 402 with x402-compatible headers including X-Payment-Required, X-PayStream-Mode, X-PayStream-Rate, and X-MNEE-Address
 **Validates: Requirements 5.1, 5.2, 11.2**
 
 **Property 4: x402 Response Parsing and Retry**
-*For any* x402 PaymentRequired response, the SDK should correctly parse payment requirements, and after stream creation, retry the original request with X-FlowPay-Stream-ID header
+*For any* x402 PaymentRequired response, the SDK should correctly parse payment requirements, and after stream creation, retry the original request with X-PayStream-Stream-ID header
 **Validates: Requirements 5.3, 5.7**
 
 **Property 5: Stream Verification (The Gatekeeper)**
-*For any* request with X-FlowPay-Stream-ID header, the middleware should verify the stream is active on-chain and has sufficient balance before granting access (200 OK) or requesting top-up (402)
+*For any* request with X-PayStream-Stream-ID header, the middleware should verify the stream is active on-chain and has sufficient balance before granting access (200 OK) or requesting top-up (402)
 **Validates: Requirements 5.8, 11.5, 11.6, 11.8**
 
 **Property 6: Streaming Efficiency (Solving N+1 Signature Problem)**
-*For any* streaming session, the system should require exactly one signature to open the stream, zero signatures for subsequent requests (only X-FlowPay-Stream-ID header), and exactly two on-chain transactions total (open + close)
+*For any* streaming session, the system should require exactly one signature to open the stream, zero signatures for subsequent requests (only X-PayStream-Stream-ID header), and exactly two on-chain transactions total (open + close)
 **Validates: Requirements 13.1, 13.2, 13.3, 13.4**
 
 **Property 7: Hybrid Payment Mode Selection**
@@ -615,7 +615,7 @@ Property-based testing validates software correctness by testing universal prope
 
 ### Dual Testing Approach
 
-The FlowPay system requires comprehensive testing using both unit tests and property-based tests to ensure correctness across all scenarios:
+The PayStream system requires comprehensive testing using both unit tests and property-based tests to ensure correctness across all scenarios:
 
 **Unit Tests**: Focus on specific examples, edge cases, and integration points
 - Specific MNEE token approval and transfer scenarios

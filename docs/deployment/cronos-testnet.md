@@ -1,12 +1,11 @@
 # Cronos Testnet Deployment
 
-Guide for deploying FlowPay to Cronos testnet.
+Guide for deploying PayStream to Cronos testnet.
 
 ## Current Deployment
 
 | Contract | Address |
 |----------|---------|
-| MockMNEE | `TBD - Deploy yourself` |
 | FlowPayStream | `TBD - Deploy yourself` |
 
 **Network:** Cronos Testnet (Chain ID: 338)
@@ -54,9 +53,6 @@ npx hardhat run scripts/deploy.js --network cronos_testnet
 **Expected Output:**
 ```
 Deploying contracts with the account: 0x...
-Deploying MockMNEE...
-MockMNEE deployed to: 0x...
-Deploying FlowPayStream with MNEE address: 0x...
 FlowPayStream deployed to: 0x...
 ```
 
@@ -66,7 +62,6 @@ Update `vite-project/src/contactInfo.js`:
 
 ```javascript
 export const contractAddress = "0x..."; // Your FlowPayStream address
-export const mneeTokenAddress = "0x..."; // Your MockMNEE address
 ```
 
 ## Network Configuration
@@ -107,9 +102,8 @@ npx hardhat test --network cronos_testnet
 
 1. Open FlowPay dashboard
 2. Connect wallet (Cronos Testnet network)
-3. Mint test MNEE tokens
-4. Create a test stream
-5. Verify on Cronos Explorer
+3. Create a test stream with TCRO
+4. Verify on Cronos Explorer
 
 ## Troubleshooting
 

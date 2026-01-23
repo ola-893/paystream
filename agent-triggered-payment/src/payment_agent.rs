@@ -138,7 +138,7 @@ impl PaymentAgent {
                     .unwrap_or_else(|| "0.0001".to_string());
                 
                 info!("💳 Creating payment stream...");
-                info!("   ├─ Deposit: {} MNEE", deposit);
+                info!("   ├─ Deposit: {} TCRO", deposit);
                 info!("   ├─ Rate: {}/sec", rate);
                 
                 // Generate stream ID (in real impl, this would call FlowPay contract)
@@ -160,7 +160,7 @@ impl PaymentAgent {
                     .unwrap_or_else(|| "0.001".to_string());
                 
                 info!("💳 Making per-request payment...");
-                info!("   ├─ Amount: {} MNEE", amount);
+                info!("   ├─ Amount: {} TCRO", amount);
                 
                 // Simulate tx hash
                 let uuid_str = Uuid::new_v4().to_string().replace("-", "");
@@ -233,7 +233,7 @@ impl PaymentAgent {
         }
     }
 
-    /// Get total amount spent (in MNEE)
+    /// Get total amount spent (in TCRO)
     pub fn total_spent(&self) -> f64 {
         self.stats.total_spent.load(Ordering::Relaxed) as f64 / 1_000_000.0
     }
@@ -243,7 +243,7 @@ impl PaymentAgent {
         info!("📊 Agent Stats:");
         info!("   ├─ Requests: {}", self.stats.requests_made.load(Ordering::Relaxed));
         info!("   ├─ Payments: {}", self.stats.payments_made.load(Ordering::Relaxed));
-        info!("   ├─ Spent: {:.6} MNEE", self.total_spent());
+        info!("   ├─ Spent: {:.6} TCRO", self.total_spent());
         info!("   └─ Active Streams: {}", self.stats.active_streams.load(Ordering::Relaxed));
     }
 
@@ -254,9 +254,9 @@ impl PaymentAgent {
 
 Service: {}
 Payment Mode: {:?}
-Cost: {} MNEE (rate: {} /sec)
-Your Budget: {} MNEE
-Already Spent: {:.4} MNEE
+Cost: {} TCRO (rate: {} /sec)
+Your Budget: {} TCRO
+Already Spent: {:.4} TCRO
 
 Context: {}
 

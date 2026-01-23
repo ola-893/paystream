@@ -1,6 +1,6 @@
 # Deployment Overview
 
-FlowPay can be deployed to various EVM-compatible networks.
+PayStream can be deployed to various EVM-compatible networks.
 
 ## Supported Networks
 
@@ -15,8 +15,7 @@ FlowPay can be deployed to various EVM-compatible networks.
 
 | Contract | Address |
 |----------|---------|
-| MockMNEE | `TBD - Deploy yourself` |
-| FlowPayStream | `TBD - Deploy yourself` |
+| PayStreamStream | `TBD - Deploy yourself` |
 
 ## Deployment Guides
 
@@ -40,17 +39,16 @@ npx hardhat run scripts/deploy.js --network cronos_testnet
 │           Deployment Stack              │
 ├─────────────────────────────────────────┤
 │                                         │
-│  ┌─────────────┐  ┌─────────────────┐   │
-│  │  MockMNEE   │  │  FlowPayStream  │   │
-│  │  (ERC-20)   │──│  (Streaming)    │   │
-│  └─────────────┘  └─────────────────┘   │
-│         │                 │             │
-│         └────────┬────────┘             │
+│         ┌─────────────────┐             │
+│         │  PayStreamStream  │             │
+│         │   (Streaming)   │             │
+│         └─────────────────┘             │
 │                  │                      │
 │                  ▼                      │
 │         ┌───────────────┐               │
 │         │    Cronos     │               │
 │         │   Network     │               │
+│         │ (Native TCRO) │               │
 │         └───────────────┘               │
 │                                         │
 └─────────────────────────────────────────┘

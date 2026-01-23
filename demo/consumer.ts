@@ -1,4 +1,4 @@
-import { FlowPaySDK } from '../sdk/src/FlowPaySDK';
+import { PayStreamSDK } from '../sdk/src/PayStreamSDK';
 import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
 
@@ -6,7 +6,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Contract address on Cronos Testnet
-const FLOWPAYSTREAM_ADDRESS = process.env.FLOWPAY_CONTRACT || '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035';
+const PAYSTREAMSTREAM_ADDRESS = process.env.PAYSTREAM_CONTRACT || '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035';
 // Cronos Testnet RPC
 const CRONOS_RPC_URL = process.env.CRONOS_RPC_URL || 'https://evm-t3.cronos.org';
 
@@ -20,7 +20,7 @@ const CRONOS_RPC_URL = process.env.CRONOS_RPC_URL || 'https://evm-t3.cronos.org'
  * 4. Accesses premium API content
  */
 async function runDemo() {
-    console.log("🚀 Starting FlowPay Demo Consumer (Real Blockchain Mode)...\n");
+    console.log("🚀 Starting PayStream Demo Consumer (Real Blockchain Mode)...\n");
 
     // Get private key from environment
     const privateKey = process.env.PRIVATE_KEY_1 || process.env.PRIVATE_KEY;
@@ -36,7 +36,7 @@ async function runDemo() {
 
     // 1. Initialize SDK with Cronos Testnet configuration
     console.log("📡 Connecting to Cronos testnet...");
-    const sdk = new FlowPaySDK({
+    const sdk = new PayStreamSDK({
         privateKey: privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`,
         rpcUrl: CRONOS_RPC_URL,
         agentId: 'Demo-Consumer-Agent-v1',

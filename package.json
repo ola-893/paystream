@@ -1,11 +1,11 @@
 {
-  "name": "flowpay",
+  "name": "paystream",
   "version": "1.0.0",
-  "description": "FlowPay - The Streaming Extension for x402",
+  "description": "PayStream - The Streaming Extension for x402",
   "main": "index.js",
   "scripts": {
     "test": "npm run test:contracts && npm run test:sdk",
-    "test:contracts": "npx hardhat test test/FlowPayStream.test.js",
+    "test:contracts": "npx hardhat test test/PayStreamStream.test.js",
     "test:sdk": "npm --prefix sdk run test:all",
     "test:integration": "npm --prefix sdk run test:integration",
     "deploy:cronos": "npx hardhat run scripts/deploy.js --network cronos_testnet",

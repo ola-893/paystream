@@ -1,6 +1,6 @@
-# FlowPayStream Contract
+# PayStreamStream Contract
 
-The FlowPayStream contract is the core payment streaming infrastructure.
+The PayStreamStream contract is the core payment streaming infrastructure.
 
 ## Contract Address
 
@@ -8,7 +8,7 @@ The FlowPayStream contract is the core payment streaming infrastructure.
 
 ## Overview
 
-FlowPayStream enables continuous payment streams using MNEE tokens. Funds flow from sender to recipient over time, calculated per-second.
+PayStreamStream enables continuous payment streams using MNEE tokens. Funds flow from sender to recipient over time, calculated per-second.
 
 ## Functions
 
@@ -42,10 +42,10 @@ function createStream(
 **Example:**
 ```javascript
 // Approve tokens first
-await mnee.approve(flowPayStreamAddress, amount);
+await mnee.approve(payStreamStreamAddress, amount);
 
 // Create stream
-await flowPayStream.createStream(
+await payStreamStream.createStream(
   recipientAddress,
   3600, // 1 hour
   ethers.parseEther('10'), // 10 MNEE
@@ -73,7 +73,7 @@ function withdrawFromStream(uint256 streamId) external
 
 **Example:**
 ```javascript
-await flowPayStream.withdrawFromStream(42);
+await payStreamStream.withdrawFromStream(42);
 ```
 
 ### cancelStream

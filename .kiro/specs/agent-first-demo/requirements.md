@@ -2,15 +2,15 @@
 
 ## Introduction
 
-This feature creates a production-ready, CLI-first agent demo that showcases AI agents autonomously triggering and streaming payments via the x402 protocol and FlowPay. The demo eliminates mock/simulated components and demonstrates real agents making real HTTP requests, receiving real 402 responses, and creating real on-chain payment streams. The CLI approach mirrors a typical developer workflow and provides full transparency into every step of the payment flow.
+This feature creates a production-ready, CLI-first agent demo that showcases AI agents autonomously triggering and streaming payments via the x402 protocol and PayStream. The demo eliminates mock/simulated components and demonstrates real agents making real HTTP requests, receiving real 402 responses, and creating real on-chain payment streams. The CLI approach mirrors a typical developer workflow and provides full transparency into every step of the payment flow.
 
 ## Glossary
 
 - **Agent**: An autonomous AI entity that can make HTTP requests, evaluate payment requirements, and trigger blockchain payments
-- **x402_Protocol**: HTTP-based payment protocol using 402 Payment Required status with FlowPay-specific headers
-- **Payment_Stream**: A continuous flow of MNEE tokens from sender to recipient over time via the FlowPayStream contract
-- **FlowPay_Contract**: The FlowPayStream smart contract that manages payment streams on Cronos Testnet
-- **MNEE**: The stablecoin token used for payments in the FlowPay ecosystem
+- **x402_Protocol**: HTTP-based payment protocol using 402 Payment Required status with PayStream-specific headers
+- **Payment_Stream**: A continuous flow of MNEE tokens from sender to recipient over time via the PayStreamStream contract
+- **PayStream_Contract**: The PayStreamStream smart contract that manages payment streams on Cronos Testnet
+- **MNEE**: The stablecoin token used for payments in the PayStream ecosystem
 - **Payment_Proof**: Evidence of payment (stream ID or transaction hash) included in retry requests
 - **Service_Provider**: An HTTP server that requires payment via x402 headers before granting access
 - **Payment_Agent**: An AI agent with wallet capabilities that can autonomously decide and execute payments
@@ -37,8 +37,8 @@ This feature creates a production-ready, CLI-first agent demo that showcases AI 
 #### Acceptance Criteria
 
 1. WHEN a request arrives without payment proof, THE Service_Provider SHALL return HTTP 402 with x402 headers
-2. THE Service_Provider SHALL include these headers in 402 responses: X-Payment-Required, X-FlowPay-Mode, X-FlowPay-Rate, X-FlowPay-Recipient, X-FlowPay-Contract, X-FlowPay-MinDeposit
-3. WHEN a request includes a valid X-FlowPay-Stream-ID header, THE Service_Provider SHALL verify the stream is active on-chain
+2. THE Service_Provider SHALL include these headers in 402 responses: X-Payment-Required, X-PayStream-Mode, X-PayStream-Rate, X-PayStream-Recipient, X-PayStream-Contract, X-PayStream-MinDeposit
+3. WHEN a request includes a valid X-PayStream-Stream-ID header, THE Service_Provider SHALL verify the stream is active on-chain
 4. IF the stream is active and has sufficient balance, THEN THE Service_Provider SHALL return HTTP 200 with the requested data
 5. IF the stream is inactive or depleted, THEN THE Service_Provider SHALL return HTTP 402 requesting new payment
 
@@ -60,8 +60,8 @@ This feature creates a production-ready, CLI-first agent demo that showcases AI 
 
 #### Acceptance Criteria
 
-1. WHEN the Payment_Agent decides to pay via streaming, THE Payment_Agent SHALL approve MNEE tokens to the FlowPay contract
-2. WHEN tokens are approved, THE Payment_Agent SHALL call createStream on the FlowPayStream contract
+1. WHEN the Payment_Agent decides to pay via streaming, THE Payment_Agent SHALL approve MNEE tokens to the PayStream contract
+2. WHEN tokens are approved, THE Payment_Agent SHALL call createStream on the PayStreamStream contract
 3. THE Payment_Agent SHALL include metadata in the stream: agent ID, timestamp, service URL, and purpose
 4. WHEN the stream is created, THE Payment_Agent SHALL extract the stream ID from the StreamCreated event
 5. THE Payment_Agent SHALL cache active stream IDs to reuse for subsequent requests to the same service
@@ -72,7 +72,7 @@ This feature creates a production-ready, CLI-first agent demo that showcases AI 
 
 #### Acceptance Criteria
 
-1. WHEN a payment stream is created, THE Payment_Agent SHALL retry the original request with X-FlowPay-Stream-ID header
+1. WHEN a payment stream is created, THE Payment_Agent SHALL retry the original request with X-PayStream-Stream-ID header
 2. WHEN retrying, THE Payment_Agent SHALL include the stream ID from the successful createStream transaction
 3. IF the retry succeeds (HTTP 200), THE Payment_Agent SHALL log success and return the response data
 4. IF the retry fails (HTTP 402 again), THE Payment_Agent SHALL log the failure and report the issue

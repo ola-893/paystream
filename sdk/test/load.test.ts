@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { FlowPaySDK } from '../src/FlowPaySDK';
+import { PayStreamSDK } from '../src/PayStreamSDK';
 import { Wallet, ethers } from 'ethers';
 import express, { Express } from 'express';
 import { Server } from 'http';
@@ -10,16 +10,16 @@ app.use(express.json());
 
 // Mock 402 Route
 app.get('/api/load', (req, res) => {
-    const streamId = req.headers['x-flowpay-stream-id'];
+    const streamId = req.headers['x-paystream-stream-id'];
     if (streamId === 'STREAM_1') {
         res.json({ success: true });
     } else {
         res.status(402).set({
             'X-Payment-Required': 'true',
-            'X-FlowPay-Mode': 'streaming',
-            'X-FlowPay-Rate': '0.0001',
-            'X-FlowPay-Currency': 'TCRO',
-            'X-FlowPay-Contract': '0xContract'
+            'X-PayStream-Mode': 'streaming',
+            'X-PayStream-Rate': '0.0001',
+            'X-PayStream-Currency': 'TCRO',
+            'X-PayStream-Contract': '0xContract'
         }).json({
             error: "Payment Required"
         });
@@ -30,8 +30,8 @@ let server: Server;
 const PORT = 3006;
 const BASE_URL = `http://localhost:${PORT}`;
 
-describe('FlowPaySDK Load & Efficiency Tests', () => {
-    let sdk: FlowPaySDK;
+describe('PayStreamSDK Load & Efficiency Tests', () => {
+    let sdk: PayStreamSDK;
     let createStreamCallCount = 0;
 
     before((done) => {
@@ -45,7 +45,7 @@ describe('FlowPaySDK Load & Efficiency Tests', () => {
     beforeEach(() => {
         createStreamCallCount = 0;
 
-        sdk = new FlowPaySDK({
+        sdk = new PayStreamSDK({
             privateKey: Wallet.createRandom().privateKey,
             rpcUrl: 'http://localhost:8545'
         });

@@ -1,6 +1,6 @@
 # Events & Errors
 
-Reference for FlowPayStream contract events and error messages.
+Reference for PayStreamStream contract events and error messages.
 
 ## Events
 
@@ -95,29 +95,29 @@ event StreamCancelled(
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| `FlowPayStream: Total amount must be greater than 0.` | Amount is zero | Provide positive amount |
-| `FlowPayStream: Recipient cannot be the zero address.` | Invalid recipient | Use valid address |
-| `FlowPayStream: Duration must be greater than 0.` | Duration is zero | Provide positive duration |
-| `FlowPayStream: flowRate would be zero.` | Amount too small for duration | Increase amount or decrease duration |
-| `FlowPayStream: Transfer failed. check allowance` | Insufficient approval | Approve tokens first |
+| `PayStreamStream: Total amount must be greater than 0.` | Amount is zero | Provide positive amount |
+| `PayStreamStream: Recipient cannot be the zero address.` | Invalid recipient | Use valid address |
+| `PayStreamStream: Duration must be greater than 0.` | Duration is zero | Provide positive duration |
+| `PayStreamStream: flowRate would be zero.` | Amount too small for duration | Increase amount or decrease duration |
+| `PayStreamStream: Transfer failed. check allowance` | Insufficient approval | Approve tokens first |
 
 ### Withdrawal Errors
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| `FlowPayStream: Stream is not active.` | Stream ended or cancelled | Check stream status |
-| `FlowPayStream: Caller is not the recipient.` | Wrong caller | Use recipient wallet |
-| `FlowPayStream: No funds to withdraw.` | Nothing claimable yet | Wait for funds to stream |
-| `FlowPayStream: Transfer failed.` | Token transfer issue | Check contract balance |
+| `PayStreamStream: Stream is not active.` | Stream ended or cancelled | Check stream status |
+| `PayStreamStream: Caller is not the recipient.` | Wrong caller | Use recipient wallet |
+| `PayStreamStream: No funds to withdraw.` | Nothing claimable yet | Wait for funds to stream |
+| `PayStreamStream: Transfer failed.` | Token transfer issue | Check contract balance |
 
 ### Cancellation Errors
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| `FlowPayStream: Stream already cancelled.` | Already inactive | No action needed |
-| `FlowPayStream: Caller cannot cancel this stream.` | Not sender or recipient | Use authorized wallet |
-| `FlowPayStream: Recipient transfer failed on cancel.` | Transfer issue | Check token state |
-| `FlowPayStream: Sender refund failed on cancel.` | Transfer issue | Check token state |
+| `PayStreamStream: Stream already cancelled.` | Already inactive | No action needed |
+| `PayStreamStream: Caller cannot cancel this stream.` | Not sender or recipient | Use authorized wallet |
+| `PayStreamStream: Recipient transfer failed on cancel.` | Transfer issue | Check token state |
+| `PayStreamStream: Sender refund failed on cancel.` | Transfer issue | Check token state |
 
 ## Listening to Events
 

@@ -6,25 +6,25 @@ async function main() {
   console.log("=".repeat(60));
 
   // Get contract address from environment
-  const FLOWPAY_ADDRESS = process.env.FLOWPAY_CONTRACT;
+  const PAYSTREAM_ADDRESS = process.env.PAYSTREAM_CONTRACT;
 
-  if (!FLOWPAY_ADDRESS) {
+  if (!PAYSTREAM_ADDRESS) {
     throw new Error(
-      "Missing contract address. Please set FLOWPAY_CONTRACT in .env"
+      "Missing contract address. Please set PAYSTREAM_CONTRACT in .env"
     );
   }
 
   console.log("\n📋 Configuration:");
   console.log(`   Network: ${hre.network.name}`);
   console.log(`   Chain ID: ${hre.network.config.chainId}`);
-  console.log(`   FlowPay Contract: ${FLOWPAY_ADDRESS}`);
+  console.log(`   PayStream Contract: ${PAYSTREAM_ADDRESS}`);
 
   // Get signer
   const [signer] = await ethers.getSigners();
   console.log(`\n👤 Using account: ${signer.address}`);
 
   // Get contract instance
-  const flowPay = await ethers.getContractAt("FlowPayStream", FLOWPAY_ADDRESS);
+  const payStream = await ethers.getContractAt("PayStreamStream", PAYSTREAM_ADDRESS);
 
   console.log("\n" + "=".repeat(60));
   console.log("STEP 1: Check TCRO Balance");
@@ -62,7 +62,7 @@ async function main() {
   console.log(`   Flow Rate: ${ethers.formatEther(flowRate)} TCRO/second`);
   console.log(`   Metadata: ${metadata}`);
 
-  const createStreamTx = await flowPay.createStream(
+  const createStreamTx = await payStream.createStream(
     recipient,
     duration,
     metadata,
@@ -80,7 +80,7 @@ async function main() {
   // Extract stream ID from events
   const streamCreatedEvent = createStreamReceipt.logs.find((log) => {
     try {
-      const parsed = flowPay.interface.parseLog(log);
+      const parsed = payStream.interface.parseLog(log);
       return parsed && parsed.name === "StreamCreated";
     } catch (e) {
       return false;
@@ -88,12 +88,12 @@ async function main() {
   });
 
   if (streamCreatedEvent) {
-    const parsed = flowPay.interface.parseLog(streamCreatedEvent);
+    const parsed = payStream.interface.parseLog(streamCreatedEvent);
     const streamId = parsed.args.streamId;
     console.log(`   🆔 Stream ID: ${streamId}`);
 
     // Get stream details from the public mapping
-    const stream = await flowPay.streams(streamId);
+    const stream = await payStream.streams(streamId);
     console.log(`\n   📊 Stream Details:`);
     console.log(`      Sender: ${stream.sender}`);
     console.log(`      Recipient: ${stream.recipient}`);
@@ -115,7 +115,7 @@ async function main() {
 
   console.log("\n✅ Contract address on Cronos Explorer:");
   console.log(
-    `   FlowPay: https://explorer.cronos.org/testnet/address/${FLOWPAY_ADDRESS}`
+    `   PayStream: https://explorer.cronos.org/testnet/address/${PAYSTREAM_ADDRESS}`
   );
 
   console.log("\n" + "=".repeat(60));

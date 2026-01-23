@@ -1,6 +1,6 @@
 # Configuration
 
-FlowPay offers extensive configuration options for different use cases.
+PayStream offers extensive configuration options for different use cases.
 
 ## SDK Configuration
 
@@ -12,12 +12,10 @@ const sdk = new FlowPaySDK({
   privateKey: process.env.PRIVATE_KEY,
   rpcUrl: 'https://evm-t3.cronos.org',
   contractAddress: 'TBD_YOUR_FLOWPAYSTREAM_ADDRESS',
-  mneeAddress: 'TBD_YOUR_MNEE_ADDRESS',
   
   // Optional
   agentId: 'my-agent-001',
   defaultStreamDuration: 3600, // 1 hour
-  autoApproveTokens: true,
   maxRetries: 3,
   retryDelay: 1000
 });
@@ -28,12 +26,10 @@ const sdk = new FlowPaySDK({
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `privateKey` | string | required | Wallet private key |
-| `rpcUrl` | string | required | Ethereum RPC endpoint |
+| `rpcUrl` | string | required | Cronos RPC endpoint |
 | `contractAddress` | string | required | FlowPayStream contract address |
-| `mneeAddress` | string | required | MNEE token address |
 | `agentId` | string | auto | Unique agent identifier |
 | `defaultStreamDuration` | number | 3600 | Default stream duration (seconds) |
-| `autoApproveTokens` | boolean | true | Auto-approve token allowance |
 | `maxRetries` | number | 3 | Max retry attempts for failed requests |
 | `retryDelay` | number | 1000 | Delay between retries (ms) |
 
@@ -43,9 +39,9 @@ const sdk = new FlowPaySDK({
 import { SpendingMonitor } from './sdk/src/SpendingMonitor';
 
 const monitor = new SpendingMonitor({
-  dailyLimit: '100',      // 100 MNEE per day
-  perRequestLimit: '1',   // 1 MNEE max per request
-  emergencyStopThreshold: '500', // Stop if total exceeds 500 MNEE
+  dailyLimit: '100',      // 100 TCRO per day
+  perRequestLimit: '1',   // 1 TCRO max per request
+  emergencyStopThreshold: '500', // Stop if total exceeds 500 TCRO
   alertCallback: (alert) => {
     console.log('Spending alert:', alert);
   }
@@ -78,7 +74,6 @@ app.use('/api/premium', flowPayMiddleware({
   
   // Contract
   contractAddress: 'TBD_YOUR_FLOWPAYSTREAM_ADDRESS',
-  mneeAddress: 'TBD_YOUR_MNEE_ADDRESS',
   recipientAddress: '0x...',
   
   // Verification
@@ -101,7 +96,6 @@ Create `vite-project/.env`:
 ```bash
 # Contract addresses
 VITE_CONTRACT_ADDRESS=TBD_YOUR_FLOWPAYSTREAM_ADDRESS
-# Legacy token address removed - using native TCRO now
 
 # Network
 VITE_CHAIN_ID=338

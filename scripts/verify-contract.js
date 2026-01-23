@@ -2,20 +2,20 @@ const hre = require("hardhat");
 const { ethers } = require("hardhat");
 
 async function main() {
-  console.log("🔍 Verifying FlowPay Contract on Cronos Testnet\n");
+  console.log("🔍 Verifying PayStream Contract on Cronos Testnet\n");
 
-  const FLOWPAY_ADDRESS = process.env.FLOWPAY_CONTRACT;
+  const PAYSTREAM_ADDRESS = process.env.PAYSTREAM_CONTRACT;
   
-  if (!FLOWPAY_ADDRESS) {
-    throw new Error("Missing FLOWPAY_CONTRACT in .env");
+  if (!PAYSTREAM_ADDRESS) {
+    throw new Error("Missing PAYSTREAM_CONTRACT in .env");
   }
 
-  console.log(`Contract Address: ${FLOWPAY_ADDRESS}`);
+  console.log(`Contract Address: ${PAYSTREAM_ADDRESS}`);
   console.log(`Network: ${hre.network.name}`);
   console.log(`Chain ID: ${hre.network.config.chainId}\n`);
 
   // Check if contract exists
-  const code = await ethers.provider.getCode(FLOWPAY_ADDRESS);
+  const code = await ethers.provider.getCode(PAYSTREAM_ADDRESS);
   console.log(`Contract code length: ${code.length} characters`);
   
   if (code === '0x') {
@@ -27,11 +27,11 @@ async function main() {
 
   // Try to get contract instance
   try {
-    const flowPay = await ethers.getContractAt("FlowPayStream", FLOWPAY_ADDRESS);
+    const payStream = await ethers.getContractAt("PayStreamStream", PAYSTREAM_ADDRESS);
     console.log("✅ Contract ABI matches");
     
     // Try calling a simple view function
-    const isActive = await flowPay.isStreamActive(1);
+    const isActive = await payStream.isStreamActive(1);
     console.log(`✅ Contract is responsive (isStreamActive(1): ${isActive})`);
     
   } catch (error) {

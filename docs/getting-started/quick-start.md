@@ -1,40 +1,39 @@
 # Quick Start
 
-Get FlowPay running in under 5 minutes.
+Get PayStream running in under 5 minutes.
 
 ## Step 1: Connect Your Wallet
 
-1. Open the FlowPay dashboard
+1. Open the PayStream dashboard
 2. Click "Connect Wallet"
 3. Select MetaMask and approve the connection
 4. Ensure you're on Cronos testnet (Chain ID: 338)
 
 ## Step 2: Get Test Tokens
 
-You need MNEE tokens to create streams:
+You need TCRO tokens to create streams:
 
-1. Navigate to the "Streams" tab
-2. Click "Mint 1000 MNEE" button
-3. Approve the transaction in MetaMask
+1. Visit the Cronos testnet faucet at https://cronos.org/faucet
+2. Enter your wallet address
+3. Request TCRO tokens
 4. Wait for confirmation
 
 ## Step 3: Create Your First Stream
 
 ```javascript
 // Using the SDK
-import { FlowPaySDK } from './sdk/src/FlowPaySDK';
+import { PayStreamSDK } from './sdk/src/PayStreamSDK';
 
-const sdk = new FlowPaySDK({
+const sdk = new PayStreamSDK({
   privateKey: process.env.PRIVATE_KEY,
   rpcUrl: 'https://evm-t3.cronos.org',
-  contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-  mneeAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896'
+  contractAddress: '0x6aEe6d1564FA029821576055A5420cAac06cF4F3'
 });
 
 // Create a stream
 const streamId = await sdk.createStream({
   recipient: '0x...provider_address',
-  amount: '10', // 10 MNEE
+  amount: '10', // 10 TCRO
   duration: 3600, // 1 hour
   metadata: JSON.stringify({ purpose: 'API access' })
 });
@@ -71,11 +70,10 @@ View your active streams in the dashboard:
 ### Create Stream via UI
 
 1. Enter recipient address
-2. Set amount (in MNEE)
+2. Set amount (in TCRO)
 3. Set duration (in seconds)
 4. Click "Create Stream"
-5. Approve token allowance (first time only)
-6. Confirm stream creation
+5. Confirm stream creation with TCRO payment
 
 ### Withdraw Funds
 
@@ -90,7 +88,7 @@ If you're receiving a stream:
 
 ```javascript
 // 1. Initialize SDK
-const sdk = new FlowPaySDK(config);
+const sdk = new PayStreamSDK(config);
 
 // 2. Check if stream exists for provider
 const existingStream = await sdk.getActiveStream(providerAddress);

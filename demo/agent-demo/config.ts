@@ -18,7 +18,7 @@ export interface EnvConfig {
   // Required variables
   PRIVATE_KEY: string;
   CRONOS_RPC_URL: string;
-  FLOWPAY_CONTRACT: string;
+  PAYSTREAM_CONTRACT: string;
   
   // Optional variables with defaults
   GEMINI_API_KEY?: string;
@@ -42,7 +42,7 @@ export interface ValidationResult {
 const REQUIRED_VARIABLES = [
   'PRIVATE_KEY',
   'CRONOS_RPC_URL',
-  'FLOWPAY_CONTRACT',
+  'PAYSTREAM_CONTRACT',
 ] as const;
 
 /**
@@ -104,7 +104,7 @@ export function validateEnvironment(): ValidationResult {
   const config: EnvConfig = {
     PRIVATE_KEY: process.env.PRIVATE_KEY!,
     CRONOS_RPC_URL: process.env.CRONOS_RPC_URL!,
-    FLOWPAY_CONTRACT: process.env.FLOWPAY_CONTRACT!,
+    PAYSTREAM_CONTRACT: process.env.PAYSTREAM_CONTRACT!,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     DAILY_BUDGET: process.env.DAILY_BUDGET || DEFAULTS.DAILY_BUDGET,
     SERVER_URL: process.env.SERVER_URL || DEFAULTS.SERVER_URL,
@@ -189,7 +189,7 @@ export function getConfigSummary(config: EnvConfig): Record<string, string> {
   return {
     PRIVATE_KEY: maskPrivateKey(config.PRIVATE_KEY),
     CRONOS_RPC_URL: config.CRONOS_RPC_URL,
-    FLOWPAY_CONTRACT: config.FLOWPAY_CONTRACT,
+    PAYSTREAM_CONTRACT: config.PAYSTREAM_CONTRACT,
     GEMINI_API_KEY: config.GEMINI_API_KEY ? '***configured***' : 'not set',
     DAILY_BUDGET: `${config.DAILY_BUDGET} TCRO`,
     SERVER_URL: config.SERVER_URL,

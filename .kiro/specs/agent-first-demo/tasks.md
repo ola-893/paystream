@@ -2,7 +2,7 @@
 
 ## Overview
 
-This implementation plan builds a CLI-first demo showcasing AI agents autonomously triggering payments via x402 protocol and FlowPay. The implementation leverages the existing FlowPaySDK and server middleware, extending them with a polished CLI demo runner.
+This implementation plan builds a CLI-first demo showcasing AI agents autonomously triggering payments via x402 protocol and PayStream. The implementation leverages the existing PayStreamSDK and server middleware, extending them with a polished CLI demo runner.
 
 ## Tasks
 
@@ -15,7 +15,7 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
 
 - [x] 2. Implement environment configuration and validation
   - [x] 2.1 Create config loader from .env file
-    - Load PRIVATE_KEY, CRONOS_RPC_URL, FLOWPAY_CONTRACT, MNEE_TOKEN
+    - Load PRIVATE_KEY, CRONOS_RPC_URL, PAYSTREAM_CONTRACT, MNEE_TOKEN
     - Support optional GEMINI_API_KEY, DAILY_BUDGET, SERVER_URL
     - _Requirements: 9.1_
   - [x] 2.2 Implement environment validation with clear error messages
@@ -112,7 +112,7 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
 
 - [x] 8. Implement payment execution flow
   - [x] 8.1 Implement createStream method in PaymentAgent
-    - Approve MNEE tokens to FlowPay contract
+    - Approve MNEE tokens to PayStream contract
     - Call createStream with metadata
     - Extract stream ID from StreamCreated event
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
@@ -139,8 +139,8 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 10. Enhance server middleware for demo
-  - [x] 10.1 Add X-FlowPay-Recipient header to 402 responses
-    - Update flowPayMiddleware to include recipient address
+  - [x] 10.1 Add X-PayStream-Recipient header to 402 responses
+    - Update payStreamMiddleware to include recipient address
     - Ensure all required x402 headers are present
     - _Requirements: 2.2_
   - [x] 10.2 Add stream verification logging
@@ -206,7 +206,7 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
 - [x] 14. Implement setup check command
   - [x] 14.1 Create checkSetup method in DemoRunner
     - Verify wallet has MNEE balance
-    - Verify FlowPay contract is accessible
+    - Verify PayStream contract is accessible
     - Verify server is running and responding
     - _Requirements: 9.6_
   - [x] 14.2 Add --check flag to CLI
@@ -255,5 +255,5 @@ This implementation plan builds a CLI-first demo showcasing AI agents autonomous
 - Checkpoints ensure incremental validation
 - Property tests validate universal correctness properties
 - Unit tests validate specific examples and edge cases
-- The implementation builds on existing FlowPaySDK and server middleware
+- The implementation builds on existing PayStreamSDK and server middleware
 

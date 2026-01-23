@@ -3,7 +3,7 @@ import { ethers, Contract, Wallet, JsonRpcProvider } from 'ethers';
 import { GeminiPaymentBrain } from './GeminiPaymentBrain';
 import { SpendingMonitor, SpendingLimits } from './SpendingMonitor';
 
-export interface FlowPayConfig {
+export interface PayStreamConfig {
     privateKey: string;
     rpcUrl: string;
     apiKey?: string;
@@ -19,7 +19,7 @@ export interface StreamMetadata {
     amount: bigint;
 }
 
-export class FlowPaySDK {
+export class PayStreamSDK {
     private wallet: Wallet;
     private provider: JsonRpcProvider;
     private apiKey?: string;
@@ -37,7 +37,7 @@ export class FlowPaySDK {
         "event StreamCreated(uint256 indexed streamId, address indexed sender, address indexed recipient, uint256 totalAmount, uint256 startTime, uint256 stopTime, string metadata)"
     ];
 
-    constructor(config: FlowPayConfig) {
+    constructor(config: PayStreamConfig) {
         this.provider = new JsonRpcProvider(config.rpcUrl);
         this.wallet = new Wallet(config.privateKey, this.provider);
         this.apiKey = config.apiKey;
@@ -66,12 +66,12 @@ export class FlowPaySDK {
 
     public emergencyStop() {
         this.isPaused = true;
-        console.warn("[FlowPaySDK] 🚨 EMERGENCY STOP ACTIVATED. All payments paused.");
+        console.warn("[PayStreamSDK] 🚨 EMERGENCY STOP ACTIVATED. All payments paused.");
     }
 
     public resume() {
         this.isPaused = false;
-        console.log("[FlowPaySDK] ✅ System Resumed.");
+        console.log("[PayStreamSDK] ✅ System Resumed.");
     }
 
     /**
@@ -90,7 +90,7 @@ export class FlowPaySDK {
      */
     public async selectPaymentMode(estimatedRequests: number): Promise<'direct' | 'stream'> {
         const decision = await this.brain.shouldStream(estimatedRequests);
-        console.log(`[FlowPaySDK] 🤖 Gemini Analysis: ${decision.reasoning}`);
+        console.log(`[PayStreamSDK] 🤖 Gemini Analysis: ${decision.reasoning}`);
         return decision.mode;
     }
 
@@ -106,7 +106,7 @@ export class FlowPaySDK {
      */
     public async makeRequest(url: string, options: AxiosRequestConfig = {}): Promise<AxiosResponse> {
         if (this.isPaused) {
-            throw new Error("FlowPaySDK is paused due to Emergency Stop.");
+            throw new Error("PayStreamSDK is paused due to Emergency Stop.");
         }
         this.metrics.requestsSent++;
 
@@ -126,16 +126,16 @@ export class FlowPaySDK {
                 // Check remaining balance
                 const remaining = this.calculateRemaining(cachedStream);
                 if (remaining <= 0n) {
-                    console.log("[FlowPaySDK] Cached stream depleted. Clearing cache...");
+                    console.log("[PayStreamSDK] Cached stream depleted. Clearing cache...");
                     this.activeStreams.delete(host);
                 } else {
                     // AUTO-RENEWAL CHECK - 10% threshold
                     const threshold = cachedStream.amount * 10n / 100n;
                     if (remaining < threshold) {
-                        console.log("[FlowPaySDK] Stream balance low (<10%). Triggering renewal...");
+                        console.log("[PayStreamSDK] Stream balance low (<10%). Triggering renewal...");
                         this.activeStreams.delete(host);
                     } else {
-                        (headers as any)['X-FlowPay-Stream-ID'] = cachedStream.streamId;
+                        (headers as any)['X-PayStream-Stream-ID'] = cachedStream.streamId;
                     }
                 }
             }
@@ -146,11 +146,11 @@ export class FlowPaySDK {
             if (axios.isAxiosError(error) && error.response && error.response.status === 402) {
                 // If we used a cached stream ID and got 402, it means it expired or ran out.
                 if (cachedStream) {
-                    console.log("[FlowPaySDK] Cached stream failed. Clearing cache and renegotiating...");
+                    console.log("[PayStreamSDK] Cached stream failed. Clearing cache and renegotiating...");
                     this.activeStreams.delete(host);
                 }
 
-                console.log("[FlowPaySDK] 402 Payment Required intercepted. Negotiating...");
+                console.log("[PayStreamSDK] 402 Payment Required intercepted. Negotiating...");
                 return this.handlePaymentRequired(url, options, error.response);
             }
             throw error;
@@ -161,13 +161,13 @@ export class FlowPaySDK {
         this.metrics.signersTriggered++;
 
         const headers = response.headers;
-        const mode = headers['x-flowpay-mode'];
-        const rate = headers['x-flowpay-rate'];
-        const contractAddress = headers['x-flowpay-contract'];
-        const recipientAddress = headers['x-flowpay-recipient'];
+        const mode = headers['x-paystream-mode'];
+        const rate = headers['x-paystream-rate'];
+        const contractAddress = headers['x-paystream-contract'];
+        const recipientAddress = headers['x-paystream-recipient'];
 
         if (!contractAddress) {
-            throw new Error("Missing X-FlowPay-Contract header in 402 response");
+            throw new Error("Missing X-PayStream-Contract header in 402 response");
         }
 
         // AI Decision Point
@@ -181,7 +181,7 @@ export class FlowPaySDK {
 
         // Stream mode
         if (mode !== 'streaming' && mode !== 'hybrid') {
-            throw new Error(`FlowPaySDK currently only supports 'streaming' or 'hybrid' mode. Got: ${mode}`);
+            throw new Error(`PayStreamSDK currently only supports 'streaming' or 'hybrid' mode. Got: ${mode}`);
         }
 
         // Create a Stream with native TCRO
@@ -193,7 +193,7 @@ export class FlowPaySDK {
         try {
             this.monitor.checkAndRecordSpend(totalAmount);
         } catch (e: any) {
-            console.error(`[FlowPaySDK] Spend Declined: ${e.message}`);
+            console.error(`[PayStreamSDK] Spend Declined: ${e.message}`);
             throw e;
         }
 
@@ -203,7 +203,7 @@ export class FlowPaySDK {
             throw new Error("Suspicious renewal activity detected. System Emergency Paused.");
         }
 
-        console.log(`[FlowPaySDK] Initiating Stream: ${ethers.formatEther(totalAmount)} TCRO for ${duration}s`);
+        console.log(`[PayStreamSDK] Initiating Stream: ${ethers.formatEther(totalAmount)} TCRO for ${duration}s`);
 
         const recipient = recipientAddress || contractAddress;
         const streamData = await this.createStream(contractAddress, recipient, totalAmount, duration, {
@@ -220,13 +220,13 @@ export class FlowPaySDK {
             amount: totalAmount
         });
 
-        console.log(`[FlowPaySDK] Stream #${streamData.streamId} created. Retrying request...`);
+        console.log(`[PayStreamSDK] Stream #${streamData.streamId} created. Retrying request...`);
 
         const retryOptions = {
             ...options,
             headers: {
                 ...options.headers,
-                'X-FlowPay-Stream-ID': streamData.streamId
+                'X-PayStream-Stream-ID': streamData.streamId
             }
         };
 
@@ -247,33 +247,33 @@ export class FlowPaySDK {
         duration: number,
         metadata: any = {}
     ): Promise<{ streamId: string, startTime: bigint }> {
-        const flowPay = new Contract(contractAddress, this.MIN_ABI, this.wallet);
+        const payStream = new Contract(contractAddress, this.MIN_ABI, this.wallet);
 
         // Metadata Construction
         const enrichedMetadata = {
             ...metadata,
             agentId: this.agentId || "anonymous",
             timestamp: Date.now(),
-            client: "FlowPaySDK/2.0-TCRO"
+            client: "PayStreamSDK/2.0-TCRO"
         };
         const metadataString = JSON.stringify(enrichedMetadata);
 
-        console.log(`[FlowPaySDK] Creating stream to ${recipient} with ${ethers.formatEther(amount)} TCRO...`);
+        console.log(`[PayStreamSDK] Creating stream to ${recipient} with ${ethers.formatEther(amount)} TCRO...`);
 
         // Send native TCRO with the transaction (no token approval needed!)
-        const tx = await flowPay.createStream(recipient, duration, metadataString, { value: amount });
+        const tx = await payStream.createStream(recipient, duration, metadataString, { value: amount });
         const receipt = await tx.wait();
 
         // Parse event to get ID
         const log = receipt.logs.find((l: any) => {
             try {
-                return flowPay.interface.parseLog(l)?.name === 'StreamCreated';
+                return payStream.interface.parseLog(l)?.name === 'StreamCreated';
             } catch { return false; }
         });
 
         if (!log) throw new Error("StreamCreated event not found");
 
-        const parsed = flowPay.interface.parseLog(log);
+        const parsed = payStream.interface.parseLog(log);
         const streamId = parsed?.args[0].toString();
         const startTime = parsed?.args[4];
 
@@ -299,12 +299,12 @@ export class FlowPaySDK {
      * Perform a direct TCRO payment (sending native currency)
      */
     private async performDirectPayment(url: string, options: AxiosRequestConfig, recipient: string, amount: bigint): Promise<AxiosResponse> {
-        if (this.isPaused) throw new Error("FlowPaySDK is paused.");
+        if (this.isPaused) throw new Error("PayStreamSDK is paused.");
 
         // SAFETY CHECK
         this.monitor.checkAndRecordSpend(amount);
 
-        console.log(`[FlowPaySDK] Executing Direct Payment of ${ethers.formatEther(amount)} TCRO to ${recipient}`);
+        console.log(`[PayStreamSDK] Executing Direct Payment of ${ethers.formatEther(amount)} TCRO to ${recipient}`);
 
         // Send native TCRO directly
         const tx = await this.wallet.sendTransaction({
@@ -313,13 +313,13 @@ export class FlowPaySDK {
         });
         await tx.wait();
 
-        console.log(`[FlowPaySDK] Direct Payment Sent: ${tx.hash}`);
+        console.log(`[PayStreamSDK] Direct Payment Sent: ${tx.hash}`);
 
         const retryOptions = {
             ...options,
             headers: {
                 ...options.headers,
-                'X-FlowPay-Tx-Hash': tx.hash
+                'X-PayStream-Tx-Hash': tx.hash
             }
         };
 
@@ -334,7 +334,7 @@ export class FlowPaySDK {
         return {
             streamId,
             agentId: this.agentId || "unknown",
-            client: "FlowPaySDK/2.0-TCRO"
+            client: "PayStreamSDK/2.0-TCRO"
         };
     }
 }

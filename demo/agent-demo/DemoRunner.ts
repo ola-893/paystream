@@ -2,7 +2,7 @@
  * DemoRunner - Scenario Orchestration
  * 
  * Orchestrates multiple demo scenarios showcasing AI agents
- * autonomously triggering payments via x402 protocol and FlowPay.
+ * autonomously triggering payments via x402 protocol and PayStream.
  * 
  * Requirements: 6.1, 6.5, 6.7, 7.1, 7.2, 7.3
  */
@@ -577,13 +577,13 @@ export class DemoRunner {
     }
     
     // Check contract accessibility
-    this.cli.startSpinner('Checking FlowPay contract...');
+    this.cli.startSpinner('Checking PayStream contract...');
     try {
-      const contract = this.agent.getFlowPayContract();
+      const contract = this.agent.getPayStreamContract();
       // Try to call a view function to verify contract is accessible
       await contract.getAddress();
       status.contractAccessible = true;
-      this.cli.stopSpinner(true, 'FlowPay contract accessible');
+      this.cli.stopSpinner(true, 'PayStream contract accessible');
     } catch (error: any) {
       status.errors.push(`Contract: ${error.message}`);
       this.cli.stopSpinner(false, `Contract check failed: ${error.message}`);

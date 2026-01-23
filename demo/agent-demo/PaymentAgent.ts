@@ -2,7 +2,7 @@
  * PaymentAgent Class
  * 
  * The core agent that manages wallet, budget, and payment decisions.
- * Handles autonomous payment execution via x402 protocol and FlowPay.
+ * Handles autonomous payment execution via x402 protocol and PayStream.
  * 
  * Requirements: 1.1, 1.2, 1.4, 1.5, 4.1, 4.2, 4.3, 4.4, 4.5, 5.1, 5.3, 5.4, 5.5
  */
@@ -18,7 +18,7 @@ export interface AgentConfig {
   privateKey: string;
   rpcUrl: string;
   dailyBudget: bigint;        // in wei (18 decimals)
-  flowPayContract: string;
+  payStreamContract: string;
   geminiApiKey?: string;      // optional for AI decisions
   dryRun?: boolean;           // optional: simulate without real transactions (Requirements: 9.3, 9.7)
 }
@@ -95,8 +95,8 @@ export interface StreamMetadata {
 
 // ERC20 ABI removed - using native TCRO instead
 
-// FlowPayStream contract ABI - updated for native TCRO
-const FLOWPAY_ABI = [
+// PayStreamStream contract ABI - updated for native TCRO
+const PAYSTREAM_ABI = [
   'function createStream(address recipient, uint256 duration, string memory metadata) external payable',
   'function cancelStream(uint256 streamId) external',
   'function isStreamActive(uint256 streamId) external view returns (bool)',
@@ -120,7 +120,7 @@ export class PaymentAgent {
   private config: AgentConfig;
   private wallet: Wallet;
   private provider: JsonRpcProvider;
-  private flowPayContract: Contract;
+  private payStreamContract: Contract;
   
   // State tracking
   private _tcroBalance: bigint = 0n;
@@ -148,8 +148,8 @@ export class PaymentAgent {
     this.provider = new JsonRpcProvider(config.rpcUrl);
     this.wallet = new Wallet(config.privateKey, this.provider);
     
-    // Initialize FlowPay contract
-    this.flowPayContract = new Contract(config.flowPayContract, FLOWPAY_ABI, this.wallet);
+    // Initialize PayStream contract
+    this.payStreamContract = new Contract(config.payStreamContract, PAYSTREAM_ABI, this.wallet);
   }
 
   /**
@@ -483,10 +483,10 @@ export class PaymentAgent {
   }
 
   /**
-   * Get the FlowPay contract instance
+   * Get the PayStream contract instance
    */
-  getFlowPayContract(): Contract {
-    return this.flowPayContract;
+  getPayStreamContract(): Contract {
+    return this.payStreamContract;
   }
 
   /**
@@ -590,8 +590,8 @@ export class PaymentAgent {
       };
       const metadataString = JSON.stringify(metadata);
 
-      // Step 2: Create stream on FlowPay contract with native TCRO (Requirements: 4.2)
-      const createTx = await this.flowPayContract.createStream(
+      // Step 2: Create stream on PayStream contract with native TCRO (Requirements: 4.2)
+      const createTx = await this.payStreamContract.createStream(
         requirement.recipient,
         duration,
         metadataString,
@@ -654,7 +654,7 @@ export class PaymentAgent {
     // Look for StreamCreated event in logs
     for (const log of receipt.logs) {
       try {
-        const parsed = this.flowPayContract.interface.parseLog({
+        const parsed = this.payStreamContract.interface.parseLog({
           topics: log.topics as string[],
           data: log.data,
         });
@@ -704,13 +704,13 @@ export class PaymentAgent {
 
         // Add cached stream ID if available (Requirements: 5.1)
         if (cachedStream && retryCount === 0) {
-          headers['x-flowpay-stream-id'] = cachedStream.streamId;
+          headers['x-paystream-stream-id'] = cachedStream.streamId;
           streamId = cachedStream.streamId;
         }
 
         // Add stream ID from payment if we just made one (Requirements: 5.2)
         if (streamId && retryCount > 0) {
-          headers['x-flowpay-stream-id'] = streamId;
+          headers['x-paystream-stream-id'] = streamId;
         }
 
         // Make the request
@@ -864,7 +864,7 @@ export class PaymentAgent {
 
       // Check if stream is still active
       const streamIdBigInt = BigInt(streamId);
-      const isActive = await this.flowPayContract.isStreamActive(streamIdBigInt);
+      const isActive = await this.payStreamContract.isStreamActive(streamIdBigInt);
       if (!isActive) {
         return {
           success: false,
@@ -875,10 +875,10 @@ export class PaymentAgent {
 
       // Cancel the stream on-chain
       // Manually encode and send to ensure data is properly included
-      const cancelData = this.flowPayContract.interface.encodeFunctionData('cancelStream', [streamIdBigInt]);
+      const cancelData = this.payStreamContract.interface.encodeFunctionData('cancelStream', [streamIdBigInt]);
       
       const cancelTx = await this.wallet.sendTransaction({
-        to: this.config.flowPayContract,
+        to: this.config.payStreamContract,
         data: cancelData,
         gasLimit: 100000n, // Set explicit gas limit
       });
@@ -893,7 +893,7 @@ export class PaymentAgent {
       let refundAmount = 0n;
       for (const log of receipt.logs) {
         try {
-          const parsed = this.flowPayContract.interface.parseLog({
+          const parsed = this.payStreamContract.interface.parseLog({
             topics: log.topics as string[],
             data: log.data,
           });
@@ -983,7 +983,7 @@ export class PaymentAgent {
         return 0n;
       }
       
-      return await this.flowPayContract.getClaimableBalance(streamId);
+      return await this.payStreamContract.getClaimableBalance(streamId);
     } catch {
       return null;
     }

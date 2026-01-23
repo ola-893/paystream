@@ -1,12 +1,12 @@
 # Architecture Overview
 
-FlowPay is designed as a modular, extensible payment protocol for AI agents.
+PayStream is designed as a modular, extensible payment protocol for AI agents.
 
 ## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                         FlowPay System                               │
+│                         PayStream System                               │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐          │
@@ -18,7 +18,7 @@ FlowPay is designed as a modular, extensible payment protocol for AI agents.
 │         │                   │                   │                   │
 │         ▼                   ▼                   ▼                   │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐          │
-│  │   Gemini     │    │  Dashboard   │    │ FlowPayStream│          │
+│  │   Gemini     │    │  Dashboard   │    │ PayStreamStream│          │
 │  │   AI Brain   │    │   (React)    │    │  (Native)    │          │
 │  └──────────────┘    └──────────────┘    └──────────────┘          │
 │                                                                      │
@@ -29,7 +29,7 @@ FlowPay is designed as a modular, extensible payment protocol for AI agents.
 
 ### 1. Consumer Agent (SDK)
 
-The FlowPaySDK enables AI agents to:
+The PayStreamSDK enables AI agents to:
 - Detect x402 payment requirements
 - Create and manage payment streams
 - Make authenticated requests
@@ -46,7 +46,7 @@ The x402 middleware enables API providers to:
 ### 3. Smart Contracts
 
 On-chain components:
-- **FlowPayStream**: Payment streaming contract
+- **PayStreamStream**: Payment streaming contract
 
 ### 4. AI Decision Engine
 
@@ -65,7 +65,7 @@ GeminiPaymentBrain provides:
 3. Agent → AI Brain: Should I stream or pay directly?
 4. AI Brain → Agent: Stream (high volume predicted)
 5. Agent → Blockchain: Create stream
-6. Agent → Provider: GET /api/premium + X-FlowPay-Stream-ID
+6. Agent → Provider: GET /api/premium + X-PayStream-Stream-ID
 7. Provider → Blockchain: Verify stream
 8. Provider → Agent: 200 OK + data
 ```
@@ -73,7 +73,7 @@ GeminiPaymentBrain provides:
 ### Request Flow (Subsequent Requests)
 
 ```
-1. Agent → Provider: GET /api/premium + X-FlowPay-Stream-ID
+1. Agent → Provider: GET /api/premium + X-PayStream-Stream-ID
 2. Provider → Cache: Check stream validity
 3. Provider → Agent: 200 OK + data
 ```
@@ -82,7 +82,7 @@ GeminiPaymentBrain provides:
 
 ### Why Streaming?
 
-| Problem | Traditional | FlowPay |
+| Problem | Traditional | PayStream |
 |---------|-------------|---------|
 | 100 API calls | 100 signatures | 2 signatures |
 | Gas cost | ~$50 | ~$1 |
@@ -91,20 +91,21 @@ GeminiPaymentBrain provides:
 
 ### Why x402?
 
-The HTTP 402 status code was reserved for "Payment Required" but never standardized. FlowPay implements a practical x402 protocol:
+The HTTP 402 status code was reserved for "Payment Required" but never standardized. PayStream implements a practical x402 protocol:
 
 - Standard HTTP semantics
 - Machine-readable payment requirements
 - Backward compatible
 - Extensible
 
-### Why MNEE?
+### Why TCRO?
 
-MNEE (Mock Native Electronic Economy) is used as the payment token:
-- Stable value representation
-- ERC-20 compatible
-- Easy to integrate
-- Testnet version available
+TCRO (Cronos native token) is used as the payment token:
+- Native blockchain currency
+- No contract dependencies
+- Lower gas costs
+- Instant settlement
+- Production-ready
 
 ## Security Model
 

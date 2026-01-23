@@ -1,6 +1,6 @@
 /**
  * Network Configuration Module
- * Centralizes all network-specific constants and configuration for FlowPay
+ * Centralizes all network-specific constants and configuration for PayStream
  */
 
 export interface NetworkConfig {
@@ -42,7 +42,7 @@ export const CRONOS_TESTNET: NetworkConfig = {
 };
 
 /**
- * Default network for FlowPay
+ * Default network for PayStream
  */
 export const DEFAULT_NETWORK = CRONOS_TESTNET;
 

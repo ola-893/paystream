@@ -7,11 +7,11 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const FLOWPAYSTREAM_ADDRESS = process.env.FLOWPAY_CONTRACT || '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035';
+const PAYSTREAMSTREAM_ADDRESS = process.env.PAYSTREAM_CONTRACT || '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035';
 const CRONOS_RPC_URL = process.env.CRONOS_RPC_URL || 'https://evm-t3.cronos.org';
 
 async function checkSetup() {
-    console.log("🔍 FlowPay Demo Setup Check\n");
+    console.log("🔍 PayStream Demo Setup Check\n");
 
     // 1. Check environment variables
     console.log("1️⃣  Environment Variables:");
@@ -64,17 +64,17 @@ async function checkSetup() {
 
     // 5. Check contract exists
     console.log("\n4️⃣  Contract:");
-    const flowPayStreamCode = await provider.getCode(FLOWPAYSTREAM_ADDRESS);
+    const payStreamStreamCode = await provider.getCode(PAYSTREAMSTREAM_ADDRESS);
 
-    if (flowPayStreamCode !== '0x') {
-        console.log(`   ✅ FlowPayStream: ${FLOWPAYSTREAM_ADDRESS}`);
+    if (payStreamStreamCode !== '0x') {
+        console.log(`   ✅ PayStreamStream: ${PAYSTREAMSTREAM_ADDRESS}`);
     } else {
-        console.log(`   ❌ FlowPayStream not deployed at ${FLOWPAYSTREAM_ADDRESS}`);
+        console.log(`   ❌ PayStreamStream not deployed at ${PAYSTREAMSTREAM_ADDRESS}`);
         console.log("      Deploy with: npm run deploy:cronos");
     }
 
     console.log("\n✅ Setup check complete!");
-    console.log("\n💡 Note: FlowPay uses native TCRO for payments (no ERC-20 token needed)");
+    console.log("\n💡 Note: PayStream uses native TCRO for payments (no ERC-20 token needed)");
     console.log("\nTo run the demo:");
     console.log("   Terminal 1: npx ts-node demo/provider.ts");
     console.log("   Terminal 2: npx ts-node demo/consumer.ts");

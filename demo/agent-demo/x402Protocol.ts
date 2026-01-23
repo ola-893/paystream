@@ -35,17 +35,17 @@ export interface PaymentProof {
  */
 export const X402_HEADERS = {
   PAYMENT_REQUIRED: 'x-payment-required',
-  MODE: 'x-flowpay-mode',
-  RATE: 'x-flowpay-rate',
-  RECIPIENT: 'x-flowpay-recipient',
-  CONTRACT: 'x-flowpay-contract',
-  MIN_DEPOSIT: 'x-flowpay-mindeposit',
-  AMOUNT: 'x-flowpay-amount',
-  TOKEN: 'x-flowpay-token',
-  DESCRIPTION: 'x-flowpay-description',
+  MODE: 'x-paystream-mode',
+  RATE: 'x-paystream-rate',
+  RECIPIENT: 'x-paystream-recipient',
+  CONTRACT: 'x-paystream-contract',
+  MIN_DEPOSIT: 'x-paystream-mindeposit',
+  AMOUNT: 'x-paystream-amount',
+  TOKEN: 'x-paystream-token',
+  DESCRIPTION: 'x-paystream-description',
   // Payment proof headers
-  STREAM_ID: 'x-flowpay-stream-id',
-  TX_HASH: 'x-flowpay-tx-hash',
+  STREAM_ID: 'x-paystream-stream-id',
+  TX_HASH: 'x-paystream-tx-hash',
 } as const;
 
 /**

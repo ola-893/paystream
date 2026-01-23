@@ -1,8 +1,8 @@
-# Design Document: Morph to FlowPay Refactor
+# Design Document: Morph to PayStream Refactor
 
 ## Overview
 
-This design outlines the systematic approach to remove all "Morph" references from the FlowPay project. The refactoring involves renaming files, updating code references, modifying documentation, and ensuring the project remains fully functional after changes.
+This design outlines the systematic approach to remove all "Morph" references from the PayStream project. The refactoring involves renaming files, updating code references, modifying documentation, and ensuring the project remains fully functional after changes.
 
 The key principle is to perform changes in a specific order to minimize breakage:
 1. Update source files (contracts, code)
@@ -17,15 +17,15 @@ The refactoring touches multiple layers of the project:
 ```mermaid
 graph TD
     subgraph "Smart Contracts"
-        A[MorphStream.sol] -->|rename| B[FlowPayStream.sol]
+        A[MorphStream.sol] -->|rename| B[PayStreamStream.sol]
     end
     
     subgraph "Tests"
-        C[MorphStream.test.js] -->|rename| D[FlowPayStream.test.js]
+        C[MorphStream.test.js] -->|rename| D[PayStreamStream.test.js]
     end
     
     subgraph "Documentation"
-        E[docs/contracts/morphstream.md] -->|rename| F[docs/contracts/flowpaystream.md]
+        E[docs/contracts/morphstream.md] -->|rename| F[docs/contracts/paystreamstream.md]
         G[docs/SUMMARY.md] -->|update links| G
     end
     
@@ -52,30 +52,30 @@ graph TD
 
 | Current Path | New Path |
 |-------------|----------|
-| `contracts/MorphStream.sol` | `contracts/FlowPayStream.sol` |
-| `test/MorphStream.test.js` | `test/FlowPayStream.test.js` |
-| `docs/contracts/morphstream.md` | `docs/contracts/flowpaystream.md` |
-| `artifacts/contracts/MorphStream.sol/` | `artifacts/contracts/FlowPayStream.sol/` |
+| `contracts/MorphStream.sol` | `contracts/PayStreamStream.sol` |
+| `test/MorphStream.test.js` | `test/PayStreamStream.test.js` |
+| `docs/contracts/morphstream.md` | `docs/contracts/paystreamstream.md` |
+| `artifacts/contracts/MorphStream.sol/` | `artifacts/contracts/PayStreamStream.sol/` |
 
 ### String Replacement Map
 
 | Pattern | Replacement | Scope |
 |---------|-------------|-------|
-| `MorphStream` | `FlowPayStream` | All files |
-| `morphStream` | `flowPayStream` | Variable names |
-| `MORPHSTREAM_ADDRESS` | `FLOWPAYSTREAM_ADDRESS` | Constants |
-| `morphstream` | `flowpaystream` | File references, URLs |
+| `MorphStream` | `PayStreamStream` | All files |
+| `morphStream` | `payStreamStream` | Variable names |
+| `MORPHSTREAM_ADDRESS` | `PAYSTREAMSTREAM_ADDRESS` | Constants |
+| `morphstream` | `paystreamstream` | File references, URLs |
 | `Morph Holesky` | `Sepolia` | Network references |
 | `Morph network` | `Sepolia network` | Documentation |
 
 ### Files to Update (Content Only)
 
-1. **Smart Contract**: `contracts/FlowPayStream.sol`
+1. **Smart Contract**: `contracts/PayStreamStream.sol`
    - Contract name
    - NatSpec comments
    - Error message prefixes
 
-2. **Test File**: `test/FlowPayStream.test.js`
+2. **Test File**: `test/PayStreamStream.test.js`
    - Contract references
    - Variable names
 
@@ -83,7 +83,7 @@ graph TD
    - `docs/README.md`
    - `docs/SUMMARY.md`
    - `docs/contracts/README.md`
-   - `docs/contracts/flowpaystream.md`
+   - `docs/contracts/paystreamstream.md`
    - `docs/contracts/mock-mnee.md`
    - `docs/contracts/events-errors.md`
    - `docs/deployment/README.md`
@@ -105,7 +105,7 @@ graph TD
    - `demo/demo_script.md`
 
 6. **Server Files**:
-   - `server/middleware/flowPayMiddleware.js`
+   - `server/middleware/payStreamMiddleware.js`
 
 7. **Configuration Files**:
    - `package.json`
@@ -196,9 +196,9 @@ npm test
 grep -r "Morph" --include="*.sol" --include="*.js" --include="*.ts" --include="*.jsx" --include="*.md" . | grep -v "node_modules" | grep -v "glassmorphism" | grep -v ".git"
 
 # 4. Verify new files exist
-ls contracts/FlowPayStream.sol
-ls test/FlowPayStream.test.js
-ls docs/contracts/flowpaystream.md
+ls contracts/PayStreamStream.sol
+ls test/PayStreamStream.test.js
+ls docs/contracts/paystreamstream.md
 ```
 
 ### Unit Tests vs Property Tests
@@ -207,23 +207,23 @@ For this refactoring:
 - **Unit tests**: The existing contract tests serve as unit tests - they verify the contract functionality works correctly after renaming
 - **Property test**: A grep-based verification that no Morph references remain serves as the property test
 
-The existing test suite (`test/FlowPayStream.test.js` after rename) validates that the contract behavior is unchanged. The grep verification validates that all references have been updated.
+The existing test suite (`test/PayStreamStream.test.js` after rename) validates that the contract behavior is unchanged. The grep verification validates that all references have been updated.
 
 ## Implementation Order
 
 To minimize breakage, changes should be made in this order:
 
 1. **Phase 1: Contract Layer**
-   - Rename and update `MorphStream.sol` → `FlowPayStream.sol`
+   - Rename and update `MorphStream.sol` → `PayStreamStream.sol`
    - Clean and recompile to generate new artifacts
 
 2. **Phase 2: Test Layer**
-   - Rename and update `MorphStream.test.js` → `FlowPayStream.test.js`
+   - Rename and update `MorphStream.test.js` → `PayStreamStream.test.js`
    - Update `package.json` test script
    - Run tests to verify
 
 3. **Phase 3: Documentation Layer**
-   - Rename `morphstream.md` → `flowpaystream.md`
+   - Rename `morphstream.md` → `paystreamstream.md`
    - Update all markdown files
    - Update `SUMMARY.md` navigation
 

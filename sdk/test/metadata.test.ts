@@ -1,13 +1,13 @@
 import { expect } from 'chai';
-import { FlowPaySDK } from '../src/FlowPaySDK';
+import { PayStreamSDK } from '../src/PayStreamSDK';
 import { Wallet, ethers } from 'ethers';
 
 describe('Stream Metadata System', () => {
-    let sdk: FlowPaySDK;
+    let sdk: PayStreamSDK;
     let createdMetadata: any = null;
 
     beforeEach(() => {
-        sdk = new FlowPaySDK({
+        sdk = new PayStreamSDK({
             privateKey: Wallet.createRandom().privateKey,
             rpcUrl: 'http://localhost:8545',
             agentId: 'agent-007'
@@ -43,11 +43,11 @@ describe('Stream Metadata System', () => {
 
         const details = sdk.getStreamDetails('123');
         expect(details.agentId).to.equal('agent-007');
-        expect(details.client).to.equal('FlowPaySDK/2.0-TCRO');
+        expect(details.client).to.equal('PayStreamSDK/2.0-TCRO');
     });
 
     it('Should return "unknown" Agent ID if not configured', () => {
-        const anonSdk = new FlowPaySDK({
+        const anonSdk = new PayStreamSDK({
             privateKey: Wallet.createRandom().privateKey,
             rpcUrl: 'http://localhost:8545'
         });

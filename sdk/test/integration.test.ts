@@ -1,18 +1,18 @@
 import { expect } from 'chai';
-import { FlowPaySDK } from '../src/FlowPaySDK';
+import { PayStreamSDK } from '../src/PayStreamSDK';
 import { Wallet, ethers } from 'ethers';
 import express, { Express } from 'express';
 import { Server } from 'http';
 
 /**
- * End-to-End Integration Tests for FlowPay System
+ * End-to-End Integration Tests for PayStream System
  * 
  * These tests validate the complete x402 handshake flow:
  * 1. Blind request → 402 Payment Required
  * 2. SDK parses x402 headers
  * 3. AI decides payment mode (streaming vs direct)
  * 4. Stream creation (1 signature)
- * 5. Retry with X-FlowPay-Stream-ID
+ * 5. Retry with X-PayStream-Stream-ID
  * 6. Multiple requests (0 signatures)
  * 7. Efficiency metrics validation
  * 
@@ -40,17 +40,17 @@ const createMockServer = () => {
     // x402 Protected Route - Weather API (Streaming)
     app.get('/api/weather', (req, res) => {
         requestCount++;
-        const streamId = req.headers['x-flowpay-stream-id'];
+        const streamId = req.headers['x-paystream-stream-id'];
 
         if (!streamId) {
             // Return 402 Payment Required with x402 headers
             return res.status(402)
                 .set({
                     'X-Payment-Required': 'true',
-                    'X-FlowPay-Mode': 'streaming',
-                    'X-FlowPay-Rate': '0.0001',
-                    'X-FlowPay-Currency': 'TCRO',
-                    'X-FlowPay-Contract': '0xMockContract'
+                    'X-PayStream-Mode': 'streaming',
+                    'X-PayStream-Rate': '0.0001',
+                    'X-PayStream-Currency': 'TCRO',
+                    'X-PayStream-Contract': '0xMockContract'
                 })
                 .json({
                     message: 'Payment Required',
@@ -80,17 +80,17 @@ const createMockServer = () => {
     // x402 Protected Route - Premium Content (Hybrid)
     app.get('/api/premium', (req, res) => {
         requestCount++;
-        const streamId = req.headers['x-flowpay-stream-id'];
-        const txHash = req.headers['x-flowpay-tx-hash'];
+        const streamId = req.headers['x-paystream-stream-id'];
+        const txHash = req.headers['x-paystream-tx-hash'];
 
         if (!streamId && !txHash) {
             return res.status(402)
                 .set({
                     'X-Payment-Required': 'true',
-                    'X-FlowPay-Mode': 'hybrid',
-                    'X-FlowPay-Rate': '0.001',
-                    'X-FlowPay-Currency': 'TCRO',
-                    'X-FlowPay-Contract': '0xMockContract'
+                    'X-PayStream-Mode': 'hybrid',
+                    'X-PayStream-Rate': '0.001',
+                    'X-PayStream-Currency': 'TCRO',
+                    'X-PayStream-Contract': '0xMockContract'
                 })
                 .json({
                     message: 'Payment Required',
@@ -137,11 +137,11 @@ const createMockServer = () => {
     return app;
 };
 
-describe('FlowPay End-to-End Integration Tests', function () {
+describe('PayStream End-to-End Integration Tests', function () {
     this.timeout(10000);
 
     let server: Server;
-    let sdk: FlowPaySDK;
+    let sdk: PayStreamSDK;
     const PORT = 3010;
     const BASE_URL = `http://localhost:${PORT}`;
 
@@ -159,7 +159,7 @@ describe('FlowPay End-to-End Integration Tests', function () {
         await fetch(`${BASE_URL}/reset`, { method: 'POST' });
 
         // Initialize SDK with mock stream creation
-        sdk = new FlowPaySDK({
+        sdk = new PayStreamSDK({
             privateKey: Wallet.createRandom().privateKey,
             rpcUrl: 'http://localhost:8545',
             agentId: 'Integration-Test-Agent'
@@ -180,7 +180,7 @@ describe('FlowPay End-to-End Integration Tests', function () {
             const axios = require('axios');
             return axios(url, {
                 ...options,
-                headers: { ...options?.headers, 'X-FlowPay-Tx-Hash': '0xMockTxHash' }
+                headers: { ...options?.headers, 'X-PayStream-Tx-Hash': '0xMockTxHash' }
             });
         };
     });
@@ -285,13 +285,13 @@ describe('FlowPay End-to-End Integration Tests', function () {
         it('should include agent ID in stream details', () => {
             const details = sdk.getStreamDetails('test-stream');
             expect(details.agentId).to.equal('Integration-Test-Agent');
-            expect(details.client).to.equal('FlowPaySDK/2.0-TCRO');
+            expect(details.client).to.equal('PayStreamSDK/2.0-TCRO');
         });
     });
 
     describe('Safety Mechanisms', () => {
         it('should enforce TCRO spending limits', () => {
-            const limitedSdk = new FlowPaySDK({
+            const limitedSdk = new PayStreamSDK({
                 privateKey: Wallet.createRandom().privateKey,
                 rpcUrl: 'http://localhost:8545',
                 spendingLimits: {
@@ -360,10 +360,10 @@ describe('x402 Protocol Compliance', () => {
 
         expect(response.status).to.equal(402);
         expect(response.headers.get('x-payment-required')).to.equal('true');
-        expect(response.headers.get('x-flowpay-mode')).to.equal('streaming');
-        expect(response.headers.get('x-flowpay-rate')).to.equal('0.0001');
-        expect(response.headers.get('x-flowpay-currency')).to.equal('TCRO');
-        expect(response.headers.get('x-flowpay-contract')).to.exist;
+        expect(response.headers.get('x-paystream-mode')).to.equal('streaming');
+        expect(response.headers.get('x-paystream-rate')).to.equal('0.0001');
+        expect(response.headers.get('x-paystream-currency')).to.equal('TCRO');
+        expect(response.headers.get('x-paystream-contract')).to.exist;
     });
 
     it('should include payment requirements in 402 body', async () => {

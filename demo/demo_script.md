@@ -1,6 +1,6 @@
-# FlowPay Demo Script
+# PayStream Demo Script
 
-**Title**: FlowPay - Real-Time TCRO Payment Streaming for AI Agents
+**Title**: PayStream - Real-Time TCRO Payment Streaming for AI Agents
 **Network**: Cronos Testnet (Real Blockchain Transactions)
 
 ---
@@ -34,10 +34,10 @@ npx ts-node demo/provider.ts
 **Expected Output**:
 ```
 🔧 Provider Configuration:
-   FlowPayStream Contract: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+   PayStreamStream Contract: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
    RPC URL: https://evm-t3.cronos.org
 
-🚀 FlowPay Demo Provider running on http://localhost:3005
+🚀 PayStream Demo Provider running on http://localhost:3005
 
 📋 Available Endpoints:
    GET /health          - Health check (free)
@@ -73,7 +73,7 @@ npx ts-node demo/consumer.ts
 
 **Expected Output**:
 ```
-🚀 Starting FlowPay Demo Consumer (Real Blockchain Mode)...
+🚀 Starting PayStream Demo Consumer (Real Blockchain Mode)...
 
 📡 Connecting to Cronos testnet...
 ✅ Agent Wallet: 0x...
@@ -82,11 +82,11 @@ npx ts-node demo/consumer.ts
 💰 Current TCRO Balance: 100.0 TCRO
 
 --- [Step 1] Making Request to http://localhost:3005/api/premium ---
-[FlowPaySDK] 402 Payment Required intercepted. Negotiating...
-[FlowPaySDK] 🤖 Gemini Analysis: High request volume expected, streaming is more efficient
-[FlowPaySDK] Initiating Stream: 0.36 TCRO for 3600s
-[FlowPaySDK] Creating stream with TCRO...
-[FlowPaySDK] Stream #X created. Retrying request...
+[PayStreamSDK] 402 Payment Required intercepted. Negotiating...
+[PayStreamSDK] 🤖 Gemini Analysis: High request volume expected, streaming is more efficient
+[PayStreamSDK] Initiating Stream: 0.36 TCRO for 3600s
+[PayStreamSDK] Creating stream with TCRO...
+[PayStreamSDK] Stream #X created. Retrying request...
 ✅ REQUEST SUCCESS!
 📦 Response: { "success": true, "data": "🌟 This is PREMIUM content..." }
 
@@ -112,9 +112,9 @@ npx ts-node demo/consumer.ts
 
 ### 1. x402 Protocol
 The provider returns HTTP 402 with payment requirements in headers:
-- `X-FlowPay-Mode: streaming`
-- `X-FlowPay-Rate: 0.0001` (TCRO per second)
-- `X-FlowPay-Contract: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
+- `X-PayStream-Mode: streaming`
+- `X-PayStream-Rate: 0.0001` (TCRO per second)
+- `X-PayStream-Contract: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
 
 ### 2. AI-Powered Payment Decisions
 The Gemini AI brain analyzes:
@@ -138,7 +138,7 @@ All transactions are real and verifiable on Cronos:
 
 | Contract | Address |
 |----------|---------|
-| FlowPayStream | `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87` |
+| PayStreamStream | `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87` |
 
 ---
 

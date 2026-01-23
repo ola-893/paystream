@@ -50,10 +50,10 @@ The following tasks can now be completed with the deployed contracts:
 **Contracts deployed to Cronos Testnet:**
 
 - **Legacy Token:** Removed (using native TCRO)
-- **FlowPayStream:** `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
+- **PayStreamStream:** `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
 
 **Explorer Links:**
-- FlowPayStream: https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+- PayStreamStream: https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
 **Configuration Updated:**
 - `.env` file updated with deployed addresses
@@ -69,7 +69,7 @@ The following tasks can now be completed with the deployed contracts:
 
 **Contract Deployment:** ✅ 100% Complete
 - MockMNEE deployed to Cronos testnet
-- FlowPayStream deployed to Cronos testnet
+- PayStreamStream deployed to Cronos testnet
 - Addresses recorded in .env
 - Verified on Cronos Explorer
 

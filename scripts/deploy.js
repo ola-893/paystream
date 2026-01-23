@@ -10,20 +10,20 @@ async function main() {
   const balance = await hre.ethers.provider.getBalance(deployer.address);
   console.log("Account balance:", hre.ethers.formatEther(balance), "TCRO");
 
-  console.log("\n📝 Deploying FlowPayStream to Cronos Testnet...");
-  const FlowPayStream = await hre.ethers.getContractFactory("FlowPayStream");
-  const flowPayStream = await FlowPayStream.deploy();
+  console.log("\n📝 Deploying PayStreamStream to Cronos Testnet...");
+  const PayStreamStream = await hre.ethers.getContractFactory("PayStreamStream");
+  const payStreamStream = await PayStreamStream.deploy();
 
-  await flowPayStream.waitForDeployment();
+  await payStreamStream.waitForDeployment();
 
-  const flowPayAddress = await flowPayStream.getAddress();
-  console.log("✅ FlowPayStream deployed to:", flowPayAddress);
-  console.log("   View on Cronos Explorer: https://explorer.cronos.org/testnet/address/" + flowPayAddress);
+  const payStreamAddress = await payStreamStream.getAddress();
+  console.log("✅ PayStreamStream deployed to:", payStreamAddress);
+  console.log("   View on Cronos Explorer: https://explorer.cronos.org/testnet/address/" + payStreamAddress);
 
   console.log("\n🎉 Deployment complete!");
   console.log("\n📋 Update your .env file with this address:");
-  console.log("   FLOWPAY_CONTRACT=" + flowPayAddress);
-  console.log("\n💡 Note: FlowPay now uses native TCRO instead of token contracts.");
+  console.log("   PAYSTREAM_CONTRACT=" + payStreamAddress);
+  console.log("\n💡 Note: PayStream now uses native TCRO instead of token contracts.");
   console.log("   Get TCRO from: https://cronos.org/faucet");
 }
 

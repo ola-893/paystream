@@ -9,7 +9,7 @@ export default function AgentConsolePage() {
   const { walletAddress, isInitialLoad } = useWallet();
   
   const [agentConfig, setAgentConfig] = useState({
-    agentId: 'FlowPay-Agent-001',
+    agentId: 'PayStream-Agent-001',
     spendingLimits: { dailyLimit: '100', perRequestLimit: '1' }
   });
   const [isPaused, setIsPaused] = useState(false);

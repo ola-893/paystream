@@ -2,7 +2,7 @@
 
 ## Overview
 
-This design document outlines the approach for replacing all emoji characters in the FlowPay frontend with professional SVG icons from the Lucide React library. The refactoring will improve visual consistency, professionalism, and accessibility across the application.
+This design document outlines the approach for replacing all emoji characters in the PayStream frontend with professional SVG icons from the Lucide React library. The refactoring will improve visual consistency, professionalism, and accessibility across the application.
 
 ## Architecture
 

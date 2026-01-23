@@ -1,6 +1,6 @@
 # Payment Streams
 
-Payment streams are the core innovation of FlowPay.
+Payment streams are the core innovation of PayStream.
 
 ## What is a Payment Stream?
 

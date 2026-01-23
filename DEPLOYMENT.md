@@ -1,8 +1,8 @@
-# FlowPay Deployment Guide
+# PayStream Deployment Guide
 
 ## Overview
 
-FlowPay is "The Streaming Extension for x402" - a hybrid payment protocol that solves the N+1 Signature Problem for AI agent payments. This guide covers deployment to Cronos testnet.
+PayStream is "The Streaming Extension for x402" - a hybrid payment protocol that solves the N+1 Signature Problem for AI agent payments. This guide covers deployment to Cronos testnet.
 
 **Key Innovation**: 2 on-chain transactions (Open + Close) regardless of request volume.
 
@@ -27,7 +27,7 @@ CRONOS_RPC_URL=https://evm-t3.cronos.org
 GEMINI_API_KEY=...                   # For AI features
 
 # Frontend (vite-project/.env)
-VITE_CONTRACT_ADDRESS=0x...          # FlowPayStream contract address (after deployment)
+VITE_CONTRACT_ADDRESS=0x...          # PayStreamStream contract address (after deployment)
 ```
 
 ## Quick Start
@@ -63,13 +63,13 @@ npx hardhat run scripts/deploy.js --network cronos_testnet
 Deploying contracts with the account: 0x...
 Network: cronos_testnet
 
-📝 Deploying FlowPayStream to Cronos Testnet...
-✅ FlowPayStream deployed to: 0x...
+📝 Deploying PayStreamStream to Cronos Testnet...
+✅ PayStreamStream deployed to: 0x...
    View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x...
 
-📝 Deploying FlowPayStream to Cronos Testnet...
-   Using MNEE address: 0x...
-✅ FlowPayStream deployed to: 0x...
+📝 Deploying PayStreamStream to Cronos Testnet...
+   Using native TCRO for payments
+✅ PayStreamStream deployed to: 0x...
    View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x...
 
 🎉 Deployment complete!
@@ -78,7 +78,7 @@ Network: cronos_testnet
 **Current Cronos Testnet Deployment (January 2026):**
 | Contract | Address |
 |----------|---------|
-| FlowPayStream | `TBD - Deploy yourself` |
+| PayStreamStream | `TBD - Deploy yourself` |
 
 **Save these addresses!** You'll need them for configuration.
 
@@ -88,12 +88,11 @@ After deployment, update these files:
 
 **`vite-project/.env`:**
 ```bash
-VITE_CONTRACT_ADDRESS=0x5678...      # FlowPayStream address
+VITE_CONTRACT_ADDRESS=0x5678...      # PayStreamStream address
 ```
 
 **`server/index.js`** (if running standalone):
 ```javascript
-const MNEE_ADDRESS = "0x1234...";
 const CONTRACT_ADDRESS = "0x5678...";
 ```
 
@@ -102,11 +101,11 @@ const CONTRACT_ADDRESS = "0x5678...";
 Verify your contracts on Cronos Explorer:
 
 ```bash
-npx hardhat verify --network cronos_testnet <CONTRACT_ADDRESS> <MNEE_ADDRESS>
+npx hardhat verify --network cronos_testnet <CONTRACT_ADDRESS>
 ```
 
 You can also view your contracts directly on Cronos Explorer:
-- FlowPayStream: `https://explorer.cronos.org/testnet/address/<CONTRACT_ADDRESS>`
+- PayStreamStream: `https://explorer.cronos.org/testnet/address/<CONTRACT_ADDRESS>`
 
 ## Running the System
 
@@ -153,7 +152,7 @@ npx mocha -r ts-node/register test/*.test.ts
 
 ### Smart Contract Tests (6 tests)
 ```bash
-npx hardhat test test/FlowPayStream.test.js
+npx hardhat test test/PayStreamStream.test.js
 ```
 
 ### Integration Tests Only
@@ -185,7 +184,7 @@ npx ts-node demo/consumer.ts
 3. SDK parses payment requirements
 4. Gemini AI decides: streaming vs direct payment
 5. SDK creates stream (1 signature)
-6. SDK retries request with `X-FlowPay-Stream-ID`
+6. SDK retries request with `X-PayStream-Stream-ID`
 7. Provider verifies stream, returns 200 OK
 8. Subsequent requests use same stream (0 signatures)
 
@@ -205,7 +204,7 @@ npx mocha -r ts-node/register test/load.test.ts
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    FlowPay System                           │
+│                    PayStream System                           │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
@@ -217,7 +216,7 @@ npx mocha -r ts-node/register test/load.test.ts
 │        │                  │                  │              │
 │        ▼                  ▼                  ▼              │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
-│  │   Gemini    │    │  Dashboard  │    │ FlowPayStream │     │
+│  │   Gemini    │    │  Dashboard  │    │ PayStreamStream │     │
 │  │   AI        │    │  (React)    │    │  (Native)     │     │
 │  └─────────────┘    └─────────────┘    └─────────────┘     │
 │                                                             │
@@ -228,12 +227,12 @@ npx mocha -r ts-node/register test/load.test.ts
 
 | Component | Description | Location |
 |-----------|-------------|----------|
-| FlowPayStream | Smart contract for payment streams | `contracts/FlowPayStream.sol` |
-| FlowPaySDK | Agent SDK for x402 negotiation | `sdk/src/FlowPaySDK.ts` |
-| flowPayMiddleware | Express.js x402 middleware | `server/middleware/flowPayMiddleware.js` |
+| PayStreamStream | Smart contract for payment streams | `contracts/PayStreamStream.sol` |
+| PayStreamSDK | Agent SDK for x402 negotiation | `sdk/src/PayStreamSDK.ts` |
+| payStreamMiddleware | Express.js x402 middleware | `server/middleware/payStreamMiddleware.js` |
 | GeminiPaymentBrain | AI decision engine | `sdk/src/GeminiPaymentBrain.ts` |
 | SpendingMonitor | Safety & limits | `sdk/src/SpendingMonitor.ts` |
-| FlowPayProxy | Multi-agent mesh support | `sdk/src/FlowPayProxy.ts` |
+| PayStreamProxy | Multi-agent mesh support | `sdk/src/PayStreamProxy.ts` |
 
 ## Network Configuration
 
@@ -247,8 +246,8 @@ npx mocha -r ts-node/register test/load.test.ts
 - Get TCRO from faucet: https://cronos.org/faucet
 
 ### "TCRO transfer failed"
-- Ensure MockMNEE is deployed
-- Check token approval: `mnee.approve(flowPayStreamAddress, amount)`
+- Ensure wallet has sufficient TCRO balance
+- Check that stream creation includes TCRO value
 
 ### "Stream is not active"
 - Verify stream ID exists on-chain
@@ -263,7 +262,6 @@ cd sdk && npm run build
 
 ## Production Checklist
 
-- [ ] Replace MockMNEE with real MNEE token on mainnet
 - [ ] Configure production RPC URLs (Alchemy/Infura)
 - [ ] Set up monitoring for Emergency Stop triggers
 - [ ] Review spending limits for production agents

@@ -1,6 +1,6 @@
 # FlowPaySDK
 
-The main SDK class for AI agent payments.
+The main SDK class for AI agent payments using native TCRO tokens.
 
 ## Constructor
 
@@ -15,10 +15,8 @@ interface FlowPayConfig {
   privateKey: string;
   rpcUrl: string;
   contractAddress: string;
-  mneeAddress: string;
   agentId?: string;
   defaultStreamDuration?: number;
-  autoApproveTokens?: boolean;
 }
 ```
 
@@ -71,7 +69,7 @@ interface CreateStreamParams {
 ```typescript
 const streamId = await sdk.createStream({
   recipient: '0x...',
-  amount: '10', // 10 MNEE
+  amount: '10', // 10 TCRO
   duration: 3600, // 1 hour
   metadata: JSON.stringify({ purpose: 'API access' })
 });
@@ -108,7 +106,7 @@ Gets withdrawable amount for a stream.
 async getClaimableBalance(streamId: number): Promise<string>
 ```
 
-**Returns:** Claimable amount in MNEE
+**Returns:** Claimable amount in TCRO
 
 ### withdrawFromStream
 
@@ -134,20 +132,12 @@ Finds an active stream for a recipient.
 async getActiveStreamForRecipient(recipient: string): Promise<number | null>
 ```
 
-### getMneeBalance
+### getTCROBalance
 
-Gets MNEE token balance.
-
-```typescript
-async getMneeBalance(address?: string): Promise<string>
-```
-
-### approveMnee
-
-Approves MNEE spending.
+Gets native TCRO balance.
 
 ```typescript
-async approveMnee(amount: string): Promise<TransactionReceipt>
+async getTCROBalance(address?: string): Promise<string>
 ```
 
 ## Events
@@ -175,9 +165,9 @@ try {
   await sdk.createStream(params);
 } catch (error) {
   if (error.code === 'INSUFFICIENT_BALANCE') {
-    console.log('Not enough MNEE');
-  } else if (error.code === 'APPROVAL_REQUIRED') {
-    console.log('Need to approve tokens');
+    console.log('Not enough TCRO');
+  } else if (error.code === 'INSUFFICIENT_GAS') {
+    console.log('Need more TCRO for gas');
   }
 }
 ```
@@ -191,13 +181,12 @@ async function main() {
   const sdk = new FlowPaySDK({
     privateKey: process.env.PRIVATE_KEY!,
     rpcUrl: 'https://evm-t3.cronos.org',
-    contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-    mneeAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896'
+    contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035'
   });
 
   // Check balance
-  const balance = await sdk.getMneeBalance();
-  console.log(`Balance: ${balance} MNEE`);
+  const balance = await sdk.getTCROBalance();
+  console.log(`Balance: ${balance} TCRO`);
 
   // Make requests (SDK handles everything)
   for (let i = 0; i < 10; i++) {

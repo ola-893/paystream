@@ -2,7 +2,7 @@
 
 ## Overview
 
-This design outlines the comprehensive migration of FlowPay from Ethereum Sepolia testnet to Cronos testnet. The migration affects every layer of the system: smart contracts, frontend application, backend services, agent demos, and documentation. The design ensures zero feature loss while gaining the benefits of Cronos's lower fees and faster finality.
+This design outlines the comprehensive migration of PayStream from Ethereum Sepolia testnet to Cronos testnet. The migration affects every layer of the system: smart contracts, frontend application, backend services, agent demos, and documentation. The design ensures zero feature loss while gaining the benefits of Cronos's lower fees and faster finality.
 
 ## Architecture
 
@@ -10,7 +10,7 @@ This design outlines the comprehensive migration of FlowPay from Ethereum Sepoli
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    FlowPay on Cronos Testnet                     │
+│                    PayStream on Cronos Testnet                     │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  ┌──────────────────────────────────────────────────────────┐   │
@@ -24,7 +24,7 @@ This design outlines the comprehensive migration of FlowPay from Ethereum Sepoli
 │                            ▼                                     │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │                  Smart Contract Layer                     │   │
-│  │  - FlowPayStream.sol (deployed on Cronos)                │   │
+│  │  - PayStreamStream.sol (deployed on Cronos)                │   │
 │  │  - MockMNEE.sol (deployed on Cronos)                     │   │
 │  │  - Hardhat Config (cronos_testnet network)               │   │
 │  └──────────────────────────────────────────────────────────┘   │
@@ -210,7 +210,7 @@ DAILY_BUDGET=10
 SERVER_URL=http://localhost:3001
 
 # Contract Addresses (set after deployment)
-FLOWPAY_CONTRACT=0x...
+PAYSTREAM_CONTRACT=0x...
 MNEE_TOKEN=0x...
 ```
 
@@ -302,7 +302,7 @@ interface AgentConfig {
   privateKey: string;
   rpcUrl: string;              // From CRONOS_RPC_URL
   dailyBudget: bigint;
-  flowPayContract: string;
+  payStreamContract: string;
   mneeToken: string;
   network: 'cronos_testnet';   // Network identifier
 }

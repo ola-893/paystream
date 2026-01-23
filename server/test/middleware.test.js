@@ -17,7 +17,7 @@ describe('x402 Middleware Integration', function () {
 
         const testConfig = {
             rpcUrl: "http://localhost:8545", // Dummy
-            flowPayContractAddress: "0xMock",
+            payStreamContractAddress: "0xMock",
             mockContract: mockContract, // Inject mock
             routes: {
                 '/api/weather': {
@@ -47,16 +47,16 @@ describe('x402 Middleware Integration', function () {
             const res = await request(app).get('/api/weather');
             expect(res.status).to.equal(402);
             expect(res.header['x-payment-required']).to.equal('true');
-            expect(res.header['x-flowpay-mode']).to.equal('streaming');
-            expect(res.header['x-flowpay-rate']).to.equal('0.0001');
+            expect(res.header['x-paystream-mode']).to.equal('streaming');
+            expect(res.header['x-paystream-rate']).to.equal('0.0001');
             expect(res.body.requirements).to.exist;
         });
 
         it('should return 402 for premium route with correct pricing', async function () {
             const res = await request(app).get('/api/premium');
             expect(res.status).to.equal(402);
-            expect(res.header['x-flowpay-mode']).to.equal('per-request');
-            expect(res.header['x-flowpay-rate']).to.equal('1.0');
+            expect(res.header['x-paystream-mode']).to.equal('per-request');
+            expect(res.header['x-paystream-rate']).to.equal('1.0');
         });
 
         it('should include all required x402 headers in 402 response', async function () {
@@ -64,18 +64,18 @@ describe('x402 Middleware Integration', function () {
             expect(res.status).to.equal(402);
             // Verify all required headers per Requirements 2.2
             expect(res.header['x-payment-required']).to.equal('true');
-            expect(res.header['x-flowpay-mode']).to.exist;
-            expect(res.header['x-flowpay-rate']).to.exist;
-            expect(res.header['x-flowpay-recipient']).to.exist;
-            expect(res.header['x-flowpay-contract']).to.exist;
-            expect(res.header['x-flowpay-mindeposit']).to.exist;
+            expect(res.header['x-paystream-mode']).to.exist;
+            expect(res.header['x-paystream-rate']).to.exist;
+            expect(res.header['x-paystream-recipient']).to.exist;
+            expect(res.header['x-paystream-contract']).to.exist;
+            expect(res.header['x-paystream-mindeposit']).to.exist;
         });
 
         it('should specify TCRO currency in x402 headers and response body', async function () {
             const res = await request(app).get('/api/weather');
             expect(res.status).to.equal(402);
             // Verify TCRO currency header per Requirements 4.1
-            expect(res.header['x-flowpay-currency']).to.equal('TCRO');
+            expect(res.header['x-paystream-currency']).to.equal('TCRO');
             // Verify TCRO currency in response body per Requirements 4.1
             expect(res.body.requirements.currency).to.equal('TCRO');
         });
@@ -85,7 +85,7 @@ describe('x402 Middleware Integration', function () {
         it('should return 200 for valid active stream', async function () {
             const res = await request(app)
                 .get('/api/weather')
-                .set('X-FlowPay-Stream-ID', '100');
+                .set('X-PayStream-Stream-ID', '100');
 
             expect(res.status).to.equal(200);
             expect(res.body.paidWithStream).to.equal('100');
@@ -94,7 +94,7 @@ describe('x402 Middleware Integration', function () {
         it('should return 402 for inactive stream', async function () {
             const res = await request(app)
                 .get('/api/weather')
-                .set('X-FlowPay-Stream-ID', '99');
+                .set('X-PayStream-Stream-ID', '99');
 
             // Middleware checks stream, sees false, returns 402 error json
             expect(res.status).to.equal(402);
@@ -104,7 +104,7 @@ describe('x402 Middleware Integration', function () {
         it('should fallback to 402/Requirements on system error', async function () {
             const res = await request(app)
                 .get('/api/weather')
-                .set('X-FlowPay-Stream-ID', '0'); // triggers throw in mock
+                .set('X-PayStream-Stream-ID', '0'); // triggers throw in mock
 
             // When verification crashes, it should default to sending the payment requirements again
             expect(res.status).to.equal(402);
@@ -119,7 +119,7 @@ describe('x402 Middleware Integration', function () {
             for (const route of routes) {
                 const res = await request(app).get(route);
                 expect(res.status).to.equal(402);
-                expect(res.header['x-flowpay-currency']).to.equal('TCRO');
+                expect(res.header['x-paystream-currency']).to.equal('TCRO');
                 expect(res.body.requirements.currency).to.equal('TCRO');
             }
         });
@@ -129,7 +129,7 @@ describe('x402 Middleware Integration', function () {
             expect(res.status).to.equal(402);
             
             // Verify pricing is in TCRO format (decimal string)
-            const rate = res.header['x-flowpay-rate'];
+            const rate = res.header['x-paystream-rate'];
             expect(rate).to.match(/^\d+(\.\d+)?$/); // Should be decimal format
             expect(parseFloat(rate)).to.be.greaterThan(0);
             
@@ -143,7 +143,7 @@ describe('x402 Middleware Integration', function () {
             expect(res.status).to.equal(402);
             
             // Verify no token address headers
-            expect(res.header['x-flowpay-token']).to.be.undefined;
+            expect(res.header['x-paystream-token']).to.be.undefined;
             expect(res.header['x-tcro-address']).to.be.undefined;
             
             // Verify no token address in response body
@@ -155,7 +155,7 @@ describe('x402 Middleware Integration', function () {
             // Test with valid stream ID (should pass validation)
             const validRes = await request(app)
                 .get('/api/weather')
-                .set('X-FlowPay-Stream-ID', '100');
+                .set('X-PayStream-Stream-ID', '100');
             
             expect(validRes.status).to.equal(200);
             expect(validRes.body.paidWithStream).to.equal('100');
@@ -163,7 +163,7 @@ describe('x402 Middleware Integration', function () {
             // Test with invalid stream ID (should fail validation)
             const invalidRes = await request(app)
                 .get('/api/weather')
-                .set('X-FlowPay-Stream-ID', '99');
+                .set('X-PayStream-Stream-ID', '99');
             
             expect(invalidRes.status).to.equal(402);
             expect(invalidRes.body.error).to.equal("Stream is inactive");
@@ -174,7 +174,7 @@ describe('x402 Middleware Integration', function () {
             
             const res = await request(app)
                 .get('/api/weather')
-                .set('X-FlowPay-Tx-Hash', validTxHash);
+                .set('X-PayStream-Tx-Hash', validTxHash);
             
             expect(res.status).to.equal(200);
             expect(res.body.paidWithStream).to.be.undefined; // Direct payment, not stream

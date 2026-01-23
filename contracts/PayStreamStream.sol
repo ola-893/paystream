@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 /**
-* @title FlowPayStream
+* @title PayStreamStream
 * @dev A protocol for creating real-time, per-second money streams on Cronos using native TCRO.
 */
-contract FlowPayStream {
+contract PayStreamStream {
     // Structure to hold all data for a single stream
     struct Stream {
         address sender;
@@ -37,7 +37,7 @@ contract FlowPayStream {
     */
     function getClaimableBalance(uint256 streamId) public view returns (uint256) {
         Stream storage stream = streams[streamId];
-        require(stream.isActive, "FlowPayStream: Stream is not active.");
+        require(stream.isActive, "PayStreamStream: Stream is not active.");
 
         // If the current time is before the start time, nothing has been streamed.
         if (block.timestamp < stream.startTime) {
@@ -62,9 +62,9 @@ contract FlowPayStream {
     * @notice Send TCRO with this transaction. The msg.value becomes the stream amount.
     */
     function createStream(address recipient, uint256 duration, string calldata metadata) external payable {
-        require(msg.value > 0, "FlowPayStream: Must send TCRO to create stream.");
-        require(recipient != address(0), "FlowPayStream: Recipient cannot be the zero address.");
-        require(duration > 0, "FlowPayStream: Duration must be greater than 0.");
+        require(msg.value > 0, "PayStreamStream: Must send TCRO to create stream.");
+        require(recipient != address(0), "PayStreamStream: Recipient cannot be the zero address.");
+        require(duration > 0, "PayStreamStream: Duration must be greater than 0.");
 
         uint256 amount = msg.value;
         uint256 streamId = nextStreamId++;
@@ -72,7 +72,7 @@ contract FlowPayStream {
         uint256 stopTime = startTime + duration;
         // Floor division to avoid rounding up. Require non-zero rate to prevent zero-per-second streams.
         uint256 flowRate = amount / duration;
-        require(flowRate > 0, "FlowPayStream: flowRate would be zero. Increase amount or duration.");
+        require(flowRate > 0, "PayStreamStream: flowRate would be zero. Increase amount or duration.");
 
         streams[streamId] = Stream({
             sender: msg.sender,
@@ -95,17 +95,17 @@ contract FlowPayStream {
     */
     function withdrawFromStream(uint256 streamId) external {
         Stream storage stream = streams[streamId];
-        require(stream.isActive, "FlowPayStream: Stream is not active.");
-        require(msg.sender == stream.recipient, "FlowPayStream: Caller is not the recipient.");
+        require(stream.isActive, "PayStreamStream: Stream is not active.");
+        require(msg.sender == stream.recipient, "PayStreamStream: Caller is not the recipient.");
 
         uint256 claimableAmount = getClaimableBalance(streamId);
-        require(claimableAmount > 0, "FlowPayStream: No funds to withdraw.");
+        require(claimableAmount > 0, "PayStreamStream: No funds to withdraw.");
 
         stream.amountWithdrawn += claimableAmount;
         
         // Transfer native TCRO to recipient
         (bool success, ) = stream.recipient.call{value: claimableAmount}("");
-        require(success, "FlowPayStream: TCRO transfer failed.");
+        require(success, "PayStreamStream: TCRO transfer failed.");
 
         emit Withdrawn(streamId, stream.recipient, claimableAmount);
     }
@@ -116,8 +116,8 @@ contract FlowPayStream {
     */
     function cancelStream(uint256 streamId) external {
         Stream storage stream = streams[streamId];
-        require(stream.isActive, "FlowPayStream: Stream already cancelled.");
-        require(msg.sender == stream.sender || msg.sender == stream.recipient, "FlowPayStream: Caller cannot cancel this stream.");
+        require(stream.isActive, "PayStreamStream: Stream already cancelled.");
+        require(msg.sender == stream.sender || msg.sender == stream.recipient, "PayStreamStream: Caller cannot cancel this stream.");
 
         uint256 recipientBalance = getClaimableBalance(streamId);
         uint256 senderBalance = (stream.totalAmount - stream.amountWithdrawn) - recipientBalance;
@@ -127,13 +127,13 @@ contract FlowPayStream {
         // Transfer to recipient
         if (recipientBalance > 0) {
             (bool success, ) = stream.recipient.call{value: recipientBalance}("");
-            require(success, "FlowPayStream: Recipient transfer failed on cancel.");
+            require(success, "PayStreamStream: Recipient transfer failed on cancel.");
         }
 
         // Refund to sender
         if (senderBalance > 0) {
             (bool success, ) = stream.sender.call{value: senderBalance}("");
-            require(success, "FlowPayStream: Sender refund failed on cancel.");
+            require(success, "PayStreamStream: Sender refund failed on cancel.");
         }
 
         emit StreamCancelled(streamId, stream.sender, stream.recipient, senderBalance, recipientBalance);

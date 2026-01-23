@@ -1,6 +1,6 @@
 # Agent-First CLI Demo
 
-A CLI-first demonstration of AI agents autonomously triggering and streaming payments via the x402 protocol and FlowPay. This demo showcases real agents making real HTTP requests, receiving real 402 responses, and creating real on-chain payment streams on Cronos Testnet.
+A CLI-first demonstration of AI agents autonomously triggering and streaming payments via the x402 protocol and PayStream. This demo showcases real agents making real HTTP requests, receiving real 402 responses, and creating real on-chain payment streams on Cronos Testnet.
 
 ## Quick Start
 
@@ -32,7 +32,7 @@ Create a `.env` file in the project root (or `demo/agent-demo/`) with the follow
 |----------|-------------|---------|
 | `PRIVATE_KEY` | Your Ethereum wallet private key (with TCRO) | `0xabc123...` |
 | `CRONOS_RPC_URL` | Cronos Testnet RPC endpoint | `https://evm-t3.cronos.org` |
-| `FLOWPAY_CONTRACT` | FlowPayStream contract address on Cronos Testnet | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
+| `PAYSTREAM_CONTRACT` | PayStreamStream contract address on Cronos Testnet | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
 
 ### Optional Variables
 
@@ -48,7 +48,7 @@ Create a `.env` file in the project root (or `demo/agent-demo/`) with the follow
 # Required
 PRIVATE_KEY=0xYourPrivateKeyHere
 CRONOS_RPC_URL=https://evm-t3.cronos.org
-FLOWPAY_CONTRACT=0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
+PAYSTREAM_CONTRACT=0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
 
 # Optional
 GEMINI_API_KEY=your_gemini_api_key
@@ -143,7 +143,7 @@ The demo includes four scenarios that demonstrate different aspects of the x402 
 ### Successful Run
 
 ```
-🤖 FlowPay Agent Demo
+🤖 PayStream Agent Demo
    CLI-first demonstration of AI agents making autonomous payments
 
 ✅ Environment validated successfully
@@ -151,7 +151,7 @@ The demo includes four scenarios that demonstrate different aspects of the x402 
 ┌──────────────────────────────────────────────────────────────┐
 │ Agent Information                                            │
 ├──────────────────────────────────────────────────────────────┤
-│ Name: FlowPay Demo Agent                                     │
+│ Name: PayStream Demo Agent                                     │
 │ Wallet: 0x1234...5678                                        │
 │ TCRO Balance: 100.0 TCRO                                     │
 │ Daily Budget: 10.0 TCRO                                      │
@@ -194,7 +194,7 @@ The demo includes four scenarios that demonstrate different aspects of the x402 
 ### Dry-Run Mode Output
 
 ```
-🤖 FlowPay Agent Demo
+🤖 PayStream Agent Demo
    CLI-first demonstration of AI agents making autonomous payments
 
 ⚠️  🔸 DRY-RUN MODE: No real blockchain transactions will be made
@@ -203,7 +203,7 @@ The demo includes four scenarios that demonstrate different aspects of the x402 
 ┌──────────────────────────────────────────────────────────────┐
 │ Agent Information                                            │
 ├──────────────────────────────────────────────────────────────┤
-│ Name: FlowPay Demo Agent                                     │
+│ Name: PayStream Demo Agent                                     │
 │ Wallet: 0x1234...5678                                        │
 │ TCRO Balance: 0.0 TCRO (dry-run)                             │
 │ Daily Budget: 10.0 TCRO                                      │
@@ -218,7 +218,7 @@ The demo includes four scenarios that demonstrate different aspects of the x402 
 ```bash
 $ npm run check
 
-🤖 FlowPay Agent Demo
+🤖 PayStream Agent Demo
 📡 Running setup check...
 
 ┌──────────────────────────────────────────────────────────────┐
@@ -226,7 +226,7 @@ $ npm run check
 ├──────────────────────────────────────────────────────────────┤
 │ ✅ Wallet Connected: 0x1234...5678                           │
 │ ✅ TCRO Balance: 100.0 TCRO                                  │
-│ ✅ FlowPay Contract: Accessible                              │
+│ ✅ PayStream Contract: Accessible                              │
 │ ✅ Server: Reachable at http://localhost:3001                │
 └──────────────────────────────────────────────────────────────┘
 
@@ -335,9 +335,9 @@ npm run dev -- --verbose --dry-run
 
 ## Related Documentation
 
-- [FlowPay SDK Documentation](../../docs/sdk/README.md)
+- [PayStream SDK Documentation](../../docs/sdk/README.md)
 - [x402 Protocol Architecture](../../docs/architecture/x402-protocol.md)
-- [FlowPayStream Contract](../../docs/contracts/flowpaystream.md)
+- [PayStreamStream Contract](../../docs/contracts/paystreamstream.md)
 - [Deployment Guide](../../docs/deployment/README.md)
 
 ## License

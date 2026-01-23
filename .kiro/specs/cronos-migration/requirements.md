@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This feature migrates the entire FlowPay ecosystem from Ethereum Sepolia testnet to Cronos testnet. The migration encompasses smart contracts, frontend application, documentation, agent demos, and all supporting infrastructure. The goal is to leverage Cronos's lower gas fees, faster block times, and better alignment with the MNEE stablecoin ecosystem while maintaining full feature parity.
+This feature migrates the entire PayStream ecosystem from Ethereum Sepolia testnet to Cronos testnet. The migration encompasses smart contracts, frontend application, documentation, agent demos, and all supporting infrastructure. The goal is to leverage Cronos's lower gas fees, faster block times, and better alignment with the MNEE stablecoin ecosystem while maintaining full feature parity.
 
 ## Glossary
 
@@ -10,7 +10,7 @@ This feature migrates the entire FlowPay ecosystem from Ethereum Sepolia testnet
 - **Sepolia**: The Ethereum testnet (Chain ID: 11155111) being replaced
 - **TCRO**: The native gas token on Cronos testnet
 - **Cronos_Explorer**: The block explorer for Cronos network at https://explorer.cronos.org
-- **FlowPay_System**: The complete payment streaming platform including contracts, frontend, SDK, and demos
+- **PayStream_System**: The complete payment streaming platform including contracts, frontend, SDK, and demos
 - **Network_Configuration**: Chain ID, RPC endpoints, block explorers, and native currency settings
 - **Frontend_Dashboard**: The React-based web application for managing payment streams
 - **Agent_Demo**: The CLI demonstration of AI agents making autonomous payments
@@ -20,19 +20,19 @@ This feature migrates the entire FlowPay ecosystem from Ethereum Sepolia testnet
 
 ### Requirement 1: Smart Contract Network Configuration
 
-**User Story:** As a developer, I want to deploy FlowPay contracts to Cronos testnet, so that I can leverage lower gas fees and faster transactions.
+**User Story:** As a developer, I want to deploy PayStream contracts to Cronos testnet, so that I can leverage lower gas fees and faster transactions.
 
 #### Acceptance Criteria
 
 1. THE Hardhat_Config SHALL define a cronos_testnet network with Chain ID 338
 2. THE Hardhat_Config SHALL use https://evm-t3.cronos.org as the default RPC URL
-3. THE Deployment_Script SHALL detect cronos_testnet network and deploy MockMNEE and FlowPayStream
+3. THE Deployment_Script SHALL detect cronos_testnet network and deploy MockMNEE and PayStreamStream
 4. THE Environment_Variables SHALL use CRONOS_RPC_URL instead of SEPOLIA_RPC_URL
 5. THE .env.example SHALL document Cronos testnet configuration with correct RPC URL and chain ID
 
 ### Requirement 2: Frontend Network Detection and Switching
 
-**User Story:** As a user, I want the dashboard to automatically detect and switch to Cronos testnet, so that I can use FlowPay without manual network configuration.
+**User Story:** As a user, I want the dashboard to automatically detect and switch to Cronos testnet, so that I can use PayStream without manual network configuration.
 
 #### Acceptance Criteria
 
@@ -84,7 +84,7 @@ This feature migrates the entire FlowPay ecosystem from Ethereum Sepolia testnet
 
 #### Acceptance Criteria
 
-1. THE README.md SHALL describe FlowPay as deployed on Cronos testnet
+1. THE README.md SHALL describe PayStream as deployed on Cronos testnet
 2. THE DEPLOYMENT.md SHALL provide Cronos-specific deployment instructions
 3. THE docs/deployment/ folder SHALL contain cronos-testnet.md instead of sepolia.md
 4. THE Getting_Started_Guides SHALL reference Cronos faucet and RPC endpoints

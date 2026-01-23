@@ -26,7 +26,7 @@ https://explorer.cronos.org/testnet/address/0x8DA26C2b004f5962c0846f57d193de12f2
 
 ---
 
-### 2. FlowPayStream Contract
+### 2. PayStreamStream Contract
 
 **Contract Address:**
 ```
@@ -36,7 +36,7 @@ https://explorer.cronos.org/testnet/address/0x8DA26C2b004f5962c0846f57d193de12f2
 **Cronos Explorer:**
 https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
-**Purpose:** Main payment streaming contract for FlowPay on Cronos (uses native TCRO)
+**Purpose:** Main payment streaming contract for PayStream on Cronos (uses native TCRO)
 
 ---
 
@@ -64,7 +64,7 @@ CRONOS_RPC_URL=https://evm-t3.cronos.org
 PRIVATE_KEY=ce44c9cf317f66b5e3ea12ee1c92bb77a6dd2d02265b086eba66f8f338d5d7dc
 
 # Deployed Contract Addresses (Cronos Testnet)
-FLOWPAY_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+PAYSTREAM_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 # Legacy token contract removed - using native TCRO now
 ```
 
@@ -81,7 +81,7 @@ Both contracts are live and verifiable on Cronos Explorer:
    - ✅ Creation transaction visible
    - ✅ Network: Cronos Testnet (338)
 
-2. **FlowPayStream Contract**
+2. **PayStreamStream Contract**
    - ✅ Contract bytecode present
    - ✅ Creation transaction visible
    - ✅ Network: Cronos Testnet (338)
@@ -93,9 +93,9 @@ Both contracts are live and verifiable on Cronos Explorer:
 Deploying contracts with the account: 0x506e724d7FDdbF91B6607d5Af0700d385D952f8a
 Network: cronos_testnet
 
-📝 Deploying FlowPayStream to Cronos Testnet...
+📝 Deploying PayStreamStream to Cronos Testnet...
    Using native TCRO for payments
-✅ FlowPayStream deployed to: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+✅ PayStreamStream deployed to: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
    View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
 🎉 Deployment complete!
@@ -122,7 +122,7 @@ Update the agent demo environment in `demo/agent-demo/.env`:
 
 ```bash
 CRONOS_RPC_URL=https://evm-t3.cronos.org
-FLOWPAY_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+PAYSTREAM_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 # Legacy token address removed - using native TCRO now
 ```
 
@@ -142,7 +142,7 @@ Follow the instructions in `TEST_REPORT.md` for each remaining task.
 
 ## Quick Links
 
-- **FlowPayStream on Explorer:** https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+- **PayStreamStream on Explorer:** https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 - **Cronos Faucet:** https://cronos.org/faucet
 - **Cronos Testnet RPC:** https://evm-t3.cronos.org
 - **Cronos Explorer:** https://explorer.cronos.org/testnet
@@ -158,7 +158,7 @@ Follow the instructions in `TEST_REPORT.md` for each remaining task.
 | Network | Ethereum Sepolia | Cronos Testnet |
 | Chain ID | 11155111 | 338 |
 | Legacy Token | 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896 | Removed (using native TCRO) |
-| FlowPayStream | 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035 | 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87 |
+| PayStreamStream | 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035 | 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87 |
 | Gas Token | ETH | TCRO |
 | Explorer | etherscan.io | explorer.cronos.org |
 

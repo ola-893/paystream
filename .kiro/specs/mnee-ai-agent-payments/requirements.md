@@ -2,9 +2,9 @@
 
 ## Introduction
 
-FlowPay is a hybrid payment protocol that positions itself as "The Streaming Extension for x402." While standard x402 excels at one-off payments (buying a single article, making one API call), it fails at high-frequency agent workloads due to the "N+1 Signature Problem" - every HTTP request requires a unique cryptographic signature and settlement event.
+PayStream is a hybrid payment protocol that positions itself as "The Streaming Extension for x402." While standard x402 excels at one-off payments (buying a single article, making one API call), it fails at high-frequency agent workloads due to the "N+1 Signature Problem" - every HTTP request requires a unique cryptographic signature and settlement event.
 
-FlowPay solves this by using x402 as the "Menu" (service discovery and price negotiation) and Payment Streams as the "Tab" (efficient continuous payment). This hybrid approach enables:
+PayStream solves this by using x402 as the "Menu" (service discovery and price negotiation) and Payment Streams as the "Tab" (efficient continuous payment). This hybrid approach enables:
 - **x402 Discovery**: Standard HTTP 402 responses tell agents "Here is what I cost"
 - **Streaming Payment**: Agents open a stream once and make thousands of requests against it
 - **Zero Per-Request Overhead**: Only 2 on-chain transactions (Open and Close) regardless of request volume
@@ -14,18 +14,18 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 
 ## Glossary
 
-- **FlowPay_System**: The complete payment streaming infrastructure including smart contracts, web interface, and agent SDK
+- **PayStream_System**: The complete payment streaming infrastructure including smart contracts, web interface, and agent SDK
 - **MNEE_Token**: USD-backed stablecoin contract at 0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF on Ethereum mainnet (testnet version or mock contract for development)
 - **Payment_Stream**: A continuous flow of MNEE tokens from sender to recipient at a specified rate per second, acting as an open "tab" for service consumption
 - **Agent_SDK**: JavaScript library enabling AI agents to discover services via x402 and create payment streams autonomously
 - **Web_Dashboard**: React-based interface for humans to monitor and manage payment streams
 - **Stream_Metadata**: JSON data attached to streams containing agent identification and service details
 - **Claimable_Balance**: Amount of MNEE tokens a recipient can withdraw from active streams at any given time
-- **x402_Protocol**: Coinbase's open standard for HTTP-native payments using HTTP 402 responses - used by FlowPay for service discovery
-- **Payment_Required_Response**: HTTP 402 response containing payment requirements per x402 specification, extended with FlowPay streaming headers
-- **Facilitator**: Server that verifies and settles x402 payments (optional - FlowPay uses on-chain stream verification instead)
+- **x402_Protocol**: Coinbase's open standard for HTTP-native payments using HTTP 402 responses - used by PayStream for service discovery
+- **Payment_Required_Response**: HTTP 402 response containing payment requirements per x402 specification, extended with PayStream streaming headers
+- **Facilitator**: Server that verifies and settles x402 payments (optional - PayStream uses on-chain stream verification instead)
 - **x402_Handshake**: The discovery workflow where an agent makes a blind request, receives 402 with pricing, and decides how to pay
-- **Stream_ID**: Unique identifier for an active payment stream, passed in X-FlowPay-Stream-ID header for request verification
+- **Stream_ID**: Unique identifier for an active payment stream, passed in X-PayStream-Stream-ID header for request verification
 - **N+1_Signature_Problem**: The inefficiency of standard x402 where every HTTP request requires a separate cryptographic signature
 
 ## Requirements
@@ -36,11 +36,11 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 
 #### Acceptance Criteria
 
-1. WHEN creating a payment stream, THE FlowPay_System SHALL use MNEE tokens instead of ETH as the payment currency
-2. WHEN a user deposits funds for streaming, THE FlowPay_System SHALL require MNEE token approval before stream creation
-3. WHEN withdrawing from a stream, THE FlowPay_System SHALL transfer MNEE tokens to the recipient's wallet
-4. THE FlowPay_System SHALL integrate with MNEE token contract (mainnet: 0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF, testnet: mock contract for development)
-5. WHEN calculating stream rates, THE FlowPay_System SHALL use MNEE token decimals (18) for precision
+1. WHEN creating a payment stream, THE PayStream_System SHALL use MNEE tokens instead of ETH as the payment currency
+2. WHEN a user deposits funds for streaming, THE PayStream_System SHALL require MNEE token approval before stream creation
+3. WHEN withdrawing from a stream, THE PayStream_System SHALL transfer MNEE tokens to the recipient's wallet
+4. THE PayStream_System SHALL integrate with MNEE token contract (mainnet: 0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF, testnet: mock contract for development)
+5. WHEN calculating stream rates, THE PayStream_System SHALL use MNEE token decimals (18) for precision
 
 ### Requirement 2: Cronos Testnet Migration
 
@@ -48,12 +48,12 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 
 #### Acceptance Criteria
 
-1. THE FlowPay_System SHALL deploy smart contracts to Cronos testnet for development and testing
-2. WHEN users connect wallets, THE FlowPay_System SHALL prompt network switching to Cronos Testnet if on wrong network
+1. THE PayStream_System SHALL deploy smart contracts to Cronos testnet for development and testing
+2. WHEN users connect wallets, THE PayStream_System SHALL prompt network switching to Cronos Testnet if on wrong network
 3. THE Web_Dashboard SHALL display Cronos testnet information and block explorer links
-4. THE FlowPay_System SHALL use Cronos-compatible RPC endpoints for blockchain interactions
-5. WHEN estimating gas costs, THE FlowPay_System SHALL calculate fees using Cronos gas prices
-6. THE FlowPay_System SHALL use testnet MNEE tokens or mock MNEE contract for testing purposes
+4. THE PayStream_System SHALL use Cronos-compatible RPC endpoints for blockchain interactions
+5. WHEN estimating gas costs, THE PayStream_System SHALL calculate fees using Cronos gas prices
+6. THE PayStream_System SHALL use testnet MNEE tokens or mock MNEE contract for testing purposes
 
 ### Requirement 3: AI Agent SDK Development
 
@@ -74,11 +74,11 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 
 #### Acceptance Criteria
 
-1. WHEN a payment stream is active, THE FlowPay_System SHALL calculate claimable amounts based on elapsed time and rate per second
-2. THE FlowPay_System SHALL support payment rates as low as $0.0001 per second for micropayment use cases
-3. WHEN recipients check balances, THE FlowPay_System SHALL return real-time claimable amounts without blockchain queries
+1. WHEN a payment stream is active, THE PayStream_System SHALL calculate claimable amounts based on elapsed time and rate per second
+2. THE PayStream_System SHALL support payment rates as low as $0.0001 per second for micropayment use cases
+3. WHEN recipients check balances, THE PayStream_System SHALL return real-time claimable amounts without blockchain queries
 4. THE Web_Dashboard SHALL display live counters showing streaming balances incrementing per second
-5. WHEN streams are created, THE FlowPay_System SHALL begin payment flow immediately without delays
+5. WHEN streams are created, THE PayStream_System SHALL begin payment flow immediately without delays
 
 ### Requirement 5: x402 Handshake Workflow (Service Discovery)
 
@@ -86,14 +86,14 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 
 #### Acceptance Criteria
 
-1. WHEN an agent makes a blind HTTP request to a protected endpoint, THE FlowPay_System SHALL respond with HTTP 402 Payment Required
-2. THE Payment_Required_Response SHALL include x402-compatible headers: X-Payment-Required, X-FlowPay-Mode, X-FlowPay-Rate, X-MNEE-Address
+1. WHEN an agent makes a blind HTTP request to a protected endpoint, THE PayStream_System SHALL respond with HTTP 402 Payment Required
+2. THE Payment_Required_Response SHALL include x402-compatible headers: X-Payment-Required, X-PayStream-Mode, X-PayStream-Rate, X-MNEE-Address
 3. WHEN the Agent_SDK receives a 402 response, THE Agent_SDK SHALL intercept and parse the payment requirements automatically
 4. THE Agent_SDK SHALL pass payment requirements to Gemini AI for intelligent payment mode decision
 5. WHEN Gemini recommends streaming mode, THE Agent_SDK SHALL approve MNEE and create a payment stream
 6. WHEN Gemini recommends per-request mode, THE Agent_SDK SHALL use standard x402 per-request payment
-7. WHEN a stream is created, THE Agent_SDK SHALL retry the original request with X-FlowPay-Stream-ID header
-8. WHEN the server receives X-FlowPay-Stream-ID, THE FlowPay_System SHALL verify the stream is active on-chain before returning 200 OK
+7. WHEN a stream is created, THE Agent_SDK SHALL retry the original request with X-PayStream-Stream-ID header
+8. WHEN the server receives X-PayStream-Stream-ID, THE PayStream_System SHALL verify the stream is active on-chain before returning 200 OK
 
 ### Requirement 6: Intelligent Payment Management
 
@@ -126,9 +126,9 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 
 #### Acceptance Criteria
 
-1. WHEN creating streams, THE FlowPay_System SHALL store metadata including agent IDs, service types, and purposes
-2. THE FlowPay_System SHALL support JSON metadata with fields for agent identification and service contracts
-3. WHEN querying streams, THE FlowPay_System SHALL return metadata for filtering and analysis
+1. WHEN creating streams, THE PayStream_System SHALL store metadata including agent IDs, service types, and purposes
+2. THE PayStream_System SHALL support JSON metadata with fields for agent identification and service contracts
+3. WHEN querying streams, THE PayStream_System SHALL return metadata for filtering and analysis
 4. THE Web_Dashboard SHALL display stream metadata in human-readable format
 5. THE Agent_SDK SHALL automatically include agent identification in stream metadata
 
@@ -138,11 +138,11 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 
 #### Acceptance Criteria
 
-1. WHEN streams exceed spending limits, THE FlowPay_System SHALL provide automatic cancellation mechanisms
+1. WHEN streams exceed spending limits, THE PayStream_System SHALL provide automatic cancellation mechanisms
 2. THE Agent_SDK SHALL support spending caps and daily budget limits for autonomous agents
 3. WHEN services become unavailable, THE Agent_SDK SHALL automatically cancel associated payment streams
-4. THE FlowPay_System SHALL provide emergency pause functionality for all agent streams
-5. WHEN suspicious activity is detected, THE FlowPay_System SHALL alert operators and suggest protective actions
+4. THE PayStream_System SHALL provide emergency pause functionality for all agent streams
+5. WHEN suspicious activity is detected, THE PayStream_System SHALL alert operators and suggest protective actions
 
 ### Requirement 10: Multi-Agent Service Mesh
 
@@ -150,24 +150,24 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 
 #### Acceptance Criteria
 
-1. THE FlowPay_System SHALL support multiple simultaneous streams between the same agent pairs
-2. WHEN agents act as intermediaries, THE FlowPay_System SHALL enable margin-based pricing where agents keep portions of payments
+1. THE PayStream_System SHALL support multiple simultaneous streams between the same agent pairs
+2. WHEN agents act as intermediaries, THE PayStream_System SHALL enable margin-based pricing where agents keep portions of payments
 3. THE Agent_SDK SHALL support service chaining where agents automatically create downstream payment streams
-4. THE FlowPay_System SHALL track payment flows through multi-agent service chains
+4. THE PayStream_System SHALL track payment flows through multi-agent service chains
 5. WHEN service chains are established, THE Web_Dashboard SHALL visualize payment flow relationships
 
 
 ### Requirement 11: x402 Server Middleware (The Gatekeeper)
 
-**User Story:** As a service provider, I want to easily add x402 payment requirements to my API endpoints, so that AI agents can discover pricing and pay via FlowPay streams.
+**User Story:** As a service provider, I want to easily add x402 payment requirements to my API endpoints, so that AI agents can discover pricing and pay via PayStream streams.
 
 #### Acceptance Criteria
 
-1. THE FlowPay_System SHALL provide Express.js middleware (flowPayMiddleware) for wrapping API endpoints with x402 payment requirements
+1. THE PayStream_System SHALL provide Express.js middleware (payStreamMiddleware) for wrapping API endpoints with x402 payment requirements
 2. WHEN a request arrives without payment headers, THE middleware SHALL respond with HTTP 402 and x402-compatible PaymentRequired headers
 3. THE middleware configuration SHALL support specifying: price (MNEE per request or per second), mode (streaming/per-request), minDeposit, and description
 4. WHEN configuring endpoints, THE middleware SHALL accept route patterns like "GET /api/weather" with associated pricing
-5. WHEN a request includes X-FlowPay-Stream-ID header, THE middleware SHALL verify the stream is active on-chain
+5. WHEN a request includes X-PayStream-Stream-ID header, THE middleware SHALL verify the stream is active on-chain
 6. WHEN stream verification succeeds, THE middleware SHALL grant access to the protected resource and return 200 OK
 7. THE middleware SHALL track usage metrics and update stream consumption data
 8. WHEN stream balance is insufficient, THE middleware SHALL respond with 402 requesting stream top-up
@@ -181,7 +181,7 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 1. THE Agent_SDK SHALL support both x402 per-request payments AND continuous streaming payments
 2. WHEN an agent expects few requests (e.g., 1-10), THE Agent_SDK SHALL recommend x402 per-request mode to avoid stream setup overhead
 3. WHEN an agent expects many requests (e.g., 100+), THE Agent_SDK SHALL recommend streaming mode to avoid N+1 signature overhead
-4. THE FlowPay_System SHALL allow service providers to specify which payment modes they accept (streaming-only, per-request-only, or both)
+4. THE PayStream_System SHALL allow service providers to specify which payment modes they accept (streaming-only, per-request-only, or both)
 5. WHEN switching between modes mid-session, THE Agent_SDK SHALL handle the transition seamlessly without service interruption
 6. THE Agent_SDK SHALL use Gemini AI to analyze: "The server wants $X/sec. I need data for Y minutes. Is streaming or per-request cheaper?"
 7. WHEN Gemini makes a payment mode decision, THE Agent_SDK SHALL log the reasoning for human oversight
@@ -195,8 +195,8 @@ The system uses MNEE stablecoin for payments, deployed on Cronos testnet for dev
 
 1. WHEN using streaming mode, THE Agent_SDK SHALL require exactly one signature to open the stream, regardless of subsequent request count
 2. WHEN a stream is active, THE Agent_SDK SHALL make unlimited requests against that stream with zero additional signatures
-3. THE FlowPay_System SHALL require exactly two on-chain transactions per session: stream open and stream close
-4. WHEN making requests against an active stream, THE Agent_SDK SHALL only include the X-FlowPay-Stream-ID header (no per-request signatures)
-5. THE FlowPay_System SHALL support request rates of 100+ requests per second against a single active stream
+3. THE PayStream_System SHALL require exactly two on-chain transactions per session: stream open and stream close
+4. WHEN making requests against an active stream, THE Agent_SDK SHALL only include the X-PayStream-Stream-ID header (no per-request signatures)
+5. THE PayStream_System SHALL support request rates of 100+ requests per second against a single active stream
 6. WHEN comparing to pure x402, THE streaming mode SHALL reduce gas costs by eliminating per-request settlement transactions
 7. THE Agent_SDK SHALL track and report efficiency metrics: requests made vs signatures required

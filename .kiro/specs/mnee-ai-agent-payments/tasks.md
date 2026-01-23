@@ -1,15 +1,15 @@
-# Implementation Plan: MNEE AI Agent Payments (FlowPay)
+# Implementation Plan: MNEE AI Agent Payments (PayStream)
 
 ## Overview
 
-Transform the existing FlowPayStream project into FlowPay - "The Streaming Extension for x402." The system uses x402 as the "Menu" (service discovery via HTTP 402) and Payment Streams as the "Tab" (efficient continuous payment). This solves the N+1 Signature Problem where standard x402 requires a signature per request.
+Transform the existing PayStreamStream project into PayStream - "The Streaming Extension for x402." The system uses x402 as the "Menu" (service discovery via HTTP 402) and Payment Streams as the "Tab" (efficient continuous payment). This solves the N+1 Signature Problem where standard x402 requires a signature per request.
 
 **Key Innovation**: 2 on-chain transactions (Open + Close) regardless of request volume.
 
 ## Tasks
 
 - [x] 1. Smart Contract Migration to MNEE
-  - Modify existing FlowPayStream contract to use MNEE tokens instead of ETH
+  - Modify existing PayStreamStream contract to use MNEE tokens instead of ETH
   - Add MNEE token interface and approval mechanisms
   - Implement metadata storage for agent identification
   - Add `isStreamActive()` function for middleware verification
@@ -19,7 +19,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 - [x]* 1.1 Write property test for MNEE token operations
   - **Property 1: MNEE Token Stream Operations**
   - **Validates: Requirements 1.1, 1.2, 1.3, 1.5**
-  - Tests exist in `test/FlowPayStream.test.js` (MNEE token integration tests)
+  - Tests exist in `test/PayStreamStream.test.js` (MNEE token integration tests)
 
 - [x] 2. Network Configuration Update
   - Update hardhat config for Cronos testnet deployment
@@ -35,11 +35,11 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
   - Hardhat config includes Cronos network; frontend App.jsx handles network switching
 
 - [x] 3. x402 Express Middleware (The Gatekeeper)
-  - Create Express.js middleware `flowPayMiddleware` for x402 payment requirements
+  - Create Express.js middleware `payStreamMiddleware` for x402 payment requirements
   - Implement HTTP 402 response with x402-compatible headers:
-    - X-Payment-Required, X-FlowPay-Mode, X-FlowPay-Rate, X-MNEE-Address
+    - X-Payment-Required, X-PayStream-Mode, X-PayStream-Rate, X-MNEE-Address
   - Add route pattern configuration (e.g., "GET /api/weather")
-  - Build stream verification for X-FlowPay-Stream-ID header
+  - Build stream verification for X-PayStream-Stream-ID header
   - Implement balance checking and 402 top-up requests
   - Track usage metrics per stream
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8_
@@ -60,7 +60,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
   - Build `handlePaymentRequired()` for automatic 402 interception
   - Add automatic MNEE approval and stream creation from x402 requirements
   - Implement `makeRequest()` with automatic 402 handling and retry
-  - Add X-FlowPay-Stream-ID header injection for subsequent requests
+  - Add X-PayStream-Stream-ID header injection for subsequent requests
   - Build API key authentication system
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.6, 5.3, 5.5, 5.7_
 
@@ -178,9 +178,9 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
   - Tests exist in `sdk/test/metadata.test.ts`
 
 - [x] 13. Enhanced Web Dashboard
-  - [x] 13.1 Rebrand from FlowPayStream to FlowPay
-    - Update Header component with FlowPay branding
-    - Update Hero component with FlowPay messaging and x402 description
+  - [x] 13.1 Rebrand from PayStreamStream to PayStream
+    - Update Header component with PayStream branding
+    - Update Hero component with PayStream messaging and x402 description
     - Update page title and meta information
     - _Requirements: 7.1_
   - [x] 13.2 Integrate Agent Console component
@@ -235,7 +235,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 
 - [x] 15. Demo: Complete x402 Handshake Flow
   - Create Consumer Agent demonstrating blind request → 402 → stream → success
-  - Build Provider Agent with flowPayMiddleware (The Gatekeeper)
+  - Build Provider Agent with payStreamMiddleware (The Gatekeeper)
   - Implement real-time API payment scenario showing:
     - x402 discovery (The Menu)
     - Gemini AI decision (streaming vs per-request)
@@ -256,7 +256,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 - [x] 16. Final Integration and Testing
   - [x] 16.1 Deploy complete system to Cronos testnet
     - Deploy MockMNEE contract to Cronos
-    - Deploy FlowPayStream contract to Cronos
+    - Deploy PayStreamStream contract to Cronos
     - Update frontend with deployed contract addresses
     - _Requirements: 2.1, 2.6_
     - Hardhat config ready; deploy script exists at `scripts/deploy.js`
@@ -288,7 +288,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 **Key Architecture Points**:
 - x402 = "The Menu" (service discovery via HTTP 402)
 - Streaming = "The Tab" (efficient continuous payment)
-- The Gatekeeper = flowPayMiddleware (catches requests, returns 402, verifies streams)
+- The Gatekeeper = payStreamMiddleware (catches requests, returns 402, verifies streams)
 - The Negotiator = Agent SDK (handles 402, creates streams, retries requests)
 - N+1 Solution = 2 on-chain transactions total, regardless of request count
 
@@ -296,7 +296,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 - ✅ Smart Contract: MNEE integration complete with metadata support
 - ✅ SDK: Full x402 handshake, hybrid payments, Gemini AI, safety systems
 - ✅ Middleware: x402 gatekeeper with stream verification
-- ✅ Dashboard: FlowPay branding, agent console, decision logs, stream monitor, service graph
+- ✅ Dashboard: PayStream branding, agent console, decision logs, stream monitor, service graph
 - ✅ Demo: Consumer and Provider agents ready
 - ✅ Documentation: DEPLOYMENT.md with full setup guide
 - ✅ Tests: 41+ tests across SDK, middleware, and smart contracts
@@ -311,7 +311,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 - [ ] 18. Design System & Visual Foundation
   - [ ] 18.1 Create modern design tokens and color palette
     - Define primary, secondary, accent colors with proper contrast
-    - Create gradient presets for FlowPay brand identity
+    - Create gradient presets for PayStream brand identity
     - Add semantic colors for success/warning/error states
     - Implement dark mode with proper color hierarchy
     - _Requirements: 7.1_
@@ -329,7 +329,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 
 - [ ] 19. Header & Navigation Redesign
   - [ ] 19.1 Create premium header component
-    - Add animated FlowPay logo with streaming effect
+    - Add animated PayStream logo with streaming effect
     - Implement wallet connection with balance display
     - Add network indicator with chain icon
     - Create notification bell for alerts/events
@@ -443,7 +443,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 
 - [ ] 26. Efficiency Metrics Dashboard
   - [ ] 26.1 Create N+1 solution showcase
-    - Animated comparison: x402 vs FlowPay
+    - Animated comparison: x402 vs PayStream
     - Transaction savings calculator
     - Gas cost comparison chart
     - Requests per signature ratio display
@@ -487,13 +487,13 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 ## Frontend-Backend Integration Tasks
 
 - [ ] 29. Smart Contract Deployment & Configuration
-  - [ ] 29.1 Deploy MockMNEE and FlowPayStream contracts to Cronos
+  - [ ] 29.1 Deploy MockMNEE and PayStreamStream contracts to Cronos
     - Run `npx hardhat run scripts/deploy.js --network cronos_testnet`
     - Record deployed contract addresses
     - Verify contracts on Cronos Explorer
     - _Requirements: 1.4, 2.1, 2.6_
   - [ ] 29.2 Configure Netlify environment variables
-    - Set VITE_CONTRACT_ADDRESS with FlowPayStream address
+    - Set VITE_CONTRACT_ADDRESS with PayStreamStream address
     - Set VITE_MNEE_TOKEN_ADDRESS with MockMNEE address
     - Redeploy frontend with new environment variables
     - _Requirements: 2.1, 2.6_
@@ -519,7 +519,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
 - [ ] 31. Stream Creation Integration
   - [ ] 31.1 Connect CreateStreamForm to smart contract
     - Implement MNEE token approval before stream creation
-    - Call FlowPayStream.createStream() with form data
+    - Call PayStreamStream.createStream() with form data
     - Handle transaction pending/success/error states
     - Show transaction hash and Etherscan link
     - _Requirements: 1.1, 1.2, 3.1_
@@ -547,7 +547,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
     - _Requirements: 1.3, 7.3_
 
 - [ ] 33. Backend Server Integration
-  - [ ] 33.1 Deploy server with flowPayMiddleware
+  - [ ] 33.1 Deploy server with payStreamMiddleware
     - Configure server for production deployment
     - Set up CORS for frontend domain
     - Configure contract addresses in server
@@ -558,7 +558,7 @@ Transform the existing FlowPayStream project into FlowPay - "The Streaming Exten
     - Display 402 responses in Decision Log
     - _Requirements: 5.1, 5.2, 7.4_
   - [ ] 33.3 Integrate SDK for agent operations
-    - Bundle FlowPaySDK for browser use
+    - Bundle PayStreamSDK for browser use
     - Connect Agent Console to SDK methods
     - Enable stream creation via SDK
     - _Requirements: 3.1, 3.2, 7.3_

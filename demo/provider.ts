@@ -8,10 +8,10 @@ dotenv.config();
 
 // Import middleware - using require for CommonJS module
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const flowPayMiddleware = require('../server/middleware/flowPayMiddleware');
+const payStreamMiddleware = require('../server/middleware/payStreamMiddleware');
 
 // Contract addresses on Cronos Testnet
-const FLOWPAYSTREAM_ADDRESS = process.env.FLOWPAY_CONTRACT || '0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87';
+const PAYSTREAMSTREAM_ADDRESS = process.env.PAYSTREAM_CONTRACT || '0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87';
 // Use Cronos Testnet RPC endpoint
 const CRONOS_RPC_URL = process.env.CRONOS_RPC_URL || 'https://evm-t3.cronos.org';
 
@@ -31,7 +31,7 @@ app.use(express.json());
 
 // Real blockchain configuration for Cronos Testnet
 const config = {
-    flowPayContractAddress: FLOWPAYSTREAM_ADDRESS,
+    payStreamContractAddress: PAYSTREAMSTREAM_ADDRESS,
     rpcUrl: CRONOS_RPC_URL,
     routes: {
         '/api/premium': {
@@ -46,11 +46,11 @@ const config = {
 };
 
 console.log("🔧 Provider Configuration:");
-console.log(`   FlowPayStream Contract: ${FLOWPAYSTREAM_ADDRESS}`);
+console.log(`   PayStreamStream Contract: ${PAYSTREAMSTREAM_ADDRESS}`);
 console.log(`   RPC URL: ${CRONOS_RPC_URL}`);
 
-// Apply FlowPay Middleware (validates payment streams on-chain)
-app.use(flowPayMiddleware(config));
+// Apply PayStream Middleware (validates payment streams on-chain)
+app.use(payStreamMiddleware(config));
 
 // Health check endpoint (no payment required)
 app.get('/health', (req, res) => {
@@ -59,7 +59,7 @@ app.get('/health', (req, res) => {
 
 // Protected Premium Content Route
 app.get('/api/premium', (req: any, res) => {
-    const streamId = req.flowPay?.streamId || 'unknown';
+    const streamId = req.payStream?.streamId || 'unknown';
     
     console.log(`📦 Serving premium content for Stream #${streamId}`);
     
@@ -74,8 +74,8 @@ app.get('/api/premium', (req: any, res) => {
 
 // Protected AI Insight Route (higher tier)
 app.get('/api/ai-insight', (req: any, res) => {
-    const streamId = req.flowPay?.streamId || 'unknown';
-    const txHash = req.flowPay?.txHash;
+    const streamId = req.payStream?.streamId || 'unknown';
+    const txHash = req.payStream?.txHash;
     
     console.log(`🧠 Serving AI insight for Stream #${streamId}`);
     
@@ -92,24 +92,24 @@ app.get('/api/ai-insight', (req: any, res) => {
 // Info endpoint (no payment required)
 app.get('/api/info', (req, res) => {
     res.json({
-        name: "FlowPay Demo Provider",
+        name: "PayStream Demo Provider",
         version: "1.0.0",
         network: "Cronos Testnet",
         contracts: {
-            flowPayStream: FLOWPAYSTREAM_ADDRESS,
+            payStreamStream: PAYSTREAMSTREAM_ADDRESS,
         },
         protectedRoutes: [
             { path: '/api/premium', price: '0.0001 TCRO/sec', mode: 'streaming' },
             { path: '/api/ai-insight', price: '0.001 TCRO/sec', mode: 'streaming' }
         ],
-        documentation: "https://flowpay.dev/docs"
+        documentation: "https://paystream.dev/docs"
     });
 });
 
 // Start server
 if (require.main === module) {
     app.listen(PORT, () => {
-        console.log(`\n🚀 FlowPay Demo Provider running on http://localhost:${PORT}`);
+        console.log(`\n🚀 PayStream Demo Provider running on http://localhost:${PORT}`);
         console.log(`\n📋 Available Endpoints:`);
         console.log(`   GET /health          - Health check (free)`);
         console.log(`   GET /api/info        - API info (free)`);

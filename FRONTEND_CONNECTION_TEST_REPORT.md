@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-This report documents the testing of the FlowPay frontend's network detection and switching functionality for Cronos testnet migration. The testing validates that the application correctly detects, switches to, and displays Cronos Testnet (Chain ID 338) network information.
+This report documents the testing of the PayStream frontend's network detection and switching functionality for Cronos testnet migration. The testing validates that the application correctly detects, switches to, and displays Cronos Testnet (Chain ID 338) network information.
 
 ## Test Environment
 

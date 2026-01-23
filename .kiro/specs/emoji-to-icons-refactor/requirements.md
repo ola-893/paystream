@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This document specifies the requirements for replacing all emoji characters in the FlowPay frontend application with professional SVG icons. The goal is to improve the visual maturity and consistency of the user interface while maintaining the same semantic meaning and functionality.
+This document specifies the requirements for replacing all emoji characters in the PayStream frontend application with professional SVG icons. The goal is to improve the visual maturity and consistency of the user interface while maintaining the same semantic meaning and functionality.
 
 ## Glossary
 

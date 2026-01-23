@@ -2,7 +2,7 @@
 
 ## Overview
 
-This design outlines the comprehensive migration from ERC-20 tokens to native TCRO (Cronos testnet tokens) across the entire FlowPay ecosystem. The migration involves updating smart contracts, payment agents, server configurations, documentation, and all supporting infrastructure to use Cronos native currency instead of custom tokens.
+This design outlines the comprehensive migration from ERC-20 tokens to native TCRO (Cronos testnet tokens) across the entire PayStream ecosystem. The migration involves updating smart contracts, payment agents, server configurations, documentation, and all supporting infrastructure to use Cronos native currency instead of custom tokens.
 
 The key architectural change is moving from ERC-20 token transfers (which require approvals and token contract interactions) to native ETH-style transfers using Solidity's `payable` functions and `msg.value`.
 
@@ -11,7 +11,7 @@ The key architectural change is moving from ERC-20 token transfers (which requir
 ### Current Architecture (ERC-20 Tokens)
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Payment       │    │   ERC-20         │    │  FlowPayStream  │
+│   Payment       │    │   ERC-20         │    │  PayStreamStream  │
 │   Agent         │───▶│   Token          │───▶│   Contract      │
 │                 │    │   Contract       │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
@@ -29,7 +29,7 @@ The key architectural change is moving from ERC-20 token transfers (which requir
 ### New Architecture (Native TCRO)
 ```
 ┌─────────────────┐                           ┌─────────────────┐
-│   Payment       │                           │  FlowPayStream  │
+│   Payment       │                           │  PayStreamStream  │
 │   Agent         │──────────────────────────▶│   Contract      │
 │                 │        payable            │   (payable)     │
 └─────────────────┘                           └─────────────────┘
@@ -48,7 +48,7 @@ The key architectural change is moving from ERC-20 token transfers (which requir
 
 ### 1. Smart Contract Updates
 
-#### FlowPayStream Contract Changes
+#### PayStreamStream Contract Changes
 ```solidity
 // OLD: ERC-20 based
 function createStream(
@@ -98,12 +98,12 @@ async getTCROBalance(): Promise<BigNumber> {
 // OLD: Approve then transfer
 async createStream(recipient: string, amount: BigNumber) {
     await this.approveTokens(amount);
-    await this.flowPayContract.createStream(recipient, amount, TOKEN_ADDRESS);
+    await this.payStreamContract.createStream(recipient, amount, TOKEN_ADDRESS);
 }
 
 // NEW: Direct payable call
 async createStream(recipient: string, flowRate: BigNumber, deposit: BigNumber) {
-    await this.flowPayContract.createStream(recipient, flowRate, {
+    await this.payStreamContract.createStream(recipient, flowRate, {
         value: deposit
     });
 }
@@ -117,7 +117,7 @@ async createStream(recipient: string, flowRate: BigNumber, deposit: BigNumber) {
 'x402-payment-required': JSON.stringify({
     type: 'stream',
     amount: '0.0001',
-    token: '0x1234567890123456789012345678901234567890',
+    token: 'LEGACY_TOKEN_ADDRESS',
     recipient: recipientAddress
 })
 

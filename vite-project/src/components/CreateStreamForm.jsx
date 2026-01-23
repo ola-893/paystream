@@ -24,7 +24,7 @@ const ProgressStep = ({ step, currentStep, label }) => {
       <div className={`
         w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all
         ${isCompleted ? 'bg-success-500 text-white' :
-          isActive ? 'bg-flowpay-500 text-white shadow-glow-sm' :
+          isActive ? 'bg-paystream-500 text-white shadow-glow-sm' :
             'bg-white/10 text-white/40'}
       `}>
         {isCompleted ? '✓' : step}
@@ -89,7 +89,7 @@ const TokenSelector = ({ selected, onSelect }) => (
             className={`
               p-4 rounded-xl border transition-all text-left
               ${selected?.symbol === token.symbol
-                ? 'border-flowpay-500 bg-flowpay-500/10 shadow-border-glow'
+                ? 'border-paystream-500 bg-paystream-500/10 shadow-border-glow'
                 : 'border-white/10 bg-white/5 hover:bg-white/10'}
             `}
           >
@@ -125,7 +125,7 @@ const DurationSelector = ({ selected, onSelect, customValue, onCustomChange }) =
             className={`
               p-3 rounded-lg border text-center transition-all
               ${selected?.label === preset.label
-                ? 'border-flowpay-500 bg-flowpay-500/10'
+                ? 'border-paystream-500 bg-paystream-500/10'
                 : 'border-white/10 bg-white/5 hover:bg-white/10'}
             `}
           >
@@ -167,7 +167,7 @@ const RateCalculator = ({ amount, duration, token }) => {
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
           <div className="text-white/50">Flow Rate</div>
-          <div className="font-mono font-semibold text-flowpay-300">
+          <div className="font-mono font-semibold text-paystream-300">
             {rate.toFixed(8)} {token?.symbol || 'TCRO'}/sec
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function CreateStreamForm({
                 <span>Balance: {selectedToken?.balance} {selectedToken?.symbol}</span>
                 <button
                   type="button"
-                  className="text-flowpay-400 hover:text-flowpay-300"
+                  className="text-paystream-400 hover:text-paystream-300"
                   onClick={() => setAmountEth(selectedToken?.balance || '0')}
                 >
                   Max

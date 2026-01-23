@@ -1,10 +1,10 @@
 # Installation
 
-This guide covers installing FlowPay components for different use cases.
+This guide covers installing PayStream components for different use cases.
 
 ## For AI Agent Developers (SDK)
 
-Install the FlowPay SDK to enable your AI agents to make streaming payments:
+Install the PayStream SDK to enable your AI agents to make streaming payments:
 
 ```bash
 cd sdk
@@ -30,13 +30,13 @@ npm install
 
 ```javascript
 const express = require('express');
-const { flowPayMiddleware } = require('./middleware/flowPayMiddleware');
+const { payStreamMiddleware } = require('./middleware/payStreamMiddleware');
 
 const app = express();
 
 // Apply middleware to protected routes
 app.use('/api/premium', flowPayMiddleware({
-  pricePerRequest: '0.001', // MNEE per request
+  pricePerRequest: '0.001', // TCRO per request
   recipientAddress: '0x...',
   contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035'
 }));

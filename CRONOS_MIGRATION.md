@@ -1,6 +1,6 @@
 # Cronos Testnet Migration Guide
 
-This document provides a comprehensive guide for the FlowPay migration from Ethereum Sepolia testnet to Cronos testnet. It includes all changed files, before/after comparisons, breaking changes, and step-by-step user actions.
+This document provides a comprehensive guide for the PayStream migration from Ethereum Sepolia testnet to Cronos testnet. It includes all changed files, before/after comparisons, breaking changes, and step-by-step user actions.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This document provides a comprehensive guide for the FlowPay migration from Ethe
 
 ## Overview
 
-FlowPay has migrated from Ethereum Sepolia testnet to Cronos testnet to leverage:
+PayStream has migrated from Ethereum Sepolia testnet to Cronos testnet to leverage:
 - **Lower gas fees**: Transactions cost significantly less on Cronos
 - **Faster block times**: ~5-6 seconds vs ~12 seconds on Ethereum
 - **Better ecosystem alignment**: Cronos is optimized for DeFi and payment applications
@@ -234,7 +234,7 @@ This migration affects all system components: smart contracts, frontend, backend
 13. ✅ **`docs/contracts/README.md`**
     - Updated deployment network references
 
-14. ✅ **`docs/contracts/flowpaystream.md`**
+14. ✅ **`docs/contracts/paystreamstream.md`**
     - Updated contract deployment info
 
 15. ✅ **`docs/reference/faq.md`**
@@ -243,7 +243,7 @@ This migration affects all system components: smart contracts, frontend, backend
 ### Spec Files (5 files)
 
 1. ✅ **`.kiro/specs/agent-first-demo/requirements.md`**
-   - Updated FlowPay_Contract glossary definition
+   - Updated PayStream_Contract glossary definition
    - Changed "Sepolia" to "Cronos Testnet"
 
 2. ✅ **`.kiro/specs/agent-first-demo/design.md`**
@@ -300,7 +300,7 @@ module.exports = {
 ```bash
 SEPOLIA_RPC_URL=https://rpc.sepolia.org
 PRIVATE_KEY=your_private_key_here
-FLOWPAY_CONTRACT=0x...
+PAYSTREAM_CONTRACT=0x...
 # Legacy token address removed - using native TCRO now
 ```
 
@@ -308,7 +308,7 @@ FLOWPAY_CONTRACT=0x...
 ```bash
 CRONOS_RPC_URL=https://evm-t3.cronos.org
 PRIVATE_KEY=your_private_key_here
-FLOWPAY_CONTRACT=TBD - Deploy yourself
+PAYSTREAM_CONTRACT=TBD - Deploy yourself
 # Legacy token address removed - using native TCRO now
 ```
 
@@ -453,7 +453,7 @@ Follow these steps to complete your migration to Cronos testnet:
 ```bash
 CRONOS_RPC_URL=https://evm-t3.cronos.org
 PRIVATE_KEY=your_private_key_here
-FLOWPAY_CONTRACT=
+PAYSTREAM_CONTRACT=
 # Legacy token address removed - using native TCRO now
 GEMINI_API_KEY=your_gemini_api_key
 DAILY_BUDGET=10
@@ -492,12 +492,12 @@ DAILY_BUDGET=10
 ```
 Deploying to cronos_testnet...
 MockMNEE deployed to: 0x1234...
-FlowPayStream deployed to: 0x5678...
+PayStreamStream deployed to: 0x5678...
 ```
 
 ### Step 5: Update Contract Addresses
 - [ ] Open `vite-project/src/contactInfo.js`
-- [ ] Update `FLOWPAY_CONTRACT` with the deployed FlowPayStream address
+- [ ] Update `PAYSTREAM_CONTRACT` with the deployed PayStreamStream address
 - [ ] Legacy token address removed - using native TCRO now
 - [ ] Save the file
 - [ ] Optionally update your `.env` file with the addresses
@@ -559,7 +559,7 @@ FlowPayStream deployed to: 0x5678...
 
 ### Automatic Setup (via App)
 
-The FlowPay frontend will automatically prompt you to add Cronos Testnet when you connect your wallet. Simply:
+The PayStream frontend will automatically prompt you to add Cronos Testnet when you connect your wallet. Simply:
 
 1. Connect your wallet
 2. Click "Switch Network" when prompted
@@ -609,7 +609,7 @@ Before deploying contracts to Cronos testnet:
    The deployment script will output the deployed contract addresses:
    ```
    MockMNEE deployed to: 0x1234567890abcdef...
-   FlowPayStream deployed to: 0xabcdef1234567890...
+   PayStreamStream deployed to: 0xabcdef1234567890...
    ```
    
    Save these addresses for the next step.
@@ -617,7 +617,7 @@ Before deploying contracts to Cronos testnet:
 5. **Update Configuration**:
    Update `vite-project/src/contactInfo.js`:
    ```javascript
-   export const FLOWPAY_CONTRACT = '0xabcdef1234567890...';
+   export const PAYSTREAM_CONTRACT = '0xabcdef1234567890...';
    // Legacy token address removed - using native TCRO now
    ```
 
@@ -628,7 +628,7 @@ Before deploying contracts to Cronos testnet:
 
 Typical gas costs on Cronos testnet:
 - **MockMNEE deployment**: ~1,500,000 gas (~7.5 TCRO)
-- **FlowPayStream deployment**: ~2,000,000 gas (~10 TCRO)
+- **PayStreamStream deployment**: ~2,000,000 gas (~10 TCRO)
 - **Total**: ~17.5 TCRO (free from faucet)
 
 ### Troubleshooting Deployment
@@ -760,7 +760,7 @@ If you encounter issues not covered here:
 
 1. **Check Cronos Documentation**: https://docs.cronos.org
 2. **Cronos Discord**: Join the Cronos community for support
-3. **GitHub Issues**: Report bugs in the FlowPay repository
+3. **GitHub Issues**: Report bugs in the PayStream repository
 4. **Cronos Explorer**: Use to debug transactions and contracts
 5. **Cronos Status Page**: Check for network outages
 
@@ -847,7 +847,7 @@ If you encounter issues not covered here:
 
 ## Summary
 
-This migration guide covers all aspects of moving FlowPay from Ethereum Sepolia to Cronos testnet. Key points:
+This migration guide covers all aspects of moving PayStream from Ethereum Sepolia to Cronos testnet. Key points:
 
 - ✅ **40+ files updated** across the entire codebase
 - ✅ **Zero feature loss** - all functionality preserved

@@ -2,13 +2,13 @@
 
 ## Introduction
 
-This specification outlines the migration from ERC-20 tokens to native TCRO (Cronos testnet token) for all payment operations in the FlowPay system. The goal is to eliminate all mock token dependencies and use the native Cronos testnet currency for a more authentic and production-ready demonstration.
+This specification outlines the migration from ERC-20 tokens to native TCRO (Cronos testnet token) for all payment operations in the PayStream system. The goal is to eliminate all mock token dependencies and use the native Cronos testnet currency for a more authentic and production-ready demonstration.
 
 ## Glossary
 
 - **TCRO**: Native token of the Cronos testnet blockchain
 - **Legacy_Token**: Custom ERC-20 token contract used for testing (to be removed)
-- **FlowPayStream**: Smart contract that handles payment streams
+- **PayStreamStream**: Smart contract that handles payment streams
 - **Payment_Agent**: Agent component that manages wallet and payment operations
 - **x402_Server**: HTTP server that handles payment-required responses
 - **Demo_System**: Complete demonstration system including CLI and web interfaces
@@ -29,7 +29,7 @@ This specification outlines the migration from ERC-20 tokens to native TCRO (Cro
 
 ### Requirement 2: Update Smart Contract Architecture
 
-**User Story:** As a blockchain developer, I want the FlowPayStream contract to handle native TCRO payments, so that no ERC-20 token approvals are needed.
+**User Story:** As a blockchain developer, I want the PayStreamStream contract to handle native TCRO payments, so that no ERC-20 token approvals are needed.
 
 #### Acceptance Criteria
 

@@ -1,15 +1,15 @@
 import { expect } from 'chai';
-import { FlowPaySDK } from '../src/FlowPaySDK';
+import { PayStreamSDK } from '../src/PayStreamSDK';
 import { Wallet, ethers } from 'ethers';
 import axios from 'axios';
 
 describe('Safety & Auto-renewal Systems', () => {
-    let sdk: FlowPaySDK;
+    let sdk: PayStreamSDK;
     let createStreamSpy: any;
 
     beforeEach(() => {
         // Init SDK with strict limits
-        sdk = new FlowPaySDK({
+        sdk = new PayStreamSDK({
             privateKey: Wallet.createRandom().privateKey,
             rpcUrl: 'http://localhost:8545',
             spendingLimits: {

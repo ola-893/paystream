@@ -2,7 +2,7 @@
 name = "paystream_cro"
 version = "0.1.0"
 edition = "2021"
-description = "AI agents with x402 payment capabilities for FlowPay streaming"
+description = "AI agents with x402 payment capabilities for PayStream streaming"
 
 [dependencies]
 tokio = { version = "1.35", features = ["full"] }

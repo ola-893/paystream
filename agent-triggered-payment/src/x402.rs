@@ -108,13 +108,13 @@ impl X402PaymentRequirement {
         ];
 
         if let Some(ref rate) = self.rate_per_second {
-            lines.push(format!("├─ Rate: {} MNEE/second", rate));
+            lines.push(format!("├─ Rate: {} TCRO/second", rate));
         }
         if let Some(ref deposit) = self.min_deposit {
-            lines.push(format!("├─ Min Deposit: {} MNEE", deposit));
+            lines.push(format!("├─ Min Deposit: {} TCRO", deposit));
         }
         if let Some(ref amount) = self.amount {
-            lines.push(format!("├─ Amount: {} MNEE", amount));
+            lines.push(format!("├─ Amount: {} TCRO", amount));
         }
         if let Some(ref desc) = self.description {
             lines.push(format!("└─ Description: {}", desc));

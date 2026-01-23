@@ -1,11 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const flowPayMiddleware = require('./middleware/flowPayMiddleware');
+const payStreamMiddleware = require('./middleware/payStreamMiddleware');
 require('dotenv').config({ path: '../.env' });
 
 // Config - now using native TCRO (no token address needed)
 const PORT = process.env.PORT || 3001;
-const CONTRACT_ADDRESS = process.env.VITE_CONTRACT_ADDRESS || process.env.FLOWPAY_CONTRACT || "0x155A00fBE3D290a8935ca4Bf5244283685Bb0035";
+const CONTRACT_ADDRESS = process.env.VITE_CONTRACT_ADDRESS || process.env.PAYSTREAM_CONTRACT || "0x155A00fBE3D290a8935ca4Bf5244283685Bb0035";
 const RPC_URL = process.env.CRONOS_RPC_URL || "https://evm-t3.cronos.org";
 // Recipient address for payments - use a dedicated server wallet
 const RECIPIENT_ADDRESS = process.env.RECIPIENT_ADDRESS || "0x1f973bc13Fe975570949b09C022dCCB46944F5ED";
@@ -14,10 +14,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// FlowPay Configuration - Native TCRO
+// PayStream Configuration - Native TCRO
 const defaultConfig = {
     rpcUrl: RPC_URL,
-    flowPayContractAddress: CONTRACT_ADDRESS,
+    payStreamContractAddress: CONTRACT_ADDRESS,
     recipientAddress: RECIPIENT_ADDRESS,
     routes: {
         '/api/weather': {
@@ -45,7 +45,7 @@ const createApp = (config = defaultConfig) => {
     app.use(express.json());
 
     // Apply Middleware for x402 handling
-    app.use(flowPayMiddleware(config));
+    app.use(payStreamMiddleware(config));
 
     // Protected Route (Streaming)
     app.get('/api/weather', (req, res) => {
@@ -53,7 +53,7 @@ const createApp = (config = defaultConfig) => {
             temperature: 22,
             city: 'London',
             condition: 'Cloudy',
-            paidWithStream: req.flowPay.streamId
+            paidWithStream: req.payStream.streamId
         });
     });
 
@@ -61,7 +61,7 @@ const createApp = (config = defaultConfig) => {
     app.get('/api/premium', (req, res) => {
         res.json({
             content: "This is premium content.",
-            paidWithStream: req.flowPay.streamId
+            paidWithStream: req.payStream.streamId
         });
     });
 
@@ -69,7 +69,7 @@ const createApp = (config = defaultConfig) => {
     app.get('/api/expensive', (req, res) => {
         res.json({
             content: "This is very expensive premium content.",
-            paidWithStream: req.flowPay.streamId
+            paidWithStream: req.payStream.streamId
         });
     });
 
@@ -87,7 +87,7 @@ const createApp = (config = defaultConfig) => {
 if (require.main === module) {
     const app = createApp();
     app.listen(PORT, () => {
-        console.log(`FlowPay Test Server running on port ${PORT}`);
+        console.log(`PayStream Test Server running on port ${PORT}`);
         console.log(`Contract Address: ${CONTRACT_ADDRESS}`);
         console.log(`Recipient Address: ${RECIPIENT_ADDRESS}`);
         console.log(`Currency: Native TCRO`);

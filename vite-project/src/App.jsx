@@ -55,7 +55,7 @@ function AppContent() {
   const [myStreamIds, setMyStreamIds] = useState([]);
   const [tcroBalance, setTcroBalance] = useState('0.0');
 
-  // FlowPay Dashboard State
+  // PayStream Dashboard State
   const [agentConfig, setAgentConfig] = useState({ agentId: 'Dashboard-Agent', spendingLimits: { dailyLimit: '100' } });
   const [isPaused, setIsPaused] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');

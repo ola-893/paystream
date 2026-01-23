@@ -2,13 +2,13 @@
 
 ## General
 
-### What is FlowPay?
+### What is PayStream?
 
-FlowPay is a payment streaming protocol that enables AI agents to pay for API services using continuous MNEE token streams instead of individual transactions.
+PayStream is a payment streaming protocol that enables AI agents to pay for API services using continuous native TCRO token streams instead of individual transactions.
 
-### What problem does FlowPay solve?
+### What problem does PayStream solve?
 
-FlowPay solves the **N+1 Signature Problem**: traditionally, N API requests require N payment signatures. FlowPay reduces this to just 2 signatures (open stream + close stream) regardless of request volume.
+PayStream solves the **N+1 Signature Problem**: traditionally, N API requests require N payment signatures. PayStream reduces this to just 2 signatures (open stream + close stream) regardless of request volume.
 
 ### What is the x402 protocol?
 
@@ -18,11 +18,11 @@ x402 is a protocol for HTTP-based payment negotiation using the 402 (Payment Req
 
 ### Which networks are supported?
 
-Currently, FlowPay is deployed on Cronos Testnet. Mainnet deployment is planned.
+Currently, PayStream is deployed on Cronos Testnet. Mainnet deployment is planned.
 
-### What token does FlowPay use?
+### What token does PayStream use?
 
-FlowPay uses MNEE (Mock Native Electronic Economy) tokens. On testnet, you can mint free test tokens.
+PayStream uses native TCRO tokens on Cronos. On testnet, you can get free TCRO from the faucet.
 
 ### How is the flow rate calculated?
 
@@ -30,7 +30,7 @@ FlowPay uses MNEE (Mock Native Electronic Economy) tokens. On testnet, you can m
 flowRate = totalAmount / duration
 ```
 
-For example, 3600 MNEE over 1 hour = 1 MNEE per second.
+For example, 3600 TCRO over 1 hour = 1 TCRO per second.
 
 ### Can I cancel a stream?
 
@@ -42,12 +42,10 @@ When a stream reaches its stop time, no more funds flow. The recipient can still
 
 ## Usage
 
-### How do I get test MNEE tokens?
+### How do I get test TCRO tokens?
 
-1. Connect your wallet to the FlowPay dashboard
-2. Go to the "Streams" tab
-3. Click "Mint 1000 MNEE"
-4. Confirm the transaction
+Get free testnet TCRO from the Cronos faucet:
+- https://cronos.org/faucet
 
 ### How do I create a stream?
 
@@ -55,8 +53,7 @@ When a stream reaches its stop time, no more funds flow. The recipient can still
 1. Go to "Streams" tab
 2. Enter recipient address, amount, and duration
 3. Click "Create Stream"
-4. Approve token allowance (first time)
-5. Confirm stream creation
+4. Confirm stream creation with TCRO
 
 **Via SDK:**
 ```typescript
@@ -77,14 +74,14 @@ await sdk.withdrawFromStream(streamId);
 
 Or use the dashboard's "Withdraw" button.
 
-### How do I integrate FlowPay as a provider?
+### How do I integrate PayStream as a provider?
 
 Use the x402 middleware:
 
 ```javascript
-const { flowPayMiddleware } = require('./middleware/flowPayMiddleware');
+const { payStreamMiddleware } = require('./middleware/payStreamMiddleware');
 
-app.use('/api/premium', flowPayMiddleware({
+app.use('/api/premium', payStreamMiddleware({
   pricePerRequest: '0.001',
   recipientAddress: '0x...'
 }));
@@ -97,10 +94,10 @@ app.use('/api/premium', flowPayMiddleware({
 You need TCRO for gas fees. Get free testnet TCRO from:
 - https://cronos.org/faucet
 
-### "MNEE transfer failed"
+### "TCRO transfer failed"
 
-1. Check you have enough MNEE balance
-2. Ensure you've approved the FlowPayStream contract to spend your tokens
+1. Check you have enough TCRO balance
+2. Ensure you have sufficient TCRO for gas fees
 3. Verify the contract addresses are correct
 
 ### "Stream is not active"
@@ -118,9 +115,9 @@ Only the stream recipient can withdraw funds. Make sure you're using the correct
 
 ## Security
 
-### Is FlowPay audited?
+### Is PayStream audited?
 
-FlowPay is currently in testnet phase. A security audit is planned before mainnet deployment.
+PayStream is currently in testnet phase. A security audit is planned before mainnet deployment.
 
 ### What are the spending limits?
 
@@ -137,9 +134,9 @@ Funds in a stream are locked in the smart contract. You can always:
 
 ## Integration
 
-### Does FlowPay work with any AI framework?
+### Does PayStream work with any AI framework?
 
-Yes, FlowPay is framework-agnostic. It works with:
+Yes, PayStream is framework-agnostic. It works with:
 - LangChain
 - AutoGPT
 - Custom agents
@@ -147,7 +144,7 @@ Yes, FlowPay is framework-agnostic. It works with:
 
 ### Can multiple agents share a stream?
 
-Not directly. Each agent should create its own streams. However, the FlowPayProxy component enables multi-agent coordination.
+Not directly. Each agent should create its own streams. However, the PayStreamProxy component enables multi-agent coordination.
 
 ### What's the minimum stream amount?
 

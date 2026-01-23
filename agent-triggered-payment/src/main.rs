@@ -56,7 +56,7 @@ async fn main() {
     for agent in &agents {
         info!("🤖 Agent {} initialized", agent.id);
         info!("   ├─ Wallet: {}...{}", &agent.config.wallet_address[..6], &agent.config.wallet_address[38..]);
-        info!("   └─ Budget: {:.2} MNEE", agent.config.daily_budget);
+        info!("   └─ Budget: {:.2} TCRO", agent.config.daily_budget);
         println!();
     }
 
@@ -74,7 +74,7 @@ async fn main() {
                 min_deposit: Some("1.00".to_string()),
                 description: Some("Real-time weather data API".to_string()),
                 network: Some("cronos_testnet".to_string()),
-                token: Some("MNEE".to_string()),
+                token: Some("TCRO".to_string()),
             },
         ),
         // Scenario 2: Translation API (Per-request mode)
@@ -89,7 +89,7 @@ async fn main() {
                 min_deposit: None,
                 description: Some("AI Translation Service".to_string()),
                 network: Some("cronos_testnet".to_string()),
-                token: Some("MNEE".to_string()),
+                token: Some("TCRO".to_string()),
             },
         ),
         // Scenario 3: Compute API (Streaming, different agent)
@@ -104,7 +104,7 @@ async fn main() {
                 min_deposit: Some("5.00".to_string()),
                 description: Some("GPU Compute - ML Inference".to_string()),
                 network: Some("cronos_testnet".to_string()),
-                token: Some("MNEE".to_string()),
+                token: Some("TCRO".to_string()),
             },
         ),
         // Scenario 4: Data feed (Per-request)
@@ -119,7 +119,7 @@ async fn main() {
                 min_deposit: None,
                 description: Some("Real-time market price feed".to_string()),
                 network: Some("cronos_testnet".to_string()),
-                token: Some("MNEE".to_string()),
+                token: Some("TCRO".to_string()),
             },
         ),
     ];
@@ -146,7 +146,7 @@ async fn main() {
                         info!("   Stream ID: #{}", stream_id);
                     }
                     if let Some(ref amount) = result.amount_spent {
-                        info!("   Amount: {} MNEE", amount);
+                        info!("   Amount: {} TCRO", amount);
                     }
                 } else {
                     info!("✅ HTTP {} - No payment required", result.status);
@@ -184,7 +184,7 @@ async fn main() {
     info!("   1. Agents made HTTP requests to premium APIs");
     info!("   2. Received HTTP 402 Payment Required responses");
     info!("   3. Parsed x402 headers (X-FlowPay-Mode, X-FlowPay-Rate, etc.)");
-    info!("   4. Created MNEE payment streams or made per-request payments");
+    info!("   4. Created TCRO payment streams or made per-request payments");
     info!("   5. Retried requests with payment proof");
     info!("   6. Successfully accessed paid services");
     println!();

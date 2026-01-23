@@ -16,7 +16,7 @@ This document tracks the testing and validation of the Cronos migration.
 
 ### Deployed Contracts
 
-#### FlowPayStream Contract
+#### PayStreamStream Contract
 - **Address:** `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
 - **Explorer:** https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 - **Status:** ✅ Deployed successfully (Native TCRO payments)
@@ -27,13 +27,13 @@ This document tracks the testing and validation of the Cronos migration.
 Deploying contracts with the account: 0x506e724d7FDdbF91B6607d5Af0700d385D952f8a
 Network: cronos_testnet
 
-📝 Deploying FlowPayStream to Cronos Testnet...
-✅ FlowPayStream deployed to: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+📝 Deploying PayStreamStream to Cronos Testnet...
+✅ PayStreamStream deployed to: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
    View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
-📝 Deploying FlowPayStream to Cronos Testnet...
+📝 Deploying PayStreamStream to Cronos Testnet...
    Using native TCRO for payments
-✅ FlowPayStream deployed to: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+✅ PayStreamStream deployed to: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
    View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
 🎉 Deployment complete!
@@ -41,7 +41,7 @@ Network: cronos_testnet
 
 ### Verification Checklist
 
-- [x] FlowPayStream contract deployed successfully
+- [x] PayStreamStream contract deployed successfully
 - [x] Contract visible on Cronos Explorer
 - [x] Native TCRO payment functionality enabled
 - [x] Contract addresses recorded in .env file
@@ -54,7 +54,7 @@ Network: cronos_testnet
 The `.env` file has been updated with the deployed contract addresses:
 
 ```bash
-FLOWPAY_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+PAYSTREAM_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 # Legacy token address removed - using native TCRO now
 ```
 
@@ -132,20 +132,18 @@ With contracts deployed, you can now proceed with:
 
 ### Test Steps
 
-1. **Mint MNEE Tokens**
-   - Navigate to token section
-   - Click "Mint MNEE" button
-   - Approve transaction in MetaMask
-   - Verify tokens received
+1. **Get TCRO Tokens**
+   - Get TCRO from Cronos faucet: https://cronos.org/faucet
+   - Verify TCRO balance in wallet
+   - Ensure sufficient TCRO for gas fees
 
 2. **Create Payment Stream**
    - Fill in stream creation form:
      - Recipient address
-     - Amount (MNEE)
+     - Amount (TCRO)
      - Duration
    - Click "Create Stream"
-   - Approve MNEE spending (if first time)
-   - Approve stream creation transaction
+   - Approve stream creation transaction (includes TCRO transfer)
    - Wait for confirmation
 
 3. **Verify on Cronos Explorer**
@@ -154,7 +152,7 @@ With contracts deployed, you can now proceed with:
    - Check transaction details:
      - Status: Success
      - From: Your address
-     - To: FlowPayStream contract
+     - To: PayStreamStream contract
      - Network: Cronos Testnet
 
 4. **Check Explorer Link Format**
@@ -164,7 +162,7 @@ With contracts deployed, you can now proceed with:
 
 ### Verification Checklist
 
-- [ ] MNEE tokens minted successfully
+- [ ] TCRO tokens obtained from faucet
 - [ ] Stream creation transaction succeeds
 - [ ] Transaction visible on Cronos Explorer
 - [ ] Explorer link format correct
@@ -190,7 +188,7 @@ With contracts deployed, you can now proceed with:
      ```bash
      CRONOS_RPC_URL=https://evm-t3.cronos.org
      PRIVATE_KEY=<your_private_key>
-     FLOWPAY_CONTRACT=<deployed_address>
+     PAYSTREAM_CONTRACT=<deployed_address>
      # Legacy token address removed - using native TCRO now
      GEMINI_API_KEY=<optional>
      DAILY_BUDGET=10
@@ -301,7 +299,7 @@ node scripts/validate-docs.js
 
 1. **Test Wrong Network Error**
    - Connect MetaMask to different network (e.g., Ethereum Mainnet)
-   - Open FlowPay app
+   - Open PayStream app
    - Verify error message: "Please switch to Cronos Testnet"
    - Verify message mentions Chain ID 338
    - Check that switch button appears
@@ -424,7 +422,7 @@ The following tasks require actual blockchain interaction and user setup:
 4. **Update .env with deployed addresses:**
    ```bash
    # Legacy token address removed - using native TCRO now
-   FLOWPAY_CONTRACT=0x...
+   PAYSTREAM_CONTRACT=0x...
    ```
 
 5. **Follow TEST_REPORT.md for remaining tests**

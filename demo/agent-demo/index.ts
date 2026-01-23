@@ -3,7 +3,7 @@
  * Agent-First CLI Demo
  * 
  * A CLI-first demonstration of AI agents autonomously triggering and streaming
- * payments via the x402 protocol and FlowPay.
+ * payments via the x402 protocol and PayStream.
  * 
  * Usage:
  *   npx ts-node index.ts [options]
@@ -35,7 +35,7 @@ const program = new Command();
 
 program
   .name('agent-demo')
-  .description('CLI demo showcasing AI agents autonomously triggering payments via x402 protocol and FlowPay')
+  .description('CLI demo showcasing AI agents autonomously triggering payments via x402 protocol and PayStream')
   .version('1.0.0')
   .option('-v, --verbose', 'Show detailed debug output')
   .option('-q, --quiet', 'Show minimal output')
@@ -92,7 +92,7 @@ function displayConfigSummary(config: EnvConfig): void {
 }
 
 async function main(): Promise<void> {
-  cli.agent('FlowPay Agent Demo');
+  cli.agent('PayStream Agent Demo');
   cli.info('CLI-first demonstration of AI agents making autonomous payments\n');
 
   // Validate environment configuration first (Requirements: 9.1, 9.2)
@@ -119,11 +119,11 @@ async function main(): Promise<void> {
     
     // Initialize agent first for setup check
     const agentConfig: AgentConfig = {
-      name: 'FlowPay Demo Agent',
+      name: 'PayStream Demo Agent',
       privateKey: config.PRIVATE_KEY,
       rpcUrl: config.CRONOS_RPC_URL,
       dailyBudget: ethers.parseEther(config.DAILY_BUDGET),
-      flowPayContract: config.FLOWPAY_CONTRACT,
+      payStreamContract: config.PAYSTREAM_CONTRACT,
       geminiApiKey: config.GEMINI_API_KEY,
       dryRun: options.dryRun || false,
     };
@@ -156,11 +156,11 @@ async function main(): Promise<void> {
   cli.agent('Initializing PaymentAgent...\n');
   
   const agentConfig: AgentConfig = {
-    name: 'FlowPay Demo Agent',
+    name: 'PayStream Demo Agent',
     privateKey: config.PRIVATE_KEY,
     rpcUrl: config.CRONOS_RPC_URL,
     dailyBudget: ethers.parseEther(config.DAILY_BUDGET),
-    flowPayContract: config.FLOWPAY_CONTRACT,
+    payStreamContract: config.PAYSTREAM_CONTRACT,
     geminiApiKey: config.GEMINI_API_KEY,
     dryRun: options.dryRun || false,
   };
@@ -233,7 +233,7 @@ async function main(): Promise<void> {
       const testHost = 'api.example.com';
       const testStream = {
         streamId: '12345',
-        recipient: '0x1234567890123456789012345678901234567890',
+        recipient: 'EXAMPLE_RECIPIENT_ADDRESS',
         amount: ethers.parseEther('1'),
         rate: ethers.parseEther('0.0001'),
         startTime: Math.floor(Date.now() / 1000),

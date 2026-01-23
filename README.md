@@ -1,4 +1,4 @@
-# 💰 FlowPay: x402 + Streaming Payments for AI Agents
+# 💰 PayStream: x402 + Streaming Payments for AI Agents
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![TCRO](https://img.shields.io/badge/Powered%20by-TCRO%20Native-green.svg)
@@ -6,9 +6,9 @@
 ![Cronos](https://img.shields.io/badge/Network-Cronos%20Testnet-blue.svg)
 
 > **🔄 Network Migration Notice**  
-> FlowPay has migrated from Ethereum Sepolia to Cronos Testnet for lower fees and faster transactions. If you're upgrading from a previous version, please see the [**Cronos Migration Guide**](CRONOS_MIGRATION.md) for detailed instructions on updating your environment, deploying contracts, and configuring MetaMask.
+> PayStream has migrated from Ethereum Sepolia to Cronos Testnet for lower fees and faster transactions. If you're upgrading from a previous version, please see the [**Cronos Migration Guide**](CRONOS_MIGRATION.md) for detailed instructions on updating your environment, deploying contracts, and configuring MetaMask.
 
-FlowPay combines **x402's HTTP-native service discovery** with **continuous payment streaming** for AI agents using native TCRO tokens. The best of both worlds: standardized discovery + efficient streaming.
+PayStream combines **x402's HTTP-native service discovery** with **continuous payment streaming** for AI agents using native TCRO tokens. The best of both worlds: standardized discovery + efficient streaming.
 
 **🏆 Built for the TCRO Migration: Native Token Payments for Agents, Commerce, and Automated Finance**
 
@@ -18,9 +18,9 @@ FlowPay combines **x402's HTTP-native service discovery** with **continuous paym
 
 | Resource | Link |
 |----------|------|
-| **Live dApp** | https://flowpay-dashboard.netlify.app |
+| **Live dApp** | https://paystream-dashboard.netlify.app |
 | **Demo Video** | [Watch on YouTube](https://youtu.be/d2uZi4Agi1o?si=MKlDp4BQpHHnh5d6) |
-| **GitHub Repo** | https://github.com/ola-893/flowpay |
+| **GitHub Repo** | https://github.com/ola-893/paystream |
 | **TCRO Contract (Mainnet)** | Native TCRO - No contract needed |
 
 ---
@@ -35,8 +35,8 @@ FlowPay combines **x402's HTTP-native service discovery** with **continuous paym
 ### Step 1: Clone & Install
 
 ```bash
-git clone https://github.com/ola-893/flowpay.git
-cd flowpay
+git clone https://github.com/ola-893/paystream.git
+cd paystream
 npm run install:all
 ```
 
@@ -69,7 +69,7 @@ That's it! The contracts are already deployed on Cronos Testnet - no deployment 
 ## 📋 Deployed Contracts (Cronos Testnet)
 
 | Contract | Address |
-| FlowPayStream | `TBD - Deploy yourself` |
+| PayStreamStream | `TBD - Deploy yourself` |
 
 ---
 
@@ -98,7 +98,7 @@ GEMINI_API_KEY="your_gemini_api_key"
 npm run deploy:cronos
 ```
 
-This will deploy the FlowPayStream contract to Cronos Testnet for native TCRO payments.
+This will deploy the PayStreamStream contract to Cronos Testnet for native TCRO payments.
 
 ### Run Tests
 
@@ -130,14 +130,14 @@ npm run test:sdk           # SDK tests only
 |----------|----------|------------|
 | **x402 Per-Request** | Few API calls | Payment overhead per request |
 | **Streaming** | High-volume usage | Requires upfront deposit |
-| **FlowPay Hybrid** | **Any usage pattern** | **None - best of both!** |
+| **PayStream Hybrid** | **Any usage pattern** | **None - best of both!** |
 
 ### How It Works
 
 ```
 1. Agent makes HTTP request to API
 2. Server returns HTTP 402 with x402-compatible payment requirements
-3. FlowPay SDK parses requirements, uses Gemini AI to decide:
+3. PayStream SDK parses requirements, uses Gemini AI to decide:
    - Few requests expected? → Use x402 per-request mode
    - Many requests expected? → Create TCRO payment stream
 4. Agent pays and accesses service
@@ -159,7 +159,7 @@ npm run test:sdk           # SDK tests only
 - ❌ Batching: Creates settlement delays (30+ seconds)
 - ❌ Off-chain solutions: Requires trusted intermediaries
 
-**FlowPay Solution:**
+**PayStream Solution:**
 - ✅ x402 discovery: Standard HTTP 402 for universal agent interoperability
 - ✅ Streaming payments: Efficient for high-volume usage
 - ✅ TCRO native: Sub-cent fees + instant settlement
@@ -184,7 +184,7 @@ npm run test:sdk           # SDK tests only
 ### x402 Express Middleware
 ```javascript
 // Add payment requirements to any Express endpoint
-app.use(flowPayMiddleware({
+app.use(payStreamMiddleware({
     endpoints: {
         "GET /api/weather": {
             price: "0.0001",
@@ -220,9 +220,9 @@ app.use(flowPayMiddleware({
 
 ### 1. x402 Service Discovery + Streaming
 ```javascript
-import { FlowPayAgent } from 'flowpay-sdk';
+import { PayStreamAgent } from 'paystream-sdk';
 
-const agent = new FlowPayAgent({
+const agent = new PayStreamAgent({
   privateKey: process.env.AGENT_PRIVATE_KEY,
   geminiApiKey: process.env.GEMINI_API_KEY
 });
@@ -240,12 +240,12 @@ console.log(await weather.json());
 ### 2. Provider with x402 Middleware
 ```javascript
 import express from 'express';
-import { flowPayMiddleware } from 'flowpay-sdk';
+import { payStreamMiddleware } from 'paystream-sdk';
 
 const app = express();
 
 // One line to add payment requirements!
-app.use(flowPayMiddleware({
+app.use(payStreamMiddleware({
     endpoints: {
         "GET /api/weather": {
             price: "0.0001",
@@ -260,7 +260,7 @@ app.use(flowPayMiddleware({
         }
     },
     tcroAddress: process.env.TCRO_ADDRESS,
-    flowPayContract: process.env.FLOWPAY_CONTRACT
+    payStreamContract: process.env.PAYSTREAM_CONTRACT
 }));
 
 app.get('/api/weather', (req, res) => {
@@ -272,7 +272,7 @@ app.get('/api/weather', (req, res) => {
 ### 3. AI-Powered Payment Mode Selection
 ```javascript
 // Gemini analyzes usage and recommends optimal mode
-const agent = new FlowPayAgent({
+const agent = new PayStreamAgent({
   geminiApiKey: process.env.GEMINI_API_KEY,
   dailyBudget: '50.00'
 });
@@ -309,7 +309,7 @@ await computeStream.cancel(); // Refunds remaining deposit
 
 ## 💡 Why x402 + TCRO Streaming?
 
-| Feature | x402 Only | Streaming Only | FlowPay Hybrid |
+| Feature | x402 Only | Streaming Only | PayStream Hybrid |
 |---------|-----------|----------------|----------------|
 | Discovery | ✅ Standard HTTP 402 | ❌ Custom | ✅ Standard HTTP 402 |
 | Low-volume efficiency | ✅ Pay per request | ❌ Deposit overhead | ✅ Per-request mode |
@@ -324,7 +324,7 @@ await computeStream.cancel(); // Refunds remaining deposit
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    FlowPay Hybrid Architecture                   │
+│                    PayStream Hybrid Architecture                   │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  ┌──────────────┐         HTTP Request          ┌────────────┐ │
@@ -337,7 +337,7 @@ await computeStream.cancel(); // Refunds remaining deposit
 │         │                                                       │
 │         ▼                                                       │
 │  ┌──────────────────────────────────────────────────────────┐  │
-│  │                    FlowPay SDK                            │  │
+│  │                    PayStream SDK                            │  │
 │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐  │  │
 │  │  │ x402 Parser │  │ Gemini AI   │  │ Payment Manager │  │  │
 │  │  │             │  │ Mode Select │  │ Stream/Request  │  │  │
@@ -347,7 +347,7 @@ await computeStream.cancel(); // Refunds remaining deposit
 │         ┌───────────────────┼───────────────────┐              │
 │         │                   │                   │              │
 │  ┌──────▼──────┐    ┌──────▼──────┐    ┌──────▼──────┐       │
-│  │   FlowPay   │    │    TCRO     │    │    Web      │       │
+│  │   PayStream   │    │    TCRO     │    │    Web      │       │
 │  │  Contract   │◀──▶│   Native    │    │  Dashboard  │       │
 │  │  (Streams)  │    │  (Native)   │    │ (Oversight) │       │
 │  └─────────────┘    └─────────────┘    └─────────────┘       │
@@ -359,14 +359,14 @@ await computeStream.cancel(); // Refunds remaining deposit
 ### x402 Payment Flow
 
 ```
-Consumer Agent                Provider API                FlowPay Contract
+Consumer Agent                Provider API                PayStream Contract
       │                            │                            │
       │──── GET /api/weather ─────▶│                            │
       │                            │                            │
       │◀─── 402 Payment Required ──│                            │
       │     X-Payment-Required:    │                            │
-      │     X-FlowPay-Mode: stream │                            │
-      │     X-FlowPay-Rate: 0.0001 │                            │
+      │     X-PayStream-Mode: stream │                            │
+      │     X-PayStream-Rate: 0.0001 │                            │
       │                            │                            │
       │ [SDK parses, AI decides]   │                            │
       │                            │                            │
@@ -374,7 +374,7 @@ Consumer Agent                Provider API                FlowPay Contract
       │◀───────── Stream #1234 ─────────────────────────────────│
       │                            │                            │
       │── GET /api/weather ───────▶│                            │
-      │   X-FlowPay-Stream: 1234   │                            │
+      │   X-PayStream-Stream: 1234   │                            │
       │                            │── verify stream ──────────▶│
       │                            │◀─ balance OK ──────────────│
       │◀─── 200 OK + Data ─────────│                            │
@@ -412,7 +412,7 @@ When ready for production with real TCRO:
 
 **TCRO Mainnet:** Native token - no contract address needed
 
-Update `vite-project/src/contactInfo.js` with mainnet addresses and deploy FlowPayStream to mainnet.
+Update `vite-project/src/contactInfo.js` with mainnet addresses and deploy PayStreamStream to mainnet.
 
 ---
 
@@ -421,9 +421,9 @@ Update `vite-project/src/contactInfo.js` with mainnet addresses and deploy FlowP
 ### Basic Stream Creation
 
 ```javascript
-import { FlowPayAgent } from 'flowpay-sdk';
+import { PayStreamAgent } from 'paystream-sdk';
 
-const agent = new FlowPayAgent({
+const agent = new PayStreamAgent({
   privateKey: process.env.AGENT_PRIVATE_KEY,
   network: 'cronos_testnet'
 });
@@ -445,9 +445,9 @@ console.log(`Stream #${stream.id} created!`);
 ### AI-Powered Agent
 
 ```javascript
-import { FlowPayAgent } from 'flowpay-sdk';
+import { PayStreamAgent } from 'paystream-sdk';
 
-const agent = new FlowPayAgent({
+const agent = new PayStreamAgent({
   privateKey: process.env.AGENT_PRIVATE_KEY,
   geminiApiKey: process.env.GEMINI_API_KEY,
   dailyBudget: '50.00'
@@ -471,7 +471,7 @@ console.log(response);
 
 1. **Agent Alice** (Consumer) needs weather data
 2. **Agent Bob** (Provider) offers weather API at $0.0001/call
-3. Alice opens a FlowPay stream to Bob
+3. Alice opens a PayStream stream to Bob
 4. Alice makes 1,000 API calls over 10 minutes
 5. Bob's balance increases in real-time: $0.00 → $0.10
 6. Bob withdraws earnings anytime
@@ -494,19 +494,19 @@ console.log(response);
 ## 📁 Project Structure
 
 ```
-flowpay/
+paystream/
 ├── contracts/
-│   ├── FlowPayStream.sol      # TCRO streaming contract
+│   ├── PayStreamStream.sol      # TCRO streaming contract
 ├── scripts/
 │   └── deploy.js              # Deployment script
 ├── sdk/
 │   └── src/
-│       ├── FlowPaySDK.ts      # Agent SDK with x402 handling
+│       ├── PayStreamSDK.ts      # Agent SDK with x402 handling
 │       ├── GeminiPaymentBrain.ts  # AI payment decisions
 │       └── SpendingMonitor.ts # Budget management
 ├── server/
 │   └── middleware/
-│       └── flowPayMiddleware.js  # x402 Express middleware
+│       └── payStreamMiddleware.js  # x402 Express middleware
 ├── demo/
 │   ├── consumer.ts            # AI agent demo (consumer)
 │   └── provider.ts            # API provider demo
@@ -518,7 +518,7 @@ flowpay/
 │   │   └── contactInfo.js     # Contract addresses
 │   └── netlify.toml           # Deployment config
 ├── test/
-│   └── FlowPayStream.test.js  # Contract tests
+│   └── PayStreamStream.test.js  # Contract tests
 ├── hardhat.config.js
 ├── package.json
 ├── LICENSE                    # MIT License
@@ -533,13 +533,13 @@ flowpay/
 
 ### How TCRO is Used
 
-FlowPay uses native TCRO tokens for all streaming payments:
-- **Payment Streams**: TCRO tokens are sent directly to the FlowPayStream smart contract and streamed per-second to recipients
+PayStream uses native TCRO tokens for all streaming payments:
+- **Payment Streams**: TCRO tokens are sent directly to the PayStreamStream smart contract and streamed per-second to recipients
 - **x402 Protocol**: AI agents pay for API access using TCRO via the x402 HTTP payment negotiation standard
 - **Testnet**: Uses native TCRO on Cronos Testnet (get from faucet)
 - **Mainnet Ready**: Designed to work with real TCRO on Cronos Mainnet
 
-FlowPay demonstrates:
+PayStream demonstrates:
 - ✅ x402-compatible service discovery (HTTP 402 standard)
 - ✅ AI agents transacting autonomously with TCRO
 - ✅ Hybrid payment modes (per-request + streaming)
@@ -547,7 +547,7 @@ FlowPay demonstrates:
 - ✅ Multi-agent service coordination
 - ✅ Human oversight and safety controls
 
-### Why FlowPay Stands Out
+### Why PayStream Stands Out
 
 1. **x402 Compatibility** - Works with the emerging agent payment ecosystem
 2. **Streaming Efficiency** - 90% gas savings for high-volume usage

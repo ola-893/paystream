@@ -1,7 +1,7 @@
 {
   "name": "agent-demo",
   "version": "1.0.0",
-  "description": "CLI-first demo showcasing AI agents autonomously triggering payments via x402 protocol and FlowPay",
+  "description": "CLI-first demo showcasing AI agents autonomously triggering payments via x402 protocol and PayStream",
   "main": "dist/index.js",
   "scripts": {
     "start": "ts-node index.ts",
@@ -11,7 +11,7 @@
   },
   "keywords": [
     "x402",
-    "flowpay",
+    "paystream",
     "ai-agent",
     "payments",
     "blockchain"
