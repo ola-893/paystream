@@ -19,7 +19,6 @@ export interface EnvConfig {
   PRIVATE_KEY: string;
   CRONOS_RPC_URL: string;
   FLOWPAY_CONTRACT: string;
-  MNEE_TOKEN: string;
   
   // Optional variables with defaults
   GEMINI_API_KEY?: string;
@@ -44,14 +43,13 @@ const REQUIRED_VARIABLES = [
   'PRIVATE_KEY',
   'CRONOS_RPC_URL',
   'FLOWPAY_CONTRACT',
-  'MNEE_TOKEN',
 ] as const;
 
 /**
  * Default values for optional variables
  */
 const DEFAULTS = {
-  DAILY_BUDGET: '10',           // 10 MNEE default daily budget
+  DAILY_BUDGET: '10',           // 10 TCRO default daily budget
   SERVER_URL: 'http://localhost:3001',
 } as const;
 
@@ -107,7 +105,6 @@ export function validateEnvironment(): ValidationResult {
     PRIVATE_KEY: process.env.PRIVATE_KEY!,
     CRONOS_RPC_URL: process.env.CRONOS_RPC_URL!,
     FLOWPAY_CONTRACT: process.env.FLOWPAY_CONTRACT!,
-    MNEE_TOKEN: process.env.MNEE_TOKEN!,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     DAILY_BUDGET: process.env.DAILY_BUDGET || DEFAULTS.DAILY_BUDGET,
     SERVER_URL: process.env.SERVER_URL || DEFAULTS.SERVER_URL,
@@ -193,9 +190,8 @@ export function getConfigSummary(config: EnvConfig): Record<string, string> {
     PRIVATE_KEY: maskPrivateKey(config.PRIVATE_KEY),
     CRONOS_RPC_URL: config.CRONOS_RPC_URL,
     FLOWPAY_CONTRACT: config.FLOWPAY_CONTRACT,
-    MNEE_TOKEN: config.MNEE_TOKEN,
     GEMINI_API_KEY: config.GEMINI_API_KEY ? '***configured***' : 'not set',
-    DAILY_BUDGET: `${config.DAILY_BUDGET} MNEE`,
+    DAILY_BUDGET: `${config.DAILY_BUDGET} TCRO`,
     SERVER_URL: config.SERVER_URL,
   };
 }

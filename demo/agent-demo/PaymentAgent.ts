@@ -19,7 +19,6 @@ export interface AgentConfig {
   rpcUrl: string;
   dailyBudget: bigint;        // in wei (18 decimals)
   flowPayContract: string;
-  mneeToken: string;
   geminiApiKey?: string;      // optional for AI decisions
   dryRun?: boolean;           // optional: simulate without real transactions (Requirements: 9.3, 9.7)
 }
@@ -41,7 +40,7 @@ export interface StreamInfo {
  */
 export interface AgentState {
   walletAddress: string;
-  mneeBalance: bigint;
+  tcroBalance: bigint;
   dailySpent: bigint;
   activeStreams: Map<string, StreamInfo>;  // host -> stream
   requestCount: number;
@@ -94,17 +93,11 @@ export interface StreamMetadata {
   purpose: string;
 }
 
-// ERC20 ABI for MNEE token interactions
-const ERC20_ABI = [
-  'function balanceOf(address owner) view returns (uint256)',
-  'function approve(address spender, uint256 amount) returns (bool)',
-  'function allowance(address owner, address spender) view returns (uint256)',
-  'function transfer(address to, uint256 amount) returns (bool)',
-];
+// ERC20 ABI removed - using native TCRO instead
 
-// FlowPayStream contract ABI
+// FlowPayStream contract ABI - updated for native TCRO
 const FLOWPAY_ABI = [
-  'function createStream(address recipient, uint256 duration, uint256 amount, string memory metadata) external',
+  'function createStream(address recipient, uint256 duration, string memory metadata) external payable',
   'function cancelStream(uint256 streamId) external',
   'function isStreamActive(uint256 streamId) external view returns (bool)',
   'function getClaimableBalance(uint256 streamId) external view returns (uint256)',
@@ -127,11 +120,10 @@ export class PaymentAgent {
   private config: AgentConfig;
   private wallet: Wallet;
   private provider: JsonRpcProvider;
-  private mneeContract: Contract;
   private flowPayContract: Contract;
   
   // State tracking
-  private _mneeBalance: bigint = 0n;
+  private _tcroBalance: bigint = 0n;
   private _dailySpent: bigint = 0n;
   private _activeStreams: Map<string, StreamInfo> = new Map();
   private _requestCount: number = 0;
@@ -156,8 +148,7 @@ export class PaymentAgent {
     this.provider = new JsonRpcProvider(config.rpcUrl);
     this.wallet = new Wallet(config.privateKey, this.provider);
     
-    // Initialize contracts
-    this.mneeContract = new Contract(config.mneeToken, ERC20_ABI, this.wallet);
+    // Initialize FlowPay contract
     this.flowPayContract = new Contract(config.flowPayContract, FLOWPAY_ABI, this.wallet);
   }
 
@@ -169,12 +160,12 @@ export class PaymentAgent {
    */
   async initialize(): Promise<void> {
     if (this._dryRun) {
-      // In dry-run mode, use a mock balance (100 MNEE)
+      // In dry-run mode, use a mock balance (100 TCRO)
       // This allows testing budget logic without real chain interaction
-      this._mneeBalance = ethers.parseEther('100');
+      this._tcroBalance = ethers.parseEther('100');
     } else {
-      // Fetch initial MNEE balance from chain
-      this._mneeBalance = await this.mneeContract.balanceOf(this.wallet.address);
+      // Fetch initial TCRO balance from chain
+      this._tcroBalance = await this.provider.getBalance(this.wallet.address);
     }
     this._initialized = true;
   }
@@ -195,11 +186,11 @@ export class PaymentAgent {
   }
 
   /**
-   * Get current MNEE balance
+   * Get current TCRO balance
    * Requirements: 1.2
    */
-  get mneeBalance(): bigint {
-    return this._mneeBalance;
+  get tcroBalance(): bigint {
+    return this._tcroBalance;
   }
 
   /**
@@ -240,7 +231,7 @@ export class PaymentAgent {
     }
     
     // Check against actual balance
-    if (amount > this._mneeBalance) {
+    if (amount > this._tcroBalance) {
       return false;
     }
     
@@ -255,7 +246,7 @@ export class PaymentAgent {
   recordPayment(amount: bigint): void {
     this.resetDailyIfNeeded();
     this._dailySpent += amount;
-    this._mneeBalance -= amount;
+    this._tcroBalance -= amount;
     this._paymentCount++;
   }
 
@@ -271,10 +262,10 @@ export class PaymentAgent {
     if (this._dailySpent + amount > this.config.dailyBudget) {
       const remaining = this.config.dailyBudget - this._dailySpent;
       throw new Error(
-        `Budget exceeded: daily limit is ${ethers.formatEther(this.config.dailyBudget)} MNEE, ` +
-        `already spent ${ethers.formatEther(this._dailySpent)} MNEE, ` +
-        `remaining ${ethers.formatEther(remaining)} MNEE, ` +
-        `requested ${ethers.formatEther(amount)} MNEE`
+        `Budget exceeded: daily limit is ${ethers.formatEther(this.config.dailyBudget)} TCRO, ` +
+        `already spent ${ethers.formatEther(this._dailySpent)} TCRO, ` +
+        `remaining ${ethers.formatEther(remaining)} TCRO, ` +
+        `requested ${ethers.formatEther(amount)} TCRO`
       );
     }
     
@@ -283,19 +274,19 @@ export class PaymentAgent {
   }
 
   /**
-   * Check MNEE balance before attempting payment
-   * Requirements: 8.3 - Check MNEE balance before attempting payment, report shortfall if insufficient
+   * Check TCRO balance before attempting payment
+   * Requirements: 8.3 - Check TCRO balance before attempting payment, report shortfall if insufficient
    * 
    * @param amount - Amount to check
    * @throws Error if balance is insufficient, with shortfall details
    */
   checkBalance(amount: bigint): void {
-    if (amount > this._mneeBalance) {
-      const shortfall = amount - this._mneeBalance;
+    if (amount > this._tcroBalance) {
+      const shortfall = amount - this._tcroBalance;
       throw new Error(
-        `Insufficient MNEE balance: need ${ethers.formatEther(amount)} MNEE, ` +
-        `have ${ethers.formatEther(this._mneeBalance)} MNEE, ` +
-        `shortfall ${ethers.formatEther(shortfall)} MNEE`
+        `Insufficient TCRO balance: need ${ethers.formatEther(amount)} TCRO, ` +
+        `have ${ethers.formatEther(this._tcroBalance)} TCRO, ` +
+        `shortfall ${ethers.formatEther(shortfall)} TCRO`
       );
     }
   }
@@ -308,8 +299,8 @@ export class PaymentAgent {
    * @returns Shortfall amount (0 if balance is sufficient)
    */
   getBalanceShortfall(amount: bigint): bigint {
-    if (amount > this._mneeBalance) {
-      return amount - this._mneeBalance;
+    if (amount > this._tcroBalance) {
+      return amount - this._tcroBalance;
     }
     return 0n;
   }
@@ -322,7 +313,7 @@ export class PaymentAgent {
    * @returns true if balance is sufficient, false otherwise
    */
   hasSufficientBalance(amount: bigint): boolean {
-    return amount <= this._mneeBalance;
+    return amount <= this._tcroBalance;
   }
 
   /**
@@ -422,7 +413,7 @@ export class PaymentAgent {
     
     return {
       walletAddress: this.wallet.address,
-      mneeBalance: this._mneeBalance,
+      tcroBalance: this._tcroBalance,
       dailySpent: this._dailySpent,
       activeStreams: new Map(this._activeStreams),
       requestCount: this._requestCount,
@@ -431,7 +422,7 @@ export class PaymentAgent {
   }
 
   /**
-   * Refresh MNEE balance from chain
+   * Refresh TCRO balance from chain
    * Requirements: 9.3, 9.7
    * 
    * In dry-run mode, returns the current mock balance without chain interaction.
@@ -439,10 +430,10 @@ export class PaymentAgent {
   async refreshBalance(): Promise<bigint> {
     if (this._dryRun) {
       // In dry-run mode, just return current balance (no chain interaction)
-      return this._mneeBalance;
+      return this._tcroBalance;
     }
-    this._mneeBalance = await this.mneeContract.balanceOf(this.wallet.address);
-    return this._mneeBalance;
+    this._tcroBalance = await this.provider.getBalance(this.wallet.address);
+    return this._tcroBalance;
   }
 
   /**
@@ -489,13 +480,6 @@ export class PaymentAgent {
    */
   getWallet(): Wallet {
     return this.wallet;
-  }
-
-  /**
-   * Get the MNEE contract instance
-   */
-  getMneeContract(): Contract {
-    return this.mneeContract;
   }
 
   /**
@@ -547,15 +531,15 @@ export class PaymentAgent {
         duration = 60; // 1 minute for per-request payments
       }
 
-      // Check MNEE balance before attempting payment (Requirements: 8.3)
+      // Check TCRO balance before attempting payment (Requirements: 8.3)
       // This provides early failure with clear shortfall reporting
       if (!this.hasSufficientBalance(amount)) {
         const shortfall = this.getBalanceShortfall(amount);
         return {
           success: false,
-          error: `Insufficient MNEE balance: need ${ethers.formatEther(amount)} MNEE, ` +
-                 `have ${ethers.formatEther(this._mneeBalance)} MNEE, ` +
-                 `shortfall ${ethers.formatEther(shortfall)} MNEE`,
+          error: `Insufficient TCRO balance: need ${ethers.formatEther(amount)} TCRO, ` +
+                 `have ${ethers.formatEther(this._tcroBalance)} TCRO, ` +
+                 `shortfall ${ethers.formatEther(shortfall)} TCRO`,
         };
       }
 
@@ -597,21 +581,7 @@ export class PaymentAgent {
 
       // REAL MODE: Execute actual blockchain transactions
 
-      // Step 1: Approve MNEE tokens to FlowPay contract (Requirements: 4.1)
-      const currentAllowance = await this.mneeContract.allowance(
-        this.wallet.address,
-        this.config.flowPayContract
-      );
-
-      if (currentAllowance < amount) {
-        const approveTx = await this.mneeContract.approve(
-          this.config.flowPayContract,
-          amount
-        );
-        await approveTx.wait();
-      }
-
-      // Step 2: Build metadata (Requirements: 4.3)
+      // Step 1: Build metadata (Requirements: 4.3)
       const metadata: StreamMetadata = {
         agentId: this.config.name,
         timestamp: Date.now(),
@@ -620,12 +590,12 @@ export class PaymentAgent {
       };
       const metadataString = JSON.stringify(metadata);
 
-      // Step 3: Create stream on FlowPay contract (Requirements: 4.2)
+      // Step 2: Create stream on FlowPay contract with native TCRO (Requirements: 4.2)
       const createTx = await this.flowPayContract.createStream(
         requirement.recipient,
         duration,
-        amount,
-        metadataString
+        metadataString,
+        { value: amount } // Send TCRO as msg.value
       );
       const receipt = await createTx.wait();
 
@@ -940,7 +910,7 @@ export class PaymentAgent {
 
       // Update balance with refund
       if (refundAmount > 0n) {
-        this._mneeBalance += refundAmount;
+        this._tcroBalance += refundAmount;
         // Reduce daily spent by refund amount (since we got it back)
         if (this._dailySpent >= refundAmount) {
           this._dailySpent -= refundAmount;

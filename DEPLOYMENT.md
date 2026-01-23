@@ -28,7 +28,6 @@ GEMINI_API_KEY=...                   # For AI features
 
 # Frontend (vite-project/.env)
 VITE_CONTRACT_ADDRESS=0x...          # FlowPayStream contract address (after deployment)
-VITE_MNEE_TOKEN_ADDRESS=0x...        # MockMNEE address (after deployment)
 ```
 
 ## Quick Start
@@ -64,8 +63,8 @@ npx hardhat run scripts/deploy.js --network cronos_testnet
 Deploying contracts with the account: 0x...
 Network: cronos_testnet
 
-📝 Deploying MockMNEE to Cronos Testnet...
-✅ MockMNEE deployed to: 0x...
+📝 Deploying FlowPayStream to Cronos Testnet...
+✅ FlowPayStream deployed to: 0x...
    View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x...
 
 📝 Deploying FlowPayStream to Cronos Testnet...
@@ -79,7 +78,6 @@ Network: cronos_testnet
 **Current Cronos Testnet Deployment (January 2026):**
 | Contract | Address |
 |----------|---------|
-| MockMNEE | `TBD - Deploy yourself` |
 | FlowPayStream | `TBD - Deploy yourself` |
 
 **Save these addresses!** You'll need them for configuration.
@@ -91,7 +89,6 @@ After deployment, update these files:
 **`vite-project/.env`:**
 ```bash
 VITE_CONTRACT_ADDRESS=0x5678...      # FlowPayStream address
-VITE_MNEE_TOKEN_ADDRESS=0x1234...    # MockMNEE address
 ```
 
 **`server/index.js`** (if running standalone):
@@ -109,7 +106,6 @@ npx hardhat verify --network cronos_testnet <CONTRACT_ADDRESS> <MNEE_ADDRESS>
 ```
 
 You can also view your contracts directly on Cronos Explorer:
-- MockMNEE: `https://explorer.cronos.org/testnet/address/<MNEE_ADDRESS>`
 - FlowPayStream: `https://explorer.cronos.org/testnet/address/<CONTRACT_ADDRESS>`
 
 ## Running the System
@@ -221,8 +217,8 @@ npx mocha -r ts-node/register test/load.test.ts
 │        │                  │                  │              │
 │        ▼                  ▼                  ▼              │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
-│  │   Gemini    │    │  Dashboard  │    │  MockMNEE   │     │
-│  │   AI        │    │  (React)    │    │  Token      │     │
+│  │   Gemini    │    │  Dashboard  │    │ FlowPayStream │     │
+│  │   AI        │    │  (React)    │    │  (Native)     │     │
 │  └─────────────┘    └─────────────┘    └─────────────┘     │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -233,7 +229,6 @@ npx mocha -r ts-node/register test/load.test.ts
 | Component | Description | Location |
 |-----------|-------------|----------|
 | FlowPayStream | Smart contract for payment streams | `contracts/FlowPayStream.sol` |
-| MockMNEE | Test ERC-20 token | `contracts/MockMNEE.sol` |
 | FlowPaySDK | Agent SDK for x402 negotiation | `sdk/src/FlowPaySDK.ts` |
 | flowPayMiddleware | Express.js x402 middleware | `server/middleware/flowPayMiddleware.js` |
 | GeminiPaymentBrain | AI decision engine | `sdk/src/GeminiPaymentBrain.ts` |
@@ -251,7 +246,7 @@ npx mocha -r ts-node/register test/load.test.ts
 ### "Insufficient funds for gas"
 - Get TCRO from faucet: https://cronos.org/faucet
 
-### "MNEE transfer failed"
+### "TCRO transfer failed"
 - Ensure MockMNEE is deployed
 - Check token approval: `mnee.approve(flowPayStreamAddress, amount)`
 
@@ -272,7 +267,7 @@ cd sdk && npm run build
 - [ ] Configure production RPC URLs (Alchemy/Infura)
 - [ ] Set up monitoring for Emergency Stop triggers
 - [ ] Review spending limits for production agents
-- [ ] Enable contract verification on Etherscan
+- [ ] Enable contract verification on Cronoscan
 - [ ] Configure HTTPS for server endpoints
 - [ ] Set up logging and alerting
 - [ ] Review gas price strategies

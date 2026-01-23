@@ -1,7 +1,7 @@
 # FlowPay Demo Script
 
-**Title**: FlowPay - Real-Time MNEE Payment Streaming for AI Agents
-**Network**: Sepolia Testnet (Real Blockchain Transactions)
+**Title**: FlowPay - Real-Time TCRO Payment Streaming for AI Agents
+**Network**: Cronos Testnet (Real Blockchain Transactions)
 
 ---
 
@@ -19,7 +19,7 @@
    cd sdk && npm install && cd ..
    ```
 
-3. **Get Test MNEE Tokens**: The demo will auto-mint if balance is low, or use the frontend at `http://localhost:5173` to mint tokens.
+3. **Get Test TCRO Tokens**: Get TCRO from the Cronos testnet faucet at https://cronos.org/faucet
 
 ---
 
@@ -34,20 +34,19 @@ npx ts-node demo/provider.ts
 **Expected Output**:
 ```
 🔧 Provider Configuration:
-   FlowPayStream Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
-   MNEE Token: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-   RPC URL: https://rpc.sepolia.org
+   FlowPayStream Contract: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+   RPC URL: https://evm-t3.cronos.org
 
 🚀 FlowPay Demo Provider running on http://localhost:3005
 
 📋 Available Endpoints:
    GET /health          - Health check (free)
    GET /api/info        - API info (free)
-   GET /api/premium     - Premium content (0.0001 MNEE/sec)
-   GET /api/ai-insight  - AI insights (0.001 MNEE/sec)
+   GET /api/premium     - Premium content (0.0001 TCRO/sec)
+   GET /api/ai-insight  - AI insights (0.001 TCRO/sec)
 ```
 
-The provider is now a "gatekeeper" that requires MNEE payment streams for premium content.
+The provider is now a "gatekeeper" that requires TCRO payment streams for premium content.
 
 ---
 
@@ -59,14 +58,14 @@ npx ts-node demo/consumer.ts
 
 **What Happens (Real Blockchain)**:
 
-1. **Wallet Connection**: Agent connects to Sepolia with `PRIVATE_KEY_1`
-2. **Balance Check**: Verifies MNEE balance, mints if needed
+1. **Wallet Connection**: Agent connects to Cronos Testnet with `PRIVATE_KEY_1`
+2. **Balance Check**: Verifies TCRO balance
 3. **x402 Flow**:
    - Agent requests `/api/premium`
    - Provider returns `402 Payment Required` with requirements
-   - SDK reads payment headers (rate, contract address, token)
+   - SDK reads payment headers (rate, contract address)
    - Gemini AI decides: stream vs direct payment
-   - SDK approves MNEE tokens on-chain
+   - SDK creates payment stream on-chain with TCRO
    - SDK creates payment stream on-chain
    - SDK retries request with stream ID
    - Provider validates stream and returns content
@@ -76,19 +75,17 @@ npx ts-node demo/consumer.ts
 ```
 🚀 Starting FlowPay Demo Consumer (Real Blockchain Mode)...
 
-📡 Connecting to Sepolia testnet...
+📡 Connecting to Cronos testnet...
 ✅ Agent Wallet: 0x...
 
---- Checking MNEE Balance ---
-💰 Current MNEE Balance: 100.0 MNEE
+--- Checking TCRO Balance ---
+💰 Current TCRO Balance: 100.0 TCRO
 
 --- [Step 1] Making Request to http://localhost:3005/api/premium ---
 [FlowPaySDK] 402 Payment Required intercepted. Negotiating...
 [FlowPaySDK] 🤖 Gemini Analysis: High request volume expected, streaming is more efficient
-[FlowPaySDK] Initiating Stream: 0.36 MNEE for 3600s
-[FlowPaySDK] Approving MNEE...
-[FlowPaySDK] Approved.
-[FlowPaySDK] Creating stream to 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896...
+[FlowPaySDK] Initiating Stream: 0.36 TCRO for 3600s
+[FlowPaySDK] Creating stream with TCRO...
 [FlowPaySDK] Stream #X created. Retrying request...
 ✅ REQUEST SUCCESS!
 📦 Response: { "success": true, "data": "🌟 This is PREMIUM content..." }
@@ -103,8 +100,8 @@ npx ts-node demo/consumer.ts
    Blockchain Transactions: 1
    ⚡ Transactions Saved: 3
 
-💰 Final MNEE Balance: 99.64 MNEE
-   Spent: 0.36 MNEE
+💰 Final TCRO Balance: 99.64 TCRO
+   Spent: 0.36 TCRO
 
 🎉 Demo Complete!
 ```
@@ -116,9 +113,8 @@ npx ts-node demo/consumer.ts
 ### 1. x402 Protocol
 The provider returns HTTP 402 with payment requirements in headers:
 - `X-FlowPay-Mode: streaming`
-- `X-FlowPay-Rate: 0.0001` (MNEE per second)
-- `X-FlowPay-Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035`
-- `X-MNEE-Address: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896`
+- `X-FlowPay-Rate: 0.0001` (TCRO per second)
+- `X-FlowPay-Contract: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
 
 ### 2. AI-Powered Payment Decisions
 The Gemini AI brain analyzes:
@@ -132,18 +128,17 @@ The Gemini AI brain analyzes:
 - **Result**: Massive gas savings for high-frequency API access
 
 ### 4. Real Blockchain Transactions
-All transactions are real and verifiable on Sepolia:
-- View on Etherscan: `https://sepolia.etherscan.io/address/YOUR_WALLET`
-- Contract: `https://sepolia.etherscan.io/address/0x155A00fBE3D290a8935ca4Bf5244283685Bb0035`
+All transactions are real and verifiable on Cronos:
+- View on Cronos Explorer: `https://explorer.cronos.org/testnet/address/YOUR_WALLET`
+- Contract: `https://explorer.cronos.org/testnet/address/0x155A00fBE3D290a8935ca4Bf5244283685Bb0035`
 
 ---
 
-## Contract Addresses (Sepolia)
+## Contract Addresses (Cronos Testnet)
 
 | Contract | Address |
 |----------|---------|
-| FlowPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
-| MockMNEE | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
+| FlowPayStream | `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87` |
 
 ---
 
@@ -153,9 +148,9 @@ All transactions are real and verifiable on Sepolia:
 
 **"Connection refused"**: Make sure provider is running first
 
-**"Insufficient MNEE balance"**: The demo auto-mints, or use the frontend to mint
+**"Insufficient TCRO balance"**: Get TCRO from https://cronos.org/faucet
 
-**"Transaction failed"**: Check you have Sepolia ETH for gas (get from faucet)
+**"Transaction failed"**: Check you have TCRO for gas (get from https://cronos.org/faucet)
 
 ---
 

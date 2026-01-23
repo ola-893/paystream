@@ -239,7 +239,7 @@ npm run deploy:cronos     # Deploy contracts
 
 4. **Update .env:**
    ```bash
-   MNEE_CONTRACT=<address_from_deployment>
+   # Legacy token address removed - using native TCRO now
    FLOWPAY_CONTRACT=<address_from_deployment>
    ```
 

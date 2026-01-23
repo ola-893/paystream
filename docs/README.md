@@ -27,7 +27,7 @@ FlowPay enables AI agents to pay for API services using continuous payment strea
 - [API Reference](api/README.md)
 - [Deployment Guide](deployment/README.md)
 
-## Current Deployment (Sepolia Testnet)
+## Current Deployment (Cronos Testnet)
 
 | Contract | Address |
 |----------|---------|

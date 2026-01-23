@@ -18,7 +18,7 @@ x402 is a protocol for HTTP-based payment negotiation using the 402 (Payment Req
 
 ### Which networks are supported?
 
-Currently, FlowPay is deployed on Ethereum Sepolia testnet. Mainnet deployment is planned.
+Currently, FlowPay is deployed on Cronos Testnet. Mainnet deployment is planned.
 
 ### What token does FlowPay use?
 
@@ -94,9 +94,8 @@ app.use('/api/premium', flowPayMiddleware({
 
 ### "Insufficient funds for gas"
 
-You need Sepolia ETH for gas fees. Get free testnet ETH from:
-- https://sepoliafaucet.com
-- https://faucet.sepolia.dev
+You need TCRO for gas fees. Get free testnet TCRO from:
+- https://cronos.org/faucet
 
 ### "MNEE transfer failed"
 

@@ -18,7 +18,7 @@ app.get('/api/load', (req, res) => {
             'X-Payment-Required': 'true',
             'X-FlowPay-Mode': 'streaming',
             'X-FlowPay-Rate': '0.0001',
-            'X-MNEE-Address': '0xToken',
+            'X-FlowPay-Currency': 'TCRO',
             'X-FlowPay-Contract': '0xContract'
         }).json({
             error: "Payment Required"
@@ -58,7 +58,7 @@ describe('FlowPaySDK Load & Efficiency Tests', () => {
         };
     });
 
-    it('Efficiency: Should only create ONE stream for multiple sequential requests', async () => {
+    it('Efficiency: Should only create ONE TCRO stream for multiple sequential requests', async () => {
         const REQUEST_COUNT = 10;
 
         for (let i = 0; i < REQUEST_COUNT; i++) {
@@ -77,7 +77,7 @@ describe('FlowPaySDK Load & Efficiency Tests', () => {
         expect(createStreamCallCount).to.equal(1);
     });
 
-    it('Efficiency: Should reuse stream for concurrent requests', async () => {
+    it('Efficiency: Should reuse TCRO stream for concurrent requests', async () => {
         // First establish cache
         await sdk.makeRequest(`${BASE_URL}/api/load`);
         expect(createStreamCallCount).to.equal(1);

@@ -18,7 +18,7 @@ app.get('/api/resource', (req, res) => {
             'X-Payment-Required': 'true',
             'X-FlowPay-Mode': 'streaming',
             'X-FlowPay-Rate': '0.0001',
-            'X-MNEE-Address': '0xToken',
+            'X-FlowPay-Currency': 'TCRO',
             'X-FlowPay-Contract': '0xContract'
         }).json({
             error: "Payment Required"
@@ -42,7 +42,7 @@ app.get('/api/secure', (req, res) => {
             'X-Payment-Required': 'true',
             'X-FlowPay-Mode': 'streaming',
             'X-FlowPay-Rate': '0.0002', // Higher rate
-            'X-MNEE-Address': '0xToken',
+            'X-FlowPay-Currency': 'TCRO',
             'X-FlowPay-Contract': '0xContract'
         }).json({
             error: "Payment Required"
@@ -81,7 +81,7 @@ describe('FlowPaySDK Integration & Property Tests', () => {
         };
 
         sdk.createStream = async (contract: string, token: string, amount: bigint, duration: number) => {
-            console.log(`[Mock] createStream called for ${amount} MNEE`);
+            console.log(`[Mock] createStream called for ${amount} TCRO`);
             createStreamSpy.called = true;
             createStreamSpy.args = { contract, token, amount, duration };
             return { streamId: '12345', startTime: BigInt(Date.now()) };
@@ -115,7 +115,7 @@ describe('FlowPaySDK Integration & Property Tests', () => {
     });
 
     // Property 9: Automatic Stream Creation from 402
-    it('Property 9: Should calculate correct stream amount based on Rate header', async () => {
+    it('Property 9: Should calculate correct TCRO stream amount based on Rate header', async () => {
         // Rate is 0.0001 (from /api/resource). Duration hardcoded to 3600 in SDK.
         // Expected = 0.0001 * 3600 = 0.36
         const expectedAmount = ethers.parseEther("0.36");

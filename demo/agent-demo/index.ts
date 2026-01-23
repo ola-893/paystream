@@ -124,7 +124,6 @@ async function main(): Promise<void> {
       rpcUrl: config.CRONOS_RPC_URL,
       dailyBudget: ethers.parseEther(config.DAILY_BUDGET),
       flowPayContract: config.FLOWPAY_CONTRACT,
-      mneeToken: config.MNEE_TOKEN,
       geminiApiKey: config.GEMINI_API_KEY,
       dryRun: options.dryRun || false,
     };
@@ -162,7 +161,6 @@ async function main(): Promise<void> {
     rpcUrl: config.CRONOS_RPC_URL,
     dailyBudget: ethers.parseEther(config.DAILY_BUDGET),
     flowPayContract: config.FLOWPAY_CONTRACT,
-    mneeToken: config.MNEE_TOKEN,
     geminiApiKey: config.GEMINI_API_KEY,
     dryRun: options.dryRun || false,
   };
@@ -170,7 +168,7 @@ async function main(): Promise<void> {
   const agent = new PaymentAgent(agentConfig);
   
   // Initialize agent and fetch balance
-  cli.startSpinner('Connecting to Cronos Testnet and fetching MNEE balance...');
+  cli.startSpinner('Connecting to Cronos Testnet and fetching TCRO balance...');
   
   try {
     await agent.initialize();
@@ -181,9 +179,9 @@ async function main(): Promise<void> {
     const agentInfoLines = [
       `Name: ${agent.name}`,
       `Wallet: ${agent.walletAddress}`,
-      `MNEE Balance: ${ethers.formatEther(state.mneeBalance)} MNEE`,
-      `Daily Budget: ${ethers.formatEther(agent.dailyBudget)} MNEE`,
-      `Remaining Budget: ${ethers.formatEther(agent.getRemainingBudget())} MNEE`,
+      `TCRO Balance: ${ethers.formatEther(state.tcroBalance)} TCRO`,
+      `Daily Budget: ${ethers.formatEther(agent.dailyBudget)} TCRO`,
+      `Remaining Budget: ${ethers.formatEther(agent.getRemainingBudget())} TCRO`,
     ];
     
     // Add dry-run indicator if in dry-run mode (Requirements: 9.7)
@@ -198,8 +196,8 @@ async function main(): Promise<void> {
     if (options.verbose) {
       cli.debug('Agent State:');
       cli.debug(`  Wallet Address: ${state.walletAddress}`);
-      cli.debug(`  MNEE Balance: ${ethers.formatEther(state.mneeBalance)} MNEE`);
-      cli.debug(`  Daily Spent: ${ethers.formatEther(state.dailySpent)} MNEE`);
+      cli.debug(`  TCRO Balance: ${ethers.formatEther(state.tcroBalance)} TCRO`);
+      cli.debug(`  Daily Spent: ${ethers.formatEther(state.dailySpent)} TCRO`);
       cli.debug(`  Active Streams: ${state.activeStreams.size}`);
       cli.debug(`  Request Count: ${state.requestCount}`);
       cli.debug(`  Payment Count: ${state.paymentCount}`);
@@ -211,19 +209,19 @@ async function main(): Promise<void> {
       cli.info('Budget Tracking Demo:');
       
       const testAmount = ethers.parseEther('0.001');
-      cli.debug(`  Can afford 0.001 MNEE: ${agent.canAfford(testAmount)}`);
+      cli.debug(`  Can afford 0.001 TCRO: ${agent.canAfford(testAmount)}`);
       
       // Test budget check
       try {
         agent.checkBudget(testAmount);
-        cli.debug('  Budget check passed for 0.001 MNEE');
+        cli.debug('  Budget check passed for 0.001 TCRO');
       } catch (error: any) {
         cli.warning(`  Budget check failed: ${error.message}`);
       }
       
       // Test exceeding budget
       const hugeAmount = ethers.parseEther('1000000');
-      cli.debug(`  Can afford 1,000,000 MNEE: ${agent.canAfford(hugeAmount)}`);
+      cli.debug(`  Can afford 1,000,000 TCRO: ${agent.canAfford(hugeAmount)}`);
     }
     
     // Demo stream caching (Requirements: 4.5)

@@ -1,16 +1,16 @@
 # 💰 FlowPay: x402 + Streaming Payments for AI Agents
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![MNEE](https://img.shields.io/badge/Powered%20by-MNEE%20Stablecoin-green.svg)
+![TCRO](https://img.shields.io/badge/Powered%20by-TCRO%20Native-green.svg)
 ![x402](https://img.shields.io/badge/x402-Compatible-purple.svg)
 ![Cronos](https://img.shields.io/badge/Network-Cronos%20Testnet-blue.svg)
 
 > **🔄 Network Migration Notice**  
 > FlowPay has migrated from Ethereum Sepolia to Cronos Testnet for lower fees and faster transactions. If you're upgrading from a previous version, please see the [**Cronos Migration Guide**](CRONOS_MIGRATION.md) for detailed instructions on updating your environment, deploying contracts, and configuring MetaMask.
 
-FlowPay combines **x402's HTTP-native service discovery** with **continuous payment streaming** for AI agents using MNEE stablecoin. The best of both worlds: standardized discovery + efficient streaming.
+FlowPay combines **x402's HTTP-native service discovery** with **continuous payment streaming** for AI agents using native TCRO tokens. The best of both worlds: standardized discovery + efficient streaming.
 
-**🏆 Built for the MNEE Hackathon: Programmable Money for Agents, Commerce, and Automated Finance**
+**🏆 Built for the TCRO Migration: Native Token Payments for Agents, Commerce, and Automated Finance**
 
 ---
 
@@ -21,7 +21,7 @@ FlowPay combines **x402's HTTP-native service discovery** with **continuous paym
 | **Live dApp** | https://flowpay-dashboard.netlify.app |
 | **Demo Video** | [Watch on YouTube](https://youtu.be/d2uZi4Agi1o?si=MKlDp4BQpHHnh5d6) |
 | **GitHub Repo** | https://github.com/ola-893/flowpay |
-| **MNEE Contract (Mainnet)** | `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF` |
+| **TCRO Contract (Mainnet)** | Native TCRO - No contract needed |
 
 ---
 
@@ -58,7 +58,7 @@ Open http://localhost:5173 in your browser.
 2. **Get TCRO** for gas fees:
    - [Cronos Faucet](https://cronos.org/faucet)
 
-3. **Connect wallet** and click "Mint MNEE" to get free test tokens
+3. **Connect wallet** and get TCRO from the faucet for native token payments
 
 4. **Create a stream** and watch payments flow in real-time!
 
@@ -69,9 +69,7 @@ That's it! The contracts are already deployed on Cronos Testnet - no deployment 
 ## 📋 Deployed Contracts (Cronos Testnet)
 
 | Contract | Address |
-|----------|---------|
 | FlowPayStream | `TBD - Deploy yourself` |
-| MockMNEE | `TBD - Deploy yourself` |
 
 ---
 
@@ -100,7 +98,7 @@ GEMINI_API_KEY="your_gemini_api_key"
 npm run deploy:cronos
 ```
 
-This will deploy both MockMNEE and FlowPayStream contracts to Cronos Testnet.
+This will deploy the FlowPayStream contract to Cronos Testnet for native TCRO payments.
 
 ### Run Tests
 
@@ -124,7 +122,7 @@ npm run test:sdk           # SDK tests only
 
 ---
 
-## 🔄 The Hybrid Approach: x402 Discovery + MNEE Streaming
+## 🔄 The Hybrid Approach: x402 Discovery + TCRO Streaming
 
 ### Why Both?
 
@@ -141,7 +139,7 @@ npm run test:sdk           # SDK tests only
 2. Server returns HTTP 402 with x402-compatible payment requirements
 3. FlowPay SDK parses requirements, uses Gemini AI to decide:
    - Few requests expected? → Use x402 per-request mode
-   - Many requests expected? → Create MNEE payment stream
+   - Many requests expected? → Create TCRO payment stream
 4. Agent pays and accesses service
 5. AI continuously optimizes payment mode based on actual usage
 ```
@@ -164,7 +162,7 @@ npm run test:sdk           # SDK tests only
 **FlowPay Solution:**
 - ✅ x402 discovery: Standard HTTP 402 for universal agent interoperability
 - ✅ Streaming payments: Efficient for high-volume usage
-- ✅ MNEE stablecoin: Sub-cent fees + instant settlement
+- ✅ TCRO native: Sub-cent fees + instant settlement
 - ✅ AI-powered: Gemini decides optimal payment mode
 
 ---
@@ -177,7 +175,7 @@ npm run test:sdk           # SDK tests only
 - **Payment requirements** - Clear pricing in response headers
 - **Flexible modes** - Support both per-request and streaming
 
-### Efficient MNEE Payment Streaming
+### Efficient TCRO Payment Streaming
 - **Per-second value transfer** - Money flows continuously for high-volume usage
 - **Instant withdrawals** - Recipients claim funds anytime
 - **Live balance counters** - Watch payments stream in real-time
@@ -233,7 +231,7 @@ const agent = new FlowPayAgent({
 // 1. Makes request → receives HTTP 402
 // 2. Parses payment requirements
 // 3. AI decides: streaming (high volume) or per-request (low volume)
-// 4. Creates MNEE stream if streaming mode
+// 4. Creates TCRO stream if streaming mode
 // 5. Retries request with payment proof
 const weather = await agent.fetch('https://api.weather-agent.com/forecast');
 console.log(await weather.json());
@@ -261,7 +259,7 @@ app.use(flowPayMiddleware({
             description: "Translation service"
         }
     },
-    mneeAddress: process.env.MNEE_ADDRESS,
+    tcroAddress: process.env.TCRO_ADDRESS,
     flowPayContract: process.env.FLOWPAY_CONTRACT
 }));
 
@@ -309,7 +307,7 @@ await computeStream.cancel(); // Refunds remaining deposit
 
 ---
 
-## 💡 Why x402 + MNEE Streaming?
+## 💡 Why x402 + TCRO Streaming?
 
 | Feature | x402 Only | Streaming Only | FlowPay Hybrid |
 |---------|-----------|----------------|----------------|
@@ -318,7 +316,7 @@ await computeStream.cancel(); // Refunds remaining deposit
 | High-volume efficiency | ❌ Gas per request | ✅ One stream | ✅ Streaming mode |
 | AI optimization | ❌ | ❌ | ✅ Gemini selects mode |
 | Interoperability | ✅ x402 ecosystem | ❌ Custom | ✅ x402 compatible |
-| MNEE native | ❌ Generic | ✅ | ✅ |
+| TCRO native | ❌ Generic | ✅ | ✅ |
 
 ---
 
@@ -349,9 +347,9 @@ await computeStream.cancel(); // Refunds remaining deposit
 │         ┌───────────────────┼───────────────────┐              │
 │         │                   │                   │              │
 │  ┌──────▼──────┐    ┌──────▼──────┐    ┌──────▼──────┐       │
-│  │   FlowPay   │    │    MNEE     │    │    Web      │       │
-│  │  Contract   │◀──▶│   Token     │    │  Dashboard  │       │
-│  │  (Streams)  │    │  (ERC-20)   │    │ (Oversight) │       │
+│  │   FlowPay   │    │    TCRO     │    │    Web      │       │
+│  │  Contract   │◀──▶│   Native    │    │  Dashboard  │       │
+│  │  (Streams)  │    │  (Native)   │    │ (Oversight) │       │
 │  └─────────────┘    └─────────────┘    └─────────────┘       │
 │                                                                  │
 │                    Cronos Testnet                                │
@@ -390,7 +388,7 @@ Consumer Agent                Provider API                FlowPay Contract
 | Component | Technology |
 |-----------|------------|
 | Blockchain | Cronos Testnet |
-| Token | MNEE Stablecoin (ERC-20) |
+| Token | TCRO Native Token |
 | Discovery Protocol | x402 (HTTP 402 standard) |
 | Smart Contracts | Solidity, Hardhat |
 | Agent SDK | TypeScript |
@@ -404,15 +402,15 @@ Consumer Agent                Provider API                FlowPay Contract
 
 ## 🔄 Mainnet Migration
 
-When ready for production with real MNEE:
+When ready for production with real TCRO:
 
 | Feature | Testnet (Cronos) | Mainnet |
 |---------|-------------------|---------|
-| Token | MockMNEE (free mint) | Real MNEE |
+| Token | TCRO (testnet faucet) | Real TCRO |
 | Network | Cronos Testnet (338) | Cronos Mainnet (25) |
 | Gas | Free testnet TCRO | Real TCRO |
 
-**MNEE Mainnet Contract:** `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`
+**TCRO Mainnet:** Native token - no contract address needed
 
 Update `vite-project/src/contactInfo.js` with mainnet addresses and deploy FlowPayStream to mainnet.
 
@@ -498,8 +496,7 @@ console.log(response);
 ```
 flowpay/
 ├── contracts/
-│   ├── FlowPayStream.sol      # MNEE streaming contract
-│   └── MockMNEE.sol           # Test token for Cronos Testnet
+│   ├── FlowPayStream.sol      # TCRO streaming contract
 ├── scripts/
 │   └── deploy.js              # Deployment script
 ├── sdk/
@@ -534,17 +531,17 @@ flowpay/
 
 **AI & Agent Payments** - Agents or automated systems paying for services or data
 
-### How MNEE is Used
+### How TCRO is Used
 
-FlowPay uses MNEE stablecoin as the payment token for all streaming payments:
-- **Payment Streams**: MNEE tokens are locked in the FlowPayStream smart contract and streamed per-second to recipients
-- **x402 Protocol**: AI agents pay for API access using MNEE via the x402 HTTP payment negotiation standard
-- **Testnet**: Uses MockMNEE (TBD - Deploy yourself) on Cronos Testnet
-- **Mainnet Ready**: Designed to work with real MNEE (`0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`) on Cronos Mainnet
+FlowPay uses native TCRO tokens for all streaming payments:
+- **Payment Streams**: TCRO tokens are sent directly to the FlowPayStream smart contract and streamed per-second to recipients
+- **x402 Protocol**: AI agents pay for API access using TCRO via the x402 HTTP payment negotiation standard
+- **Testnet**: Uses native TCRO on Cronos Testnet (get from faucet)
+- **Mainnet Ready**: Designed to work with real TCRO on Cronos Mainnet
 
 FlowPay demonstrates:
 - ✅ x402-compatible service discovery (HTTP 402 standard)
-- ✅ AI agents transacting autonomously with MNEE
+- ✅ AI agents transacting autonomously with TCRO
 - ✅ Hybrid payment modes (per-request + streaming)
 - ✅ Intelligent decision-making with Gemini AI
 - ✅ Multi-agent service coordination
@@ -555,7 +552,7 @@ FlowPay demonstrates:
 1. **x402 Compatibility** - Works with the emerging agent payment ecosystem
 2. **Streaming Efficiency** - 90% gas savings for high-volume usage
 3. **AI-Powered** - Gemini automatically optimizes payment mode
-4. **MNEE Native** - Built specifically for MNEE stablecoin
+4. **TCRO Native** - Built specifically for TCRO native tokens
 5. **Production Ready** - Express middleware for easy integration
 
 ---
@@ -584,12 +581,12 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
-- [MNEE](https://mnee.io) - USD-backed stablecoin powering this project
+- [TCRO](https://cronos.org) - Native token powering this project
 - [Google Gemini](https://ai.google.dev) - AI decision-making capabilities
 - [Ethereum](https://ethereum.org) - Blockchain infrastructure
 
 ---
 
-**Built with 💙 for the MNEE Hackathon**
+**Built with 💙 for the TCRO Migration**
 
 *Enabling the autonomous economy, one stream at a time.*

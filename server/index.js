@@ -1,35 +1,33 @@
 const express = require('express');
 const cors = require('cors');
 const flowPayMiddleware = require('./middleware/flowPayMiddleware');
-require('dotenv').config({ path: '../.env' }); // Load from root .env if available
+require('dotenv').config({ path: '../.env' });
 
-// Mock Config if env vars missing
+// Config - now using native TCRO (no token address needed)
 const PORT = process.env.PORT || 3001;
-const MNEE_ADDRESS = process.env.VITE_MNEE_TOKEN_ADDRESS || process.env.MNEE_TOKEN || "0x96B1FE54Ee89811f46ecE4a347950E0D682D3896";
 const CONTRACT_ADDRESS = process.env.VITE_CONTRACT_ADDRESS || process.env.FLOWPAY_CONTRACT || "0x155A00fBE3D290a8935ca4Bf5244283685Bb0035";
-const RPC_URL = process.env.SEPOLIA_RPC_URL || "https://ethereum-sepolia-rpc.publicnode.com";
-// Recipient address for payments - use a dedicated server wallet or fallback to a test address
+const RPC_URL = process.env.CRONOS_RPC_URL || "https://evm-t3.cronos.org";
+// Recipient address for payments - use a dedicated server wallet
 const RECIPIENT_ADDRESS = process.env.RECIPIENT_ADDRESS || "0x1f973bc13Fe975570949b09C022dCCB46944F5ED";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// FlowPay Configuration
+// FlowPay Configuration - Native TCRO
 const defaultConfig = {
     rpcUrl: RPC_URL,
     flowPayContractAddress: CONTRACT_ADDRESS,
-    mneeAddress: MNEE_ADDRESS,
     recipientAddress: RECIPIENT_ADDRESS,
     routes: {
         '/api/weather': {
-            price: '0.0001', // MNEE per second (streaming mode)
+            price: '0.0001', // TCRO per second (streaming mode)
             mode: 'streaming',
             description: 'Real-time weather data',
             minDeposit: '0.36' // 1 hour of streaming at 0.0001/sec
         },
         '/api/premium': {
-            price: '0.01', // MNEE per request
+            price: '0.01', // TCRO per request
             mode: 'per-request',
             description: 'Premium content'
         },
@@ -90,8 +88,9 @@ if (require.main === module) {
     const app = createApp();
     app.listen(PORT, () => {
         console.log(`FlowPay Test Server running on port ${PORT}`);
-        console.log(`MNEE Address: ${MNEE_ADDRESS}`);
         console.log(`Contract Address: ${CONTRACT_ADDRESS}`);
+        console.log(`Recipient Address: ${RECIPIENT_ADDRESS}`);
+        console.log(`Currency: Native TCRO`);
     });
 }
 

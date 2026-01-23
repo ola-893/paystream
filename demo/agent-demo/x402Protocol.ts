@@ -13,8 +13,8 @@
 export interface X402Requirement {
   recipient: string;
   mode: 'streaming' | 'per-request';
-  rate?: string;           // MNEE per second (streaming mode)
-  amount?: string;         // MNEE per request (per-request mode)
+  rate?: string;           // TCRO per second (streaming mode)
+  amount?: string;         // TCRO per request (per-request mode)
   minDeposit?: string;     // minimum deposit (streaming mode)
   contract: string;
   token: string;
@@ -227,12 +227,12 @@ export function formatX402Requirement(requirement: X402Requirement): string {
   ];
 
   if (requirement.mode === 'streaming') {
-    lines.push(`Rate: ${requirement.rate} MNEE/second`);
+    lines.push(`Rate: ${requirement.rate} TCRO/second`);
     if (requirement.minDeposit) {
-      lines.push(`Min Deposit: ${requirement.minDeposit} MNEE`);
+      lines.push(`Min Deposit: ${requirement.minDeposit} TCRO`);
     }
   } else {
-    lines.push(`Amount: ${requirement.amount} MNEE`);
+    lines.push(`Amount: ${requirement.amount} TCRO`);
   }
 
   if (requirement.description) {

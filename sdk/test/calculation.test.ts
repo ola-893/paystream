@@ -18,10 +18,10 @@ describe('FlowPaySDK Real-time Calculations', () => {
         Date.now = originalDateNow;
     });
 
-    it('Should calculate claimable balance correctly over time', () => {
+    it('Should calculate claimable TCRO balance correctly over time', () => {
         const startTime = 1000; // t=1000 seconds
-        const rate = ethers.parseEther("1"); // 1 token per second
-        const amount = ethers.parseEther("100"); // 100 tokens total
+        const rate = ethers.parseEther("1"); // 1 TCRO per second
+        const amount = ethers.parseEther("100"); // 100 TCRO total
 
         const stream: StreamMetadata = {
             streamId: "1",
@@ -65,11 +65,11 @@ describe('FlowPaySDK Real-time Calculations', () => {
         expect(sdk.calculateRemaining(stream)).to.equal(0n); // Should be floored at 0
     });
 
-    it('Should handle micropayments precision ($0.0001/sec)', () => {
-        // Rate: 0.0001 ETH/sec = 10^14 wei/sec
+    it('Should handle TCRO micropayments precision ($0.0001/sec)', () => {
+        // Rate: 0.0001 TCRO/sec = 10^14 wei/sec
         const rate = ethers.parseUnits("0.0001", 18);
         const startTime = 1000;
-        const amount = ethers.parseEther("1"); // 1 ETH total
+        const amount = ethers.parseEther("1"); // 1 TCRO total
 
         const stream: StreamMetadata = {
             streamId: "1",

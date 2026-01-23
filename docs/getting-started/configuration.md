@@ -101,7 +101,7 @@ Create `vite-project/.env`:
 ```bash
 # Contract addresses
 VITE_CONTRACT_ADDRESS=TBD_YOUR_FLOWPAYSTREAM_ADDRESS
-VITE_MNEE_TOKEN_ADDRESS=TBD_YOUR_MNEE_ADDRESS
+# Legacy token address removed - using native TCRO now
 
 # Network
 VITE_CHAIN_ID=338

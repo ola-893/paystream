@@ -7,7 +7,7 @@ Get FlowPay running in under 5 minutes.
 1. Open the FlowPay dashboard
 2. Click "Connect Wallet"
 3. Select MetaMask and approve the connection
-4. Ensure you're on Sepolia testnet
+4. Ensure you're on Cronos testnet (Chain ID: 338)
 
 ## Step 2: Get Test Tokens
 
@@ -26,7 +26,7 @@ import { FlowPaySDK } from './sdk/src/FlowPaySDK';
 
 const sdk = new FlowPaySDK({
   privateKey: process.env.PRIVATE_KEY,
-  rpcUrl: 'https://rpc.sepolia.org',
+  rpcUrl: 'https://evm-t3.cronos.org',
   contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
   mneeAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896'
 });

@@ -2,30 +2,16 @@
 pragma solidity ^0.8.20;
 
 /**
- * @dev Interface of the ERC20 standard as defined in the EIP.
- */
-interface IERC20 {
-    function totalSupply() external view returns (uint256);
-    function balanceOf(address account) external view returns (uint256);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function allowance(address owner, address spender) external view returns (uint256);
-    function approve(address spender, uint256 amount) external returns (bool);
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
-}
-
-/**
 * @title FlowPayStream
-* @dev A protocol for creating real-time, per-second money streams on Sepolia using MNEE tokens.
+* @dev A protocol for creating real-time, per-second money streams on Cronos using native TCRO.
 */
 contract FlowPayStream {
-    IERC20 public mneeToken;
-
     // Structure to hold all data for a single stream
     struct Stream {
         address sender;
         address recipient;
-        uint256 totalAmount;        // The total amount to be streamed.
-        uint256 flowRate;           // Amount per second.
+        uint256 totalAmount;        // The total amount to be streamed (in wei).
+        uint256 flowRate;           // Amount per second (in wei).
         uint256 startTime;          // Timestamp when the stream begins.
         uint256 stopTime;           // Timestamp when the stream ends.
         uint256 amountWithdrawn;    // Total amount withdrawn by the recipient.
@@ -42,10 +28,7 @@ contract FlowPayStream {
     event Withdrawn(uint256 indexed streamId, address indexed recipient, uint256 amount);
     event StreamCancelled(uint256 indexed streamId, address sender, address recipient, uint256 senderBalance, uint256 recipientBalance);
 
-    constructor(address _mneeToken) {
-        require(_mneeToken != address(0), "FlowPayStream: MNEE token address cannot be zero");
-        mneeToken = IERC20(_mneeToken);
-    }
+    constructor() {}
 
     /**
     * @dev Calculates the amount accrued to the recipient for a given stream at the current time.
@@ -72,21 +55,18 @@ contract FlowPayStream {
     }
 
     /**
-    * @dev Creates a new money stream.
+    * @dev Creates a new money stream using native TCRO.
     * @param recipient The address that will receive the funds.
     * @param duration The duration of the stream in seconds.
-    * @param amount The total amount of MNEE tokens to stream.
     * @param metadata JSON string containing agent identification and other info.
+    * @notice Send TCRO with this transaction. The msg.value becomes the stream amount.
     */
-    function createStream(address recipient, uint256 duration, uint256 amount, string calldata metadata) external {
-        require(amount > 0, "FlowPayStream: Total amount must be greater than 0.");
+    function createStream(address recipient, uint256 duration, string calldata metadata) external payable {
+        require(msg.value > 0, "FlowPayStream: Must send TCRO to create stream.");
         require(recipient != address(0), "FlowPayStream: Recipient cannot be the zero address.");
         require(duration > 0, "FlowPayStream: Duration must be greater than 0.");
 
-        // Transfer MNEE tokens from sender to this contract
-        bool success = mneeToken.transferFrom(msg.sender, address(this), amount);
-        require(success, "FlowPayStream: Transfer failed. check allowance");
-
+        uint256 amount = msg.value;
         uint256 streamId = nextStreamId++;
         uint256 startTime = block.timestamp;
         uint256 stopTime = startTime + duration;
@@ -123,8 +103,9 @@ contract FlowPayStream {
 
         stream.amountWithdrawn += claimableAmount;
         
-        bool success = mneeToken.transfer(stream.recipient, claimableAmount);
-        require(success, "FlowPayStream: Transfer failed.");
+        // Transfer native TCRO to recipient
+        (bool success, ) = stream.recipient.call{value: claimableAmount}("");
+        require(success, "FlowPayStream: TCRO transfer failed.");
 
         emit Withdrawn(streamId, stream.recipient, claimableAmount);
     }
@@ -143,13 +124,15 @@ contract FlowPayStream {
         
         stream.isActive = false;
 
+        // Transfer to recipient
         if (recipientBalance > 0) {
-            bool success = mneeToken.transfer(stream.recipient, recipientBalance);
+            (bool success, ) = stream.recipient.call{value: recipientBalance}("");
             require(success, "FlowPayStream: Recipient transfer failed on cancel.");
         }
 
+        // Refund to sender
         if (senderBalance > 0) {
-            bool success = mneeToken.transfer(stream.sender, senderBalance);
+            (bool success, ) = stream.sender.call{value: senderBalance}("");
             require(success, "FlowPayStream: Sender refund failed on cancel.");
         }
 
@@ -164,4 +147,9 @@ contract FlowPayStream {
     function isStreamActive(uint256 streamId) external view returns (bool) {
         return streams[streamId].isActive;
     }
+
+    /**
+     * @dev Allows the contract to receive TCRO directly (for potential future features).
+     */
+    receive() external payable {}
 }

@@ -35,17 +35,17 @@ cargo run
 
 🤖 Agent weather-bot-abc123 initialized
    ├─ Wallet: 0xABCD...5678
-   └─ Budget: 50.00 MNEE
+   └─ Budget: 50.00 TCRO
 
 📡 Fetching: https://api.weather-service.com/forecast
 ⚠️  HTTP 402 Payment Required
    ├─ Recipient: 0x5678...9012
    ├─ Mode: Streaming
-   ├─ Rate: 0.0001 MNEE/second
-   └─ Min Deposit: 1.00 MNEE
+   ├─ Rate: 0.0001 TCRO/second
+   └─ Min Deposit: 1.00 TCRO
 
 💳 Creating payment stream...
-   ├─ Deposit: 1.00 MNEE
+   ├─ Deposit: 1.00 TCRO
    ├─ Rate: 0.0001/sec
    └─ Stream ID: #1000
 
@@ -68,7 +68,7 @@ cargo run
 ## Integration with FlowPay
 
 This connects to [FlowPay](https://github.com/ola-893/flowpay) for:
-- MNEE stablecoin payments on Cronos Testnet
+- TCRO native payments on Cronos Testnet
 - Payment streaming contracts
 - HTTP 402 middleware
 

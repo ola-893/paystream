@@ -15,7 +15,7 @@ Before you begin, ensure you have:
 - Node.js v18 or higher
 - npm or yarn package manager
 - MetaMask or compatible Web3 wallet
-- Sepolia testnet ETH (for gas fees)
+- TCRO testnet tokens (for gas fees)
 - Basic understanding of Ethereum and smart contracts
 
 ## System Requirements
@@ -33,7 +33,7 @@ FlowPay consists of three main components:
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │   Consumer      │────▶│    Provider     │────▶│   Blockchain    │
-│   (AI Agent)    │◀────│   (x402 API)    │◀────│   (Sepolia)     │
+│   (AI Agent)    │◀────│   (x402 API)    │◀────│   (Cronos)      │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
         │                       │                       │
         ▼                       ▼                       ▼

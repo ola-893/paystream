@@ -46,7 +46,7 @@ X-Payment-Amount: 0.001
 X-Payment-Currency: MNEE
 X-Payment-Recipient: 0x1234...
 X-Payment-Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
-X-Payment-Network: sepolia
+X-Payment-Network: cronos-testnet
 X-Payment-Description: Premium API access
 ```
 

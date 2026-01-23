@@ -11,7 +11,7 @@ FlowPay is designed as a modular, extensible payment protocol for AI agents.
 │                                                                      │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐          │
 │  │   Consumer   │───▶│   Provider   │───▶│  Blockchain  │          │
-│  │   Agent      │    │   (x402)     │    │  (Sepolia)   │          │
+│  │   Agent      │    │   (x402)     │    │  (Cronos)    │          │
 │  │   + SDK      │◀───│              │◀───│              │          │
 │  └──────────────┘    └──────────────┘    └──────────────┘          │
 │         │                   │                   │                   │
@@ -19,7 +19,7 @@ FlowPay is designed as a modular, extensible payment protocol for AI agents.
 │         ▼                   ▼                   ▼                   │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐          │
 │  │   Gemini     │    │  Dashboard   │    │ FlowPayStream│          │
-│  │   AI Brain   │    │   (React)    │    │  + MockMNEE  │          │
+│  │   AI Brain   │    │   (React)    │    │  (Native)    │          │
 │  └──────────────┘    └──────────────┘    └──────────────┘          │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
@@ -47,7 +47,6 @@ The x402 middleware enables API providers to:
 
 On-chain components:
 - **FlowPayStream**: Payment streaming contract
-- **MockMNEE**: Test ERC-20 token
 
 ### 4. AI Decision Engine
 

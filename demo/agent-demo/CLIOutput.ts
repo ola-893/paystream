@@ -363,15 +363,15 @@ export class CLIOutput {
       ? ((stats.scenariosPassed / stats.scenariosRun) * 100).toFixed(1)
       : '0.0';
 
-    // Format total spent (convert from wei to MNEE with 18 decimals)
-    const totalSpentMNEE = this.formatMNEE(stats.totalSpent);
+    // Format total spent (convert from wei to TCRO with 18 decimals)
+    const totalSpentTCRO = this.formatTCRO(stats.totalSpent);
 
     table.push(
       [chalk.white('Scenarios Run'), chalk.cyan(stats.scenariosRun.toString())],
       [chalk.white('Scenarios Passed'), chalk.green(stats.scenariosPassed.toString())],
       [chalk.white('Pass Rate'), chalk.cyan(`${passRate}%`)],
       [chalk.white('Total Payments'), chalk.magenta(stats.totalPayments.toString())],
-      [chalk.white('Total Spent'), chalk.magenta(`${totalSpentMNEE} MNEE`)],
+      [chalk.white('Total Spent'), chalk.magenta(`${totalSpentTCRO} TCRO`)],
       [chalk.white('Streams Created'), chalk.blue(stats.streamsCreated.toString())],
       [chalk.white('Streams Reused'), chalk.blue(stats.streamsReused.toString())],
     );
@@ -393,11 +393,11 @@ export class CLIOutput {
   }
 
   /**
-   * Format a bigint value as MNEE (18 decimals)
+   * Format a bigint value as TCRO (18 decimals)
    * @param value - Value in wei
    * @returns Formatted string
    */
-  private formatMNEE(value: bigint): string {
+  private formatTCRO(value: bigint): string {
     const decimals = 18n;
     const divisor = 10n ** decimals;
     const wholePart = value / divisor;

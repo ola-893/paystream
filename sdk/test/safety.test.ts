@@ -13,7 +13,7 @@ describe('Safety & Auto-renewal Systems', () => {
             privateKey: Wallet.createRandom().privateKey,
             rpcUrl: 'http://localhost:8545',
             spendingLimits: {
-                dailyLimit: ethers.parseEther("1.0"), // 1 MNEE Limit
+                dailyLimit: ethers.parseEther("1.0"), // 1 TCRO Limit
                 totalLimit: ethers.parseEther("10.0")
             }
         });
@@ -38,7 +38,7 @@ describe('Safety & Auto-renewal Systems', () => {
         // we can spy on the monitor attached to SDK.
     });
 
-    it('Should enforce Daily Spending Limit', () => {
+    it('Should enforce Daily TCRO Spending Limit', () => {
         // limit is 1.0. 
         // Spending 0.6 is fine.
         sdk.monitor.checkAndRecordSpend(ethers.parseEther("0.6"));

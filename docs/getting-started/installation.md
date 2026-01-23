@@ -68,8 +68,8 @@ npm install
 # Compile contracts
 npx hardhat compile
 
-# Deploy to Sepolia
-npx hardhat run scripts/deploy.js --network sepolia
+# Deploy to Cronos Testnet
+npx hardhat run scripts/deploy.js --network cronos_testnet
 ```
 
 ## Environment Variables
@@ -79,10 +79,10 @@ Create a `.env` file in the project root:
 ```bash
 # Required for deployment
 PRIVATE_KEY=0x...
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
+CRONOS_RPC_URL=https://evm-t3.cronos.org
 
 # Optional
-ETHERSCAN_API_KEY=...
+GEMINI_API_KEY=...
 GEMINI_API_KEY=...
 ```
 

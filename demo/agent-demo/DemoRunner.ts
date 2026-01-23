@@ -186,7 +186,7 @@ export class DemoRunner {
       // Display request info (Requirements: 6.1)
       this.cli.request(`Making request to ${url}`);
       this.cli.info(`Expected mode: ${scenario.expectedMode}`);
-      this.cli.info(`Expected price: ${scenario.expectedPrice} MNEE`);
+      this.cli.info(`Expected price: ${scenario.expectedPrice} TCRO`);
     } catch (setupError: any) {
       // Handle errors during scenario setup (Requirements: 8.1, 8.5)
       this.cli.error(`Scenario setup failed: ${setupError.message}`);
@@ -381,7 +381,7 @@ export class DemoRunner {
       `Scenarios to run: ${scenariosToRun.length}`,
       `Server URL: ${this.serverUrl}`,
       `Agent: ${this.agent.name}`,
-      `Budget: ${ethers.formatEther(this.agent.dailyBudget)} MNEE`,
+      `Budget: ${ethers.formatEther(this.agent.dailyBudget)} TCRO`,
     ];
     
     // Add dry-run indicator if applicable (Requirements: 9.7)
@@ -490,7 +490,7 @@ export class DemoRunner {
           }
           
           if (refundAmount > 0n) {
-            this.cli.success(`   Refunded: ${ethers.formatEther(refundAmount)} MNEE`);
+            this.cli.success(`   Refunded: ${ethers.formatEther(refundAmount)} TCRO`);
           }
         } else {
           failCount++;
@@ -508,7 +508,7 @@ export class DemoRunner {
     this.cli.info('');
     const closureSummary = [
       `Streams closed: ${successCount}/${activeStreams.size}`,
-      `Total refunded: ${ethers.formatEther(totalRefunded)} MNEE`,
+      `Total refunded: ${ethers.formatEther(totalRefunded)} TCRO`,
     ];
     
     if (failCount > 0) {
@@ -570,7 +570,7 @@ export class DemoRunner {
       const balance = await this.agent.refreshBalance();
       status.walletConnected = true;
       status.walletBalance = balance;
-      this.cli.stopSpinner(true, `Wallet connected: ${ethers.formatEther(balance)} MNEE`);
+      this.cli.stopSpinner(true, `Wallet connected: ${ethers.formatEther(balance)} TCRO`);
     } catch (error: any) {
       status.errors.push(`Wallet: ${error.message}`);
       this.cli.stopSpinner(false, `Wallet connection failed: ${error.message}`);

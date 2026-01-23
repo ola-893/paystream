@@ -301,7 +301,7 @@ module.exports = {
 SEPOLIA_RPC_URL=https://rpc.sepolia.org
 PRIVATE_KEY=your_private_key_here
 FLOWPAY_CONTRACT=0x...
-MNEE_TOKEN=0x...
+# Legacy token address removed - using native TCRO now
 ```
 
 **After (Cronos):**
@@ -309,7 +309,7 @@ MNEE_TOKEN=0x...
 CRONOS_RPC_URL=https://evm-t3.cronos.org
 PRIVATE_KEY=your_private_key_here
 FLOWPAY_CONTRACT=TBD - Deploy yourself
-MNEE_TOKEN=TBD - Deploy yourself
+# Legacy token address removed - using native TCRO now
 ```
 
 ### 3. Frontend Chain ID
@@ -454,7 +454,7 @@ Follow these steps to complete your migration to Cronos testnet:
 CRONOS_RPC_URL=https://evm-t3.cronos.org
 PRIVATE_KEY=your_private_key_here
 FLOWPAY_CONTRACT=
-MNEE_TOKEN=
+# Legacy token address removed - using native TCRO now
 GEMINI_API_KEY=your_gemini_api_key
 DAILY_BUDGET=10
 ```
@@ -498,7 +498,7 @@ FlowPayStream deployed to: 0x5678...
 ### Step 5: Update Contract Addresses
 - [ ] Open `vite-project/src/contactInfo.js`
 - [ ] Update `FLOWPAY_CONTRACT` with the deployed FlowPayStream address
-- [ ] Update `MNEE_TOKEN` with the deployed MockMNEE address
+- [ ] Legacy token address removed - using native TCRO now
 - [ ] Save the file
 - [ ] Optionally update your `.env` file with the addresses
 
@@ -618,7 +618,7 @@ Before deploying contracts to Cronos testnet:
    Update `vite-project/src/contactInfo.js`:
    ```javascript
    export const FLOWPAY_CONTRACT = '0xabcdef1234567890...';
-   export const MNEE_TOKEN = '0x1234567890abcdef...';
+   // Legacy token address removed - using native TCRO now
    ```
 
 6. **Verify Contracts** (optional but recommended):

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ethers } from 'ethers';
-import { contractAddress, contractABI, mneeTokenAddress, mneeTokenABI } from './contactInfo.js';
+import { contractAddress, contractABI } from './contactInfo.js';
 import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
 import CreateStreamForm from './components/CreateStreamForm.jsx';
@@ -10,10 +10,10 @@ import { DecisionLog } from './components/DecisionLog.jsx';
 import { StreamMonitor } from './components/StreamMonitor.jsx';
 import { ServiceGraph } from './components/ServiceGraph.jsx';
 import { EfficiencyMetrics } from './components/EfficiencyMetrics.jsx';
-import { 
-  MobileBottomNav, 
+import {
+  MobileBottomNav,
   CollapsibleSection,
-  ToastProvider, 
+  ToastProvider,
   useToast,
   ErrorBoundary,
   SkeletonDashboard,
@@ -53,7 +53,7 @@ function AppContent() {
   const [claimableBalance, setClaimableBalance] = useState('0.0');
   const [isProcessing, setIsProcessing] = useState(false);
   const [myStreamIds, setMyStreamIds] = useState([]);
-  const [mneeBalance, setMneeBalance] = useState('0.0');
+  const [tcroBalance, setTcroBalance] = useState('0.0');
 
   // FlowPay Dashboard State
   const [agentConfig, setAgentConfig] = useState({ agentId: 'Dashboard-Agent', spendingLimits: { dailyLimit: '100' } });
@@ -81,44 +81,14 @@ function AppContent() {
     setMyStreamIds((prev) => (prev.includes(idNumber) ? prev : [...prev, idNumber]));
   };
 
-  // Fetch MNEE balance
-  const fetchMneeBalance = async () => {
+  // Fetch native TCRO balance
+  const fetchTcroBalance = async () => {
     if (!provider || !walletAddress) return;
     try {
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, provider);
-      const balance = await mneeContract.balanceOf(walletAddress);
-      setMneeBalance(ethers.formatEther(balance));
+      const balance = await provider.getBalance(walletAddress);
+      setTcroBalance(ethers.formatEther(balance));
     } catch (error) {
-      console.error('Failed to fetch MNEE balance:', error);
-    }
-  };
-
-  // Mint MNEE tokens for testing
-  const mintMneeTokens = async (amount = '1000') => {
-    if (!signer || !walletAddress) {
-      toast.warning('Please connect your wallet first');
-      return;
-    }
-    try {
-      setIsProcessing(true);
-      setStatus('Minting MNEE tokens...');
-      const loadingToast = toast.transaction.pending('Minting MNEE tokens...');
-      
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, signer);
-      const amountWei = ethers.parseEther(amount);
-      const tx = await mneeContract.mint(walletAddress, amountWei);
-      await tx.wait();
-      
-      toast.dismiss(loadingToast);
-      toast.success(`Minted ${amount} MNEE tokens!`, { title: 'Mint Successful' });
-      setStatus(`Minted ${amount} MNEE tokens.`);
-      await fetchMneeBalance();
-    } catch (error) {
-      console.error('Mint failed:', error);
-      toast.error(error?.shortMessage || error?.message || 'Mint failed', { title: 'Mint Failed' });
-      setStatus(error?.shortMessage || error?.message || 'Mint failed.');
-    } finally {
-      setIsProcessing(false);
+      console.error('Failed to fetch TCRO balance:', error);
     }
   };
 
@@ -151,7 +121,7 @@ function AppContent() {
   const ensureCorrectNetwork = async (eth) => {
     const currentChainIdHex = await eth.request({ method: 'eth_chainId' });
     setChainId(parseInt(currentChainIdHex, 16));
-    const isOk = currentChainIdHex === TARGET_CHAIN_ID_HEX; // Only check Target
+    const isOk = currentChainIdHex === TARGET_CHAIN_ID_HEX;
     if (!isOk) {
       try {
         await eth.request({
@@ -228,26 +198,16 @@ function AppContent() {
         setStatus('Contract not deployed on this network. Switch to Cronos Testnet.');
         return;
       }
-      setStatus('Approving MNEE...');
-      // Use the imported MNEE token address and ABI
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, signer);
 
-      const currentAllowance = await mneeContract.allowance(await signer.getAddress(), contractAddress);
-      if (currentAllowance < totalAmountWei) {
-        setStatus('Approving MNEE token...');
-        const approveTx = await mneeContract.approve(contractAddress, totalAmountWei);
-        await approveTx.wait();
-        setStatus('MNEE Approved.');
-      }
-
-      setStatus('Creating stream...');
+      // No token approval needed - sending native TCRO!
+      setStatus('Creating stream with TCRO...');
       setIsProcessing(true);
-      // New signature: createStream(recipient, duration, amount, metadata)
-      // Removing { value: ... }
-      const tx = await contractWithSigner.createStream(recipient, duration, totalAmountWei, "{}");
+
+      // New signature: createStream(recipient, duration, metadata) with value
+      const tx = await contractWithSigner.createStream(recipient, duration, "{}", { value: totalAmountWei });
       const receipt = await tx.wait();
 
-      // Parse StreamCreated event for streamId (with robust fallbacks)
+      // Parse StreamCreated event for streamId
       let createdId = null;
       try {
         const iface = contractWithSigner.interface;
@@ -263,7 +223,8 @@ function AppContent() {
           }
         }
       } catch { }
-      // Fallback: query events at the tx block filtered by sender
+
+      // Fallback: query events at the tx block
       if (createdId === null && contractWithProvider) {
         try {
           const filter = contractWithProvider.filters.StreamCreated(null, walletAddress, null);
@@ -289,6 +250,7 @@ function AppContent() {
       setAmountEth('');
       setDurationSeconds('');
       await refreshStreams();
+      await fetchTcroBalance();
     } catch (error) {
       console.error('Stream creation failed:', error);
       const raw = `${error?.shortMessage || error?.message || ''}`.toLowerCase();
@@ -358,8 +320,8 @@ function AppContent() {
       toast.stream.withdrawn(claimableBalance);
       addMyStreamId(id);
       await refreshStreams();
-      // Refresh claimable for convenience
       await checkClaimableBalance();
+      await fetchTcroBalance();
     } catch (error) {
       console.error('Withdraw failed:', error);
       setStatus(error?.shortMessage || error?.message || 'Withdraw failed.');
@@ -426,11 +388,11 @@ function AppContent() {
   useEffect(() => {
     if (!walletAddress || !contractWithProvider) return;
     refreshStreams();
-    fetchMneeBalance();
-    // Listen for new streams and updates
-    const createdListener = () => refreshStreams();
-    const cancelledListener = () => refreshStreams();
-    const withdrawnListener = () => refreshStreams();
+    fetchTcroBalance();
+    // Listen for events
+    const createdListener = () => { refreshStreams(); fetchTcroBalance(); };
+    const cancelledListener = () => { refreshStreams(); fetchTcroBalance(); };
+    const withdrawnListener = () => { refreshStreams(); fetchTcroBalance(); };
     contractWithProvider.on('StreamCreated', createdListener);
     contractWithProvider.on('StreamCancelled', cancelledListener);
     contractWithProvider.on('Withdrawn', withdrawnListener);
@@ -444,7 +406,7 @@ function AppContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress, contractWithProvider]);
 
-  // Live claimable ticker based on local clock to avoid spamming RPC
+  // Live claimable ticker
   const tickerRef = useRef(null);
   useEffect(() => {
     if (!incomingStreams.length) return;
@@ -478,6 +440,7 @@ function AppContent() {
       toast.success(`Withdrawn from Stream #${streamId}`, { title: 'Withdrawal Complete' });
       addMyStreamId(Number(streamId));
       await refreshStreams();
+      await fetchTcroBalance();
     } catch (e) {
       console.error(e);
       setStatus(e?.shortMessage || e?.message || 'Withdraw failed.');
@@ -501,6 +464,7 @@ function AppContent() {
       toast.stream.cancelled(streamId);
       addMyStreamId(Number(streamId));
       await refreshStreams();
+      await fetchTcroBalance();
     } catch (e) {
       console.error(e);
       setStatus(e?.shortMessage || e?.message || 'Cancel failed.');
@@ -554,34 +518,26 @@ function AppContent() {
     }
     return (
       <div className="space-y-8 md:space-y-12">
-        {/* MNEE Token Balance Card */}
+        {/* TCRO Balance Card */}
         <section className="card-glass p-4 md:p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-white mb-1">💰 MNEE Token Balance</h3>
+              <h3 className="text-lg font-semibold text-white mb-1">💰 TCRO Balance</h3>
               <p className="text-2xl font-mono text-cyan-300">
-                {Number(mneeBalance).toLocaleString(undefined, { maximumFractionDigits: 4 })} MNEE
+                {Number(tcroBalance).toLocaleString(undefined, { maximumFractionDigits: 4 })} TCRO
               </p>
-              <p className="text-xs text-white/50 mt-1 font-mono truncate">
-                Token: {mneeTokenAddress}
+              <p className="text-xs text-white/50 mt-1">
+                Native Cronos Testnet tokens - <a href="https://cronos.org/faucet" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline">Get from faucet</a>
               </p>
             </div>
             <div className="flex gap-2">
               <button
                 type="button"
                 className="btn-default min-h-[44px] px-4"
-                onClick={fetchMneeBalance}
+                onClick={fetchTcroBalance}
                 disabled={isProcessing}
               >
                 Refresh
-              </button>
-              <button
-                type="button"
-                className="btn-primary min-h-[44px] px-4"
-                onClick={() => mintMneeTokens('1000')}
-                disabled={isProcessing}
-              >
-                Mint 1000 MNEE
               </button>
             </div>
           </div>
@@ -589,7 +545,7 @@ function AppContent() {
 
         <section className="grid gap-4 md:gap-6 lg:grid-cols-2">
           <CollapsibleSection title="Create Stream" icon="➕" defaultOpen={true}>
-            <p className="text-sm text-white/50 mb-4">Funds stream per second using MNEE tokens. Flow rate = total / duration.</p>
+            <p className="text-sm text-white/50 mb-4">Funds stream per second using native TCRO. Flow rate = total / duration.</p>
             <CreateStreamForm
               recipient={recipient}
               setRecipient={setRecipient}
@@ -602,7 +558,7 @@ function AppContent() {
           </CollapsibleSection>
 
           <CollapsibleSection title="Withdraw Funds" icon="💰" defaultOpen={true}>
-            <p className="text-sm text-white/60 mb-4">Enter a stream ID to check and withdraw claimable MNEE funds.</p>
+            <p className="text-sm text-white/60 mb-4">Enter a stream ID to check and withdraw claimable TCRO funds.</p>
             <div className="grid grid-cols-1 gap-4">
               <label>
                 <span className="block text-sm text-white/70 mb-1.5">Stream ID</span>
@@ -631,7 +587,7 @@ function AppContent() {
               </div>
 
               <p className="text-sm text-white/70">
-                Can Withdraw: <span className="font-mono text-cyan-300">{Number(claimableBalance || '0').toLocaleString(undefined, { maximumFractionDigits: 6 })}</span> MNEE
+                Can Withdraw: <span className="font-mono text-cyan-300">{Number(claimableBalance || '0').toLocaleString(undefined, { maximumFractionDigits: 6 })}</span> TCRO
               </p>
             </div>
           </CollapsibleSection>

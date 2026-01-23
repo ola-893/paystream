@@ -1,17 +1,12 @@
-// Deployed contract addresses on Cronos testnet
+// Deployed contract address on Cronos testnet
 export const contractAddress = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_CONTRACT_ADDRESS)
   ? import.meta.env.VITE_CONTRACT_ADDRESS
-  : "0x155A00fBE3D290a8935ca4Bf5244283685Bb0035"; // FlowPayStream on Cronos Testnet (TBD - Deploy yourself)
+  : "0x6aEe6d1564FA029821576055A5420cAac06cF4F3"; // FlowPayStream on Cronos Testnet
 
-// MNEE Token address on Cronos Testnet
-export const mneeTokenAddress = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_MNEE_TOKEN_ADDRESS)
-  ? import.meta.env.VITE_MNEE_TOKEN_ADDRESS
-  : "0x96B1FE54Ee89811f46ecE4a347950E0D682D3896"; // MockMNEE on Cronos Testnet (TBD - Deploy yourself)
-
-// 2. Uses the Vercel Environment Variable for the ABI if it exists, otherwise falls back to the hardcoded ABI.
+// Contract ABI for FlowPayStream (Native TCRO version)
 const hardcodedABI = [
   {
-    "inputs": [{ "internalType": "address", "name": "_mneeToken", "type": "address" }],
+    "inputs": [],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -55,12 +50,11 @@ const hardcodedABI = [
     "inputs": [
       { "internalType": "address", "name": "recipient", "type": "address" },
       { "internalType": "uint256", "name": "duration", "type": "uint256" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" },
       { "internalType": "string", "name": "metadata", "type": "string" }
     ],
     "name": "createStream",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -92,13 +86,6 @@ const hardcodedABI = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "mneeToken",
-    "outputs": [{ "internalType": "contract IERC20", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "name": "streams",
     "outputs": [
@@ -114,6 +101,10 @@ const hardcodedABI = [
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ];
 
@@ -121,117 +112,5 @@ export const contractABI = (typeof import.meta !== 'undefined' && import.meta.en
   ? JSON.parse(import.meta.env.VITE_CONTRACT_ABI)
   : hardcodedABI;
 
-// MNEE Token ABI (ERC20 standard functions)
-export const mneeTokenABI = [
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "spender", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true, "internalType": "address", "name": "from", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "address", "name": "", "type": "address" }
-    ],
-    "name": "allowance",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "spender", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "approve",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "balanceOf",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "decimals",
-    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "to", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "recipient", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "transfer",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "sender", "type": "address" },
-      { "internalType": "address", "name": "recipient", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "transferFrom",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-];
+// Note: FlowPay now uses native TCRO tokens instead of ERC-20 tokens
+// No token contract address needed - TCRO is the native currency of Cronos

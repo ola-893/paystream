@@ -41,7 +41,7 @@
 ## Deployment
 
 * [Overview](deployment/README.md)
-* [Sepolia Testnet](deployment/sepolia.md)
+* [Cronos Testnet](deployment/cronos.md)
 * [Production Checklist](deployment/production.md)
 
 ## Guides

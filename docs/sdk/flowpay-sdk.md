@@ -190,7 +190,7 @@ import { FlowPaySDK } from './FlowPaySDK';
 async function main() {
   const sdk = new FlowPaySDK({
     privateKey: process.env.PRIVATE_KEY!,
-    rpcUrl: 'https://rpc.sepolia.org',
+    rpcUrl: 'https://evm-t3.cronos.org',
     contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
     mneeAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896'
   });

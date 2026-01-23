@@ -4,8 +4,6 @@ const { ethers } = require("hardhat");
 describe("FlowPayStream", function () {
     let FlowPayStream;
     let flowPayStream;
-    let MockMNEE;
-    let mockMNEE;
     let owner;
     let recipient;
     let otherAccount;
@@ -13,35 +11,29 @@ describe("FlowPayStream", function () {
     beforeEach(async function () {
         [owner, recipient, otherAccount] = await ethers.getSigners();
 
-        // Deploy MockMNEE
-        MockMNEE = await ethers.getContractFactory("MockMNEE");
-        mockMNEE = await MockMNEE.deploy();
-        await mockMNEE.waitForDeployment();
-
-        // Deploy FlowPayStream
+        // Deploy FlowPayStream (no constructor args - uses native TCRO)
         FlowPayStream = await ethers.getContractFactory("FlowPayStream");
-        flowPayStream = await FlowPayStream.deploy(await mockMNEE.getAddress());
+        flowPayStream = await FlowPayStream.deploy();
         await flowPayStream.waitForDeployment();
-
-        // Mint tokens to owner
-        await mockMNEE.mint(owner.address, ethers.parseEther("1000"));
     });
 
     describe("Deployment", function () {
-        it("Should set the right MNEE token address", async function () {
-            expect(await flowPayStream.mneeToken()).to.equal(await mockMNEE.getAddress());
+        it("Should deploy successfully", async function () {
+            expect(await flowPayStream.getAddress()).to.be.properAddress;
         });
     });
 
     describe("Stream Creation", function () {
-        it("Should create a stream successfully", async function () {
-            const amount = ethers.parseEther("100");
+        it("Should create a stream successfully with native TCRO", async function () {
+            const amount = ethers.parseEther("1"); // 1 TCRO
             const duration = 100; // 100 seconds
 
-            // Approve FlowPayStream to spend tokens
-            await mockMNEE.approve(await flowPayStream.getAddress(), amount);
-
-            const tx = await flowPayStream.createStream(recipient.address, duration, amount, "metadata");
+            const tx = await flowPayStream.createStream(
+                recipient.address,
+                duration,
+                "metadata",
+                { value: amount }
+            );
             const receipt = await tx.wait();
 
             // Check event
@@ -60,23 +52,30 @@ describe("FlowPayStream", function () {
             expect(args.metadata).to.equal("metadata");
         });
 
-        it("Should fail if allowance is insufficient", async function () {
-            const amount = ethers.parseEther("100");
+        it("Should fail if no TCRO is sent", async function () {
             const duration = 100;
 
             await expect(
-                flowPayStream.createStream(recipient.address, duration, amount, "metadata")
-            ).to.be.revertedWith("ERC20: transfer amount exceeds allowance");
+                flowPayStream.createStream(recipient.address, duration, "metadata", { value: 0 })
+            ).to.be.revertedWith("FlowPayStream: Must send TCRO to create stream.");
+        });
+
+        it("Should fail if recipient is zero address", async function () {
+            const amount = ethers.parseEther("1");
+            const duration = 100;
+
+            await expect(
+                flowPayStream.createStream(ethers.ZeroAddress, duration, "metadata", { value: amount })
+            ).to.be.revertedWith("FlowPayStream: Recipient cannot be the zero address.");
         });
     });
 
     describe("Withdrawal", function () {
-        it("Should allow withdrawal of accrued tokens", async function () {
-            const amount = ethers.parseEther("100");
+        it("Should allow withdrawal of accrued TCRO", async function () {
+            const amount = ethers.parseEther("1");
             const duration = 100;
 
-            await mockMNEE.approve(await flowPayStream.getAddress(), amount);
-            await flowPayStream.createStream(recipient.address, duration, amount, "metadata");
+            await flowPayStream.createStream(recipient.address, duration, "metadata", { value: amount });
 
             // Increase time by 50 seconds
             await ethers.provider.send("evm_increaseTime", [50]);
@@ -85,24 +84,26 @@ describe("FlowPayStream", function () {
             const streamId = 1;
             const claimable = await flowPayStream.getClaimableBalance(streamId);
 
-            // Approx 50 tokens
-            expect(claimable).to.be.closeTo(ethers.parseEther("50"), ethers.parseEther("1"));
+            // Approx 0.5 TCRO
+            expect(claimable).to.be.closeTo(ethers.parseEther("0.5"), ethers.parseEther("0.01"));
 
-            const recipientBalanceBefore = await mockMNEE.balanceOf(recipient.address);
-            await flowPayStream.connect(recipient).withdrawFromStream(streamId);
-            const recipientBalanceAfter = await mockMNEE.balanceOf(recipient.address);
+            const recipientBalanceBefore = await ethers.provider.getBalance(recipient.address);
+            const tx = await flowPayStream.connect(recipient).withdrawFromStream(streamId);
+            const receipt = await tx.wait();
+            const gasUsed = receipt.gasUsed * receipt.gasPrice;
+            const recipientBalanceAfter = await ethers.provider.getBalance(recipient.address);
 
-            expect(recipientBalanceAfter - recipientBalanceBefore).to.be.closeTo(claimable, ethers.parseEther("2"));
+            // Balance should increase by claimable minus gas
+            expect(recipientBalanceAfter - recipientBalanceBefore + gasUsed).to.be.closeTo(claimable, ethers.parseEther("0.02"));
         });
     });
 
     describe("Cancellation", function () {
-        it("Should allow sender to cancel and refund remaining", async function () {
-            const amount = ethers.parseEther("100");
+        it("Should allow sender to cancel and refund remaining TCRO", async function () {
+            const amount = ethers.parseEther("1");
             const duration = 100;
 
-            await mockMNEE.approve(await flowPayStream.getAddress(), amount);
-            await flowPayStream.createStream(recipient.address, duration, amount, "metadata");
+            await flowPayStream.createStream(recipient.address, duration, "metadata", { value: amount });
 
             // Increase time by 50 seconds
             await ethers.provider.send("evm_increaseTime", [50]);
@@ -110,12 +111,14 @@ describe("FlowPayStream", function () {
 
             const streamId = 1;
 
-            const senderBalanceBefore = await mockMNEE.balanceOf(owner.address);
-            await flowPayStream.cancelStream(streamId);
-            const senderBalanceAfter = await mockMNEE.balanceOf(owner.address);
+            const senderBalanceBefore = await ethers.provider.getBalance(owner.address);
+            const tx = await flowPayStream.cancelStream(streamId);
+            const receipt = await tx.wait();
+            const gasUsed = receipt.gasUsed * receipt.gasPrice;
+            const senderBalanceAfter = await ethers.provider.getBalance(owner.address);
 
-            // Should get back approx 50 tokens
-            expect(senderBalanceAfter - senderBalanceBefore).to.be.closeTo(ethers.parseEther("50"), ethers.parseEther("1"));
+            // Should get back approx 0.5 TCRO minus gas
+            expect(senderBalanceAfter - senderBalanceBefore + gasUsed).to.be.closeTo(ethers.parseEther("0.5"), ethers.parseEther("0.01"));
 
             expect(await flowPayStream.isStreamActive(streamId)).to.be.false;
         });
@@ -123,10 +126,9 @@ describe("FlowPayStream", function () {
 
     describe("Active Check", function () {
         it("Should return true for active stream", async function () {
-            const amount = ethers.parseEther("100");
+            const amount = ethers.parseEther("1");
             const duration = 100;
-            await mockMNEE.approve(await flowPayStream.getAddress(), amount);
-            await flowPayStream.createStream(recipient.address, duration, amount, "metadata");
+            await flowPayStream.createStream(recipient.address, duration, "metadata", { value: amount });
             expect(await flowPayStream.isStreamActive(1)).to.be.true;
         });
     });

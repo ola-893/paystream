@@ -10,17 +10,16 @@ dotenv.config();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const flowPayMiddleware = require('../server/middleware/flowPayMiddleware');
 
-// Contract addresses on Sepolia
-const FLOWPAYSTREAM_ADDRESS = '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035';
-const MOCK_MNEE_ADDRESS = '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896';
-// Use a more reliable RPC endpoint
-const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com';
+// Contract addresses on Cronos Testnet
+const FLOWPAYSTREAM_ADDRESS = process.env.FLOWPAY_CONTRACT || '0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87';
+// Use Cronos Testnet RPC endpoint
+const CRONOS_RPC_URL = process.env.CRONOS_RPC_URL || 'https://evm-t3.cronos.org';
 
 /**
  * Demo Provider: "The Gatekeeper"
  * 
  * This is a premium API service that:
- * 1. Requires MNEE payment streams for access
+ * 1. Requires TCRO payment streams for access
  * 2. Uses x402 protocol to negotiate payments
  * 3. Validates streams on-chain before serving content
  */
@@ -30,27 +29,25 @@ const PORT = 3005;
 app.use(cors());
 app.use(express.json());
 
-// Real blockchain configuration for Sepolia
+// Real blockchain configuration for Cronos Testnet
 const config = {
-    mneeAddress: MOCK_MNEE_ADDRESS,
     flowPayContractAddress: FLOWPAYSTREAM_ADDRESS,
-    rpcUrl: SEPOLIA_RPC_URL,
+    rpcUrl: CRONOS_RPC_URL,
     routes: {
         '/api/premium': {
             mode: 'streaming',
-            price: '0.0001' // 0.0001 MNEE per second
+            price: '0.0001' // 0.0001 TCRO per second
         },
         '/api/ai-insight': {
             mode: 'streaming',
-            price: '0.001' // 0.001 MNEE per second (higher tier)
+            price: '0.001' // 0.001 TCRO per second (higher tier)
         }
     }
 };
 
 console.log("🔧 Provider Configuration:");
 console.log(`   FlowPayStream Contract: ${FLOWPAYSTREAM_ADDRESS}`);
-console.log(`   MNEE Token: ${MOCK_MNEE_ADDRESS}`);
-console.log(`   RPC URL: ${SEPOLIA_RPC_URL}`);
+console.log(`   RPC URL: ${CRONOS_RPC_URL}`);
 
 // Apply FlowPay Middleware (validates payment streams on-chain)
 app.use(flowPayMiddleware(config));
@@ -68,7 +65,7 @@ app.get('/api/premium', (req: any, res) => {
     
     res.json({
         success: true,
-        data: "🌟 This is PREMIUM content delivered via real MNEE payment streaming!",
+        data: "🌟 This is PREMIUM content delivered via real TCRO payment streaming!",
         streamId: streamId,
         timestamp: Date.now(),
         message: "Your AI agent successfully negotiated payment and accessed this protected resource."
@@ -97,14 +94,13 @@ app.get('/api/info', (req, res) => {
     res.json({
         name: "FlowPay Demo Provider",
         version: "1.0.0",
-        network: "Sepolia Testnet",
+        network: "Cronos Testnet",
         contracts: {
             flowPayStream: FLOWPAYSTREAM_ADDRESS,
-            mneeToken: MOCK_MNEE_ADDRESS
         },
         protectedRoutes: [
-            { path: '/api/premium', price: '0.0001 MNEE/sec', mode: 'streaming' },
-            { path: '/api/ai-insight', price: '0.001 MNEE/sec', mode: 'streaming' }
+            { path: '/api/premium', price: '0.0001 TCRO/sec', mode: 'streaming' },
+            { path: '/api/ai-insight', price: '0.001 TCRO/sec', mode: 'streaming' }
         ],
         documentation: "https://flowpay.dev/docs"
     });
@@ -117,8 +113,8 @@ if (require.main === module) {
         console.log(`\n📋 Available Endpoints:`);
         console.log(`   GET /health          - Health check (free)`);
         console.log(`   GET /api/info        - API info (free)`);
-        console.log(`   GET /api/premium     - Premium content (0.0001 MNEE/sec)`);
-        console.log(`   GET /api/ai-insight  - AI insights (0.001 MNEE/sec)`);
+        console.log(`   GET /api/premium     - Premium content (0.0001 TCRO/sec)`);
+        console.log(`   GET /api/ai-insight  - AI insights (0.001 TCRO/sec)`);
         console.log(`\n💡 To test, run the consumer in another terminal:`);
         console.log(`   npx ts-node demo/consumer.ts`);
     });

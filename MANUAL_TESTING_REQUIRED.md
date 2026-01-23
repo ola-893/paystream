@@ -34,7 +34,7 @@ npm run check:deployment
 npm run deploy:cronos
 
 # 3. Save the deployed addresses to .env
-MNEE_CONTRACT=0x...
+# Legacy token address removed - using native TCRO now
 FLOWPAY_CONTRACT=0x...
 ```
 

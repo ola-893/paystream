@@ -43,7 +43,7 @@ describe('Stream Metadata System', () => {
 
         const details = sdk.getStreamDetails('123');
         expect(details.agentId).to.equal('agent-007');
-        expect(details.client).to.equal('FlowPaySDK/1.0');
+        expect(details.client).to.equal('FlowPaySDK/2.0-TCRO');
     });
 
     it('Should return "unknown" Agent ID if not configured', () => {

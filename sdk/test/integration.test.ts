@@ -49,7 +49,7 @@ const createMockServer = () => {
                     'X-Payment-Required': 'true',
                     'X-FlowPay-Mode': 'streaming',
                     'X-FlowPay-Rate': '0.0001',
-                    'X-MNEE-Address': '0xMockMNEE',
+                    'X-FlowPay-Currency': 'TCRO',
                     'X-FlowPay-Contract': '0xMockContract'
                 })
                 .json({
@@ -57,7 +57,7 @@ const createMockServer = () => {
                     requirements: {
                         mode: 'streaming',
                         price: '0.0001',
-                        currency: 'MNEE'
+                        currency: 'TCRO'
                     }
                 });
         }
@@ -89,7 +89,7 @@ const createMockServer = () => {
                     'X-Payment-Required': 'true',
                     'X-FlowPay-Mode': 'hybrid',
                     'X-FlowPay-Rate': '0.001',
-                    'X-MNEE-Address': '0xMockMNEE',
+                    'X-FlowPay-Currency': 'TCRO',
                     'X-FlowPay-Contract': '0xMockContract'
                 })
                 .json({
@@ -97,7 +97,7 @@ const createMockServer = () => {
                     requirements: {
                         mode: 'hybrid',
                         price: '0.001',
-                        currency: 'MNEE'
+                        currency: 'TCRO'
                     }
                 });
         }
@@ -285,12 +285,12 @@ describe('FlowPay End-to-End Integration Tests', function () {
         it('should include agent ID in stream details', () => {
             const details = sdk.getStreamDetails('test-stream');
             expect(details.agentId).to.equal('Integration-Test-Agent');
-            expect(details.client).to.equal('FlowPaySDK/1.0');
+            expect(details.client).to.equal('FlowPaySDK/2.0-TCRO');
         });
     });
 
     describe('Safety Mechanisms', () => {
-        it('should enforce spending limits', () => {
+        it('should enforce TCRO spending limits', () => {
             const limitedSdk = new FlowPaySDK({
                 privateKey: Wallet.createRandom().privateKey,
                 rpcUrl: 'http://localhost:8545',
@@ -321,7 +321,7 @@ describe('FlowPay End-to-End Integration Tests', function () {
     });
 
     describe('Real-time Calculations', () => {
-        it('should calculate claimable balance correctly', () => {
+        it('should calculate claimable TCRO balance correctly', () => {
             const startTime = Math.floor(Date.now() / 1000) - 100; // 100 seconds ago
             const rate = ethers.parseEther('0.0001');
             const amount = ethers.parseEther('1');
@@ -362,7 +362,7 @@ describe('x402 Protocol Compliance', () => {
         expect(response.headers.get('x-payment-required')).to.equal('true');
         expect(response.headers.get('x-flowpay-mode')).to.equal('streaming');
         expect(response.headers.get('x-flowpay-rate')).to.equal('0.0001');
-        expect(response.headers.get('x-mnee-address')).to.exist;
+        expect(response.headers.get('x-flowpay-currency')).to.equal('TCRO');
         expect(response.headers.get('x-flowpay-contract')).to.exist;
     });
 
@@ -373,6 +373,6 @@ describe('x402 Protocol Compliance', () => {
         expect(body.requirements).to.exist;
         expect(body.requirements.mode).to.equal('streaming');
         expect(body.requirements.price).to.equal('0.0001');
-        expect(body.requirements.currency).to.equal('MNEE');
+        expect(body.requirements.currency).to.equal('TCRO');
     });
 });

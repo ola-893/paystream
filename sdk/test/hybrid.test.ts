@@ -24,7 +24,7 @@ app.get('/api/hybrid', (req, res) => {
         'X-Payment-Required': 'true',
         'X-FlowPay-Mode': 'hybrid', // Server suggesting hybrid capability
         'X-FlowPay-Rate': '0.0001',
-        'X-MNEE-Address': '0xToken',
+        'X-FlowPay-Currency': 'TCRO',
         'X-FlowPay-Contract': '0xContract'
     }).json({ error: "Payment Required" });
 });

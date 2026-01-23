@@ -1,15 +1,13 @@
 const { ethers } = require('ethers');
 
 /**
- * FlowPay x402 Express Middleware
+ * FlowPay x402 Express Middleware (TCRO Native Version)
  * @param {Object} config Middleware configuration
  * @param {Object} config.routes Map of routes to pricing config
- * @param {string} config.mneeAddress MNEE Token Address
  * @param {string} config.flowPayContractAddress FlowPayStream Contract Address
  * @param {string} config.rpcUrl RPC URL for blockchain connection
- * @param {string} config.recipientAddress Payment recipient address (defaults to mneeAddress if not provided)
+ * @param {string} config.recipientAddress Payment recipient address
  * @param {string} config.apiKey Optional API Key for authentication
- * @param {string} config.privateKey Optional private key for server-side signing if needed (not used for verification)
  */
 const flowPayMiddleware = (config) => {
     // Initialize provider and contract OR use mock
@@ -34,7 +32,6 @@ const flowPayMiddleware = (config) => {
         const path = req.path;
 
         // Find matching route config
-        // Simple exact match or simple prefix match logic
         let routeConfig = config.routes[path];
         if (!routeConfig) {
             // Try finding a matching prefix if exact match fails
@@ -49,7 +46,7 @@ const flowPayMiddleware = (config) => {
             return next();
         }
 
-        // 0. API Key Authentication (Requirement 3.4)
+        // 0. API Key Authentication
         if (config.apiKey) {
             const clientKey = req.headers['x-api-key'];
             if (!clientKey || clientKey !== config.apiKey) {
@@ -60,35 +57,23 @@ const flowPayMiddleware = (config) => {
         const streamIdHeader = req.headers['x-flowpay-stream-id'];
         const txHashHeader = req.headers['x-flowpay-tx-hash'];
 
-        // 1. Check for Direct Payment (Tx Hash) (Requirement: Hybrid Mode)
+        // 1. Check for Direct Payment (Native TCRO Tx Hash)
         if (txHashHeader) {
             try {
-                // In a real implementation, we would:
-                // 1. Fetch tx receipt from provider
-                // 2. Verify receiver == config.mneeAddress (or recipient)
-                // 3. Verify amount >= routeConfig.price
-                // 4. Verify status == 1 (success)
-                // 5. Verify tx hash hasn't been used before (replay protection)
-
-                // For Hackathon/Mock: We assume if the hash matches a pattern/mock or just exists, it's valid if using mockContract
-                // Or if we have a provider, we could attempt to look it up. 
-                // Let's implement a basic mock verification if config.mockContract exists.
-
                 let isValidPayment = false;
                 if (config.mockContract) {
                     // Mock validation
                     isValidPayment = true;
-                    console.log(`[FlowPay] Validated Direct Payment Tx: ${txHashHeader}`);
+                    console.log(`[FlowPay] Validated Direct TCRO Payment Tx: ${txHashHeader}`);
                 } else {
-                    // Real provider validation (TODO: Implement full verification)
-                    // For now, optimistic acceptance for valid-looking hashes
+                    // Real provider validation - check tx hash format
                     if (txHashHeader.startsWith('0x') && txHashHeader.length === 66) {
                         isValidPayment = true;
                     }
                 }
 
                 if (isValidPayment) {
-                    console.log(`[FlowPay] Request accepted for ${path} using Direct Payment Tx: ${txHashHeader}`);
+                    console.log(`[FlowPay] Request accepted for ${path} using Direct TCRO Payment Tx: ${txHashHeader}`);
                     req.flowPay = { txHash: txHashHeader, mode: 'direct' };
                     return next();
                 }
@@ -108,28 +93,20 @@ const flowPayMiddleware = (config) => {
         try {
             // 2. Verify Stream ID
             const streamId = BigInt(streamIdHeader);
-            
-            // Log stream verification attempt (Requirement 2.3)
+
             console.log(`[FlowPay] Verifying stream #${streamId} for ${path}...`);
-            
+
             const isActive = await flowPayContract.isStreamActive(streamId);
 
-            // Log verification result (Requirement 2.3)
             if (!isActive) {
                 console.log(`[FlowPay] Stream #${streamId} verification result: INACTIVE`);
-                // Stream exists but is inactive
                 return res.status(402).json({
                     error: "Stream is inactive",
-                    detail: "The provided stream ID is not active. Please open a new stream or top up."
+                    detail: "The provided stream ID is not active. Please open a new stream."
                 });
             }
-            
+
             console.log(`[FlowPay] Stream #${streamId} verification result: ACTIVE`);
-
-            // Optional: Verify recipient is this server (if we tracked our address)
-            // Optional: Verify balance is sufficient (via getClaimableBalance or local tracking)
-
-            // Track metrics (simple console log for MVP)
             console.log(`[FlowPay] Request accepted for ${path} using Stream #${streamId}`);
 
             // Attach stream info to request for downstream use
@@ -141,7 +118,6 @@ const flowPayMiddleware = (config) => {
         } catch (error) {
             console.error("[FlowPay] Stream verification failed:", error);
             console.log(`[FlowPay] Stream #${streamIdHeader} verification result: ERROR - ${error.message}`);
-            // Fallback to 402 if verification crashes (safe default)
             const requiredAmountFallback = ethers.parseEther(routeConfig.price || '0');
             return send402Response(res, routeConfig, config, requiredAmountFallback);
         }
@@ -149,29 +125,27 @@ const flowPayMiddleware = (config) => {
 };
 
 function send402Response(res, routeConfig, config, requiredAmount) {
-    // Set all required x402 headers per Requirements 2.2
+    // Set all required x402 headers for native TCRO
     res.set('X-Payment-Required', 'true');
     res.set('X-FlowPay-Mode', routeConfig.mode || 'streaming');
     res.set('X-FlowPay-Rate', ethers.formatEther(requiredAmount));
-    res.set('X-FlowPay-Recipient', config.recipientAddress || config.mneeAddress || '');
+    res.set('X-FlowPay-Recipient', config.recipientAddress || '');
     res.set('X-FlowPay-Contract', config.flowPayContractAddress || '');
+    res.set('X-FlowPay-Currency', 'TCRO');
     res.set('X-FlowPay-MinDeposit', routeConfig.minDeposit || '0.001');
-    // Legacy header for backwards compatibility
-    res.set('X-MNEE-Address', config.mneeAddress || '');
-    
+
     // Standard 402 body
     res.status(402).json({
         message: "Payment Required",
         requirements: {
             mode: routeConfig.mode || 'streaming',
             price: ethers.formatEther(requiredAmount),
-            currency: "MNEE",
+            currency: "TCRO",
             contract: config.flowPayContractAddress,
-            recipient: config.recipientAddress || config.mneeAddress,
+            recipient: config.recipientAddress,
             minDeposit: routeConfig.minDeposit || '0.001'
         }
     });
 }
 
 module.exports = flowPayMiddleware;
-

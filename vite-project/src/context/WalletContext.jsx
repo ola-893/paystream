@@ -1,11 +1,11 @@
 import { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
-import { contractAddress, contractABI, mneeTokenAddress, mneeTokenABI } from '../contactInfo.js';
+import { contractAddress, contractABI } from '../contactInfo.js';
 import { useToast } from '../components/ui';
 
 const WalletContext = createContext(null);
 
-const TARGET_CHAIN_ID_DEC = 11155111;
+const TARGET_CHAIN_ID_DEC = 338; // Cronos Testnet
 const TARGET_CHAIN_ID_HEX = '0x' + TARGET_CHAIN_ID_DEC.toString(16);
 
 export function WalletProvider({ children }) {
@@ -16,7 +16,7 @@ export function WalletProvider({ children }) {
   const [chainId, setChainId] = useState(null);
   const [status, setStatus] = useState('Not Connected');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [mneeBalance, setMneeBalance] = useState('0.0');
+  const [tcroBalance, setTcroBalance] = useState('0.0');
 
   // Stream state
   const [incomingStreams, setIncomingStreams] = useState([]);
@@ -88,33 +88,22 @@ export function WalletProvider({ children }) {
     }
   };
 
-  const fetchMneeBalance = useCallback(async () => {
+  const fetchTcroBalance = useCallback(async () => {
     if (!provider || !walletAddress) return;
     try {
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, provider);
-      const balance = await mneeContract.balanceOf(walletAddress);
-      setMneeBalance(ethers.formatEther(balance));
-    } catch (error) { console.error('Failed to fetch MNEE balance:', error); }
+      const balance = await provider.getBalance(walletAddress);
+      setTcroBalance(ethers.formatEther(balance));
+    } catch (error) { 
+      console.error('Failed to fetch TCRO balance:', error); 
+    }
   }, [provider, walletAddress]);
 
-  const mintMneeTokens = async (amount = '1000') => {
-    if (!signer || !walletAddress) { toast.warning('Please connect your wallet first'); return; }
-    try {
-      setIsProcessing(true);
-      setStatus('Minting MNEE tokens...');
-      const loadingToast = toast.transaction.pending('Minting MNEE tokens...');
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, signer);
-      const tx = await mneeContract.mint(walletAddress, ethers.parseEther(amount));
-      await tx.wait();
-      toast.dismiss(loadingToast);
-      toast.success(`Minted ${amount} MNEE tokens!`, { title: 'Mint Successful' });
-      setStatus(`Minted ${amount} MNEE tokens.`);
-      await fetchMneeBalance();
-    } catch (error) {
-      console.error('Mint failed:', error);
-      toast.error(error?.shortMessage || error?.message || 'Mint failed', { title: 'Mint Failed' });
-      setStatus(error?.shortMessage || error?.message || 'Mint failed.');
-    } finally { setIsProcessing(false); }
+  // Note: TCRO faucet functionality - no minting needed for native tokens
+  const getTcroFromFaucet = async () => {
+    toast.info('Get TCRO from the Cronos testnet faucet: https://cronos.org/faucet', { 
+      title: 'TCRO Faucet',
+      duration: 10000 
+    });
   };
 
   const fetchStreamsFromEvents = useCallback(async (me) => {
@@ -197,25 +186,43 @@ export function WalletProvider({ children }) {
       return null;
     }
     try {
-      if (!ethers.isAddress(recipient)) { setStatus('Invalid recipient address.'); return null; }
+      if (!ethers.isAddress(recipient)) { 
+        setStatus('Invalid recipient address.'); 
+        return null; 
+      }
+      
       const totalAmountWei = ethers.parseEther(amount.toString());
       const dur = parseInt(duration, 10);
+      
       if (totalAmountWei <= 0n || !Number.isFinite(dur) || dur <= 0) {
-        setStatus('Enter a positive amount and duration.'); return null;
+        setStatus('Enter a positive amount and duration.'); 
+        return null;
       }
-      setStatus('Approving MNEE...');
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, signer);
-      const currentAllowance = await mneeContract.allowance(await signer.getAddress(), contractAddress);
-      if (currentAllowance < totalAmountWei) {
-        setStatus('Approving MNEE token...');
-        const approveTx = await mneeContract.approve(contractAddress, totalAmountWei);
-        await approveTx.wait();
-        setStatus('MNEE Approved.');
+
+      // Check TCRO balance
+      const balance = await provider.getBalance(walletAddress);
+      if (balance < totalAmountWei) {
+        setStatus('Insufficient TCRO balance.');
+        toast.error('Insufficient TCRO balance', { title: 'Balance Error' });
+        return null;
       }
+
       setStatus('Creating stream...');
       setIsProcessing(true);
-      const tx = await contractWithSigner.createStream(recipient, dur, totalAmountWei, "{}");
+      
+      const loadingToast = toast.transaction.pending('Creating stream with TCRO...');
+      
+      // Create stream with native TCRO (payable function)
+      const tx = await contractWithSigner.createStream(
+        recipient, 
+        dur, 
+        "{}", 
+        { value: totalAmountWei } // Send TCRO as msg.value
+      );
+      
       const receipt = await tx.wait();
+      toast.dismiss(loadingToast);
+      
       let createdId = null;
       try {
         const iface = contractWithSigner.interface;
@@ -224,10 +231,14 @@ export function WalletProvider({ children }) {
           if (log.address?.toLowerCase() === contractAddress.toLowerCase() && log.topics?.[0] === topic) {
             const parsed = iface.parseLog({ topics: Array.from(log.topics), data: log.data });
             const sid = parsed?.args?.streamId ?? parsed?.args?.[0];
-            if (sid !== undefined && sid !== null) { createdId = Number(sid); break; }
+            if (sid !== undefined && sid !== null) { 
+              createdId = Number(sid); 
+              break; 
+            }
           }
         }
       } catch {}
+      
       if (createdId !== null) {
         setStatus(`Stream created. ID #${createdId}`);
         toast.stream.created(createdId);
@@ -235,14 +246,18 @@ export function WalletProvider({ children }) {
         setStatus('Stream created.');
         toast.success('Stream created successfully', { title: 'Stream Created' });
       }
+      
       await refreshStreams();
+      await fetchTcroBalance(); // Refresh TCRO balance
       return createdId;
     } catch (error) {
       console.error('Stream creation failed:', error);
       setStatus(error?.shortMessage || error?.message || 'Transaction failed.');
       toast.error(error?.shortMessage || error?.message || 'Transaction failed', { title: 'Stream Creation Failed' });
       return null;
-    } finally { setIsProcessing(false); }
+    } finally { 
+      setIsProcessing(false); 
+    }
   };
 
   const getClaimableBalance = async (streamId) => {
@@ -262,7 +277,7 @@ export function WalletProvider({ children }) {
   useEffect(() => {
     if (!walletAddress || !contractWithProvider) return;
     refreshStreams();
-    fetchMneeBalance();
+    fetchTcroBalance();
     const listener = () => refreshStreams();
     contractWithProvider.on('StreamCreated', listener);
     contractWithProvider.on('StreamCancelled', listener);
@@ -274,13 +289,13 @@ export function WalletProvider({ children }) {
         contractWithProvider.off('Withdrawn', listener);
       } catch {}
     };
-  }, [walletAddress, contractWithProvider, refreshStreams, fetchMneeBalance]);
+  }, [walletAddress, contractWithProvider, refreshStreams, fetchTcroBalance]);
 
   const value = {
     provider, signer, walletAddress, chainId, status, setStatus, isProcessing, setIsProcessing,
-    mneeBalance, incomingStreams, setIncomingStreams, outgoingStreams, isLoadingStreams, isInitialLoad,
-    contractWithProvider, contractWithSigner, getNetworkName, connectWallet, fetchMneeBalance,
-    mintMneeTokens, refreshStreams, withdraw, cancel, createStream, getClaimableBalance, formatEth, toast
+    tcroBalance, incomingStreams, setIncomingStreams, outgoingStreams, isLoadingStreams, isInitialLoad,
+    contractWithProvider, contractWithSigner, getNetworkName, connectWallet, fetchTcroBalance,
+    getTcroFromFaucet, refreshStreams, withdraw, cancel, createStream, getClaimableBalance, formatEth, toast
   };
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;

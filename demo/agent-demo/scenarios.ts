@@ -16,14 +16,14 @@ import { Scenario } from './DemoRunner';
  * stream that flows tokens over time at a specified rate.
  * 
  * - Endpoint: /api/weather
- * - Price: 0.0001 MNEE/second
+ * - Price: 0.0001 TCRO/second
  * - Expected: Stream creation and reuse
  * 
  * Requirements: 7.1, 7.2
  */
 export const STREAMING_SCENARIO: Scenario = {
   name: 'streaming',
-  description: 'Weather API with streaming payments (0.0001 MNEE/second)',
+  description: 'Weather API with streaming payments (0.0001 TCRO/second)',
   endpoint: '/api/weather',
   expectedMode: 'streaming',
   expectedPrice: '0.0001',
@@ -37,14 +37,14 @@ export const STREAMING_SCENARIO: Scenario = {
  * direct payment for each API request.
  * 
  * - Endpoint: /api/premium
- * - Price: 0.01 MNEE per request
+ * - Price: 0.01 TCRO per request
  * - Expected: Direct payment
  * 
  * Requirements: 7.1, 7.2
  */
 export const PER_REQUEST_SCENARIO: Scenario = {
   name: 'per-request',
-  description: 'Premium API with per-request payment (0.01 MNEE)',
+  description: 'Premium API with per-request payment (0.01 TCRO)',
   endpoint: '/api/premium',
   expectedMode: 'per-request',
   expectedPrice: '0.01',

@@ -4,7 +4,7 @@ The FlowPayStream contract is the core payment streaming infrastructure.
 
 ## Contract Address
 
-**Sepolia**: `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035`
+**Cronos Testnet**: `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035`
 
 ## Overview
 

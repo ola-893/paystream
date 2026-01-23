@@ -16,15 +16,10 @@ This document tracks the testing and validation of the Cronos migration.
 
 ### Deployed Contracts
 
-#### MockMNEE Token
-- **Address:** `0x8DA26C2b004f5962c0846f57d193de12f2F62612`
-- **Explorer:** https://explorer.cronos.org/testnet/address/0x8DA26C2b004f5962c0846f57d193de12f2F62612
-- **Status:** ✅ Deployed successfully
-
 #### FlowPayStream Contract
 - **Address:** `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87`
 - **Explorer:** https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
-- **Status:** ✅ Deployed successfully
+- **Status:** ✅ Deployed successfully (Native TCRO payments)
 
 ### Deployment Output
 
@@ -32,12 +27,12 @@ This document tracks the testing and validation of the Cronos migration.
 Deploying contracts with the account: 0x506e724d7FDdbF91B6607d5Af0700d385D952f8a
 Network: cronos_testnet
 
-📝 Deploying MockMNEE to Cronos Testnet...
-✅ MockMNEE deployed to: 0x8DA26C2b004f5962c0846f57d193de12f2F62612
-   View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x8DA26C2b004f5962c0846f57d193de12f2F62612
+📝 Deploying FlowPayStream to Cronos Testnet...
+✅ FlowPayStream deployed to: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
+   View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
 📝 Deploying FlowPayStream to Cronos Testnet...
-   Using MNEE address: 0x8DA26C2b004f5962c0846f57d193de12f2F62612
+   Using native TCRO for payments
 ✅ FlowPayStream deployed to: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
    View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
@@ -46,9 +41,9 @@ Network: cronos_testnet
 
 ### Verification Checklist
 
-- [x] MockMNEE contract deployed successfully
 - [x] FlowPayStream contract deployed successfully
-- [x] Both contracts visible on Cronos Explorer
+- [x] Contract visible on Cronos Explorer
+- [x] Native TCRO payment functionality enabled
 - [x] Contract addresses recorded in .env file
 - [x] Deployment used TCRO for gas (not ETH)
 - [x] Network shown as "cronos_testnet" in output
@@ -60,7 +55,7 @@ The `.env` file has been updated with the deployed contract addresses:
 
 ```bash
 FLOWPAY_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
-MNEE_CONTRACT=0x8DA26C2b004f5962c0846f57d193de12f2F62612
+# Legacy token address removed - using native TCRO now
 ```
 
 ### Next Steps
@@ -196,7 +191,7 @@ With contracts deployed, you can now proceed with:
      CRONOS_RPC_URL=https://evm-t3.cronos.org
      PRIVATE_KEY=<your_private_key>
      FLOWPAY_CONTRACT=<deployed_address>
-     MNEE_TOKEN=<deployed_address>
+     # Legacy token address removed - using native TCRO now
      GEMINI_API_KEY=<optional>
      DAILY_BUDGET=10
      ```
@@ -428,7 +423,7 @@ The following tasks require actual blockchain interaction and user setup:
 
 4. **Update .env with deployed addresses:**
    ```bash
-   MNEE_CONTRACT=0x...
+   # Legacy token address removed - using native TCRO now
    FLOWPAY_CONTRACT=0x...
    ```
 

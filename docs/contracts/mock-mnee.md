@@ -4,7 +4,7 @@ MockMNEE is a test ERC-20 token for FlowPay development.
 
 ## Contract Address
 
-**Sepolia**: `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896`
+**Cronos Testnet**: `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896`
 
 ## Overview
 
@@ -124,9 +124,9 @@ const mnee = new ethers.Contract(mneeAddress, mneeABI, signer);
 await mnee.mint(myAddress, ethers.parseEther('1000'));
 ```
 
-### Via Etherscan
+### Via Cronos Explorer
 
-1. Go to [MockMNEE on Etherscan](https://sepolia.etherscan.io/address/0x96B1FE54Ee89811f46ecE4a347950E0D682D3896#writeContract)
+1. Go to [MockMNEE on Cronos Explorer](https://explorer.cronos.org/testnet/address/0x96B1FE54Ee89811f46ecE4a347950E0D682D3896#writeContract)
 2. Connect wallet
 3. Call `mint` with your address and amount
 

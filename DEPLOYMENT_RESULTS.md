@@ -10,17 +10,19 @@
 
 ## Deployed Contracts
 
-### 1. MockMNEE Token (ERC-20)
+### 1. Legacy Token Contract (REMOVED)
 
-**Contract Address:**
+**Previous Contract Address:**
 ```
 0x8DA26C2b004f5962c0846f57d193de12f2F62612
 ```
 
-**Cronos Explorer:**
+**Previous Cronos Explorer:**
 https://explorer.cronos.org/testnet/address/0x8DA26C2b004f5962c0846f57d193de12f2F62612
 
-**Purpose:** Test ERC-20 token for payment streams on Cronos testnet
+**Purpose:** Previously used ERC-20 token for payment streams (now replaced with native TCRO)
+
+**Status:** ❌ Removed - No longer needed for TCRO migration
 
 ---
 
@@ -34,9 +36,7 @@ https://explorer.cronos.org/testnet/address/0x8DA26C2b004f5962c0846f57d193de12f2
 **Cronos Explorer:**
 https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
-**Purpose:** Main payment streaming contract for FlowPay on Cronos
-
-**MNEE Token Used:** 0x8DA26C2b004f5962c0846f57d193de12f2F62612
+**Purpose:** Main payment streaming contract for FlowPay on Cronos (uses native TCRO)
 
 ---
 
@@ -65,7 +65,7 @@ PRIVATE_KEY=ce44c9cf317f66b5e3ea12ee1c92bb77a6dd2d02265b086eba66f8f338d5d7dc
 
 # Deployed Contract Addresses (Cronos Testnet)
 FLOWPAY_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
-MNEE_CONTRACT=0x8DA26C2b004f5962c0846f57d193de12f2F62612
+# Legacy token contract removed - using native TCRO now
 ```
 
 ---
@@ -93,12 +93,8 @@ Both contracts are live and verifiable on Cronos Explorer:
 Deploying contracts with the account: 0x506e724d7FDdbF91B6607d5Af0700d385D952f8a
 Network: cronos_testnet
 
-📝 Deploying MockMNEE to Cronos Testnet...
-✅ MockMNEE deployed to: 0x8DA26C2b004f5962c0846f57d193de12f2F62612
-   View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x8DA26C2b004f5962c0846f57d193de12f2F62612
-
 📝 Deploying FlowPayStream to Cronos Testnet...
-   Using MNEE address: 0x8DA26C2b004f5962c0846f57d193de12f2F62612
+   Using native TCRO for payments
 ✅ FlowPayStream deployed to: 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
    View on Cronos Explorer: https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
@@ -115,7 +111,7 @@ Update the frontend environment variables in `vite-project/.env`:
 
 ```bash
 VITE_CONTRACT_ADDRESS=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
-VITE_MNEE_TOKEN_ADDRESS=0x8DA26C2b004f5962c0846f57d193de12f2F62612
+# Legacy token address removed - using native TCRO now
 VITE_CHAIN_ID=338
 VITE_RPC_URL=https://evm-t3.cronos.org
 ```
@@ -127,7 +123,7 @@ Update the agent demo environment in `demo/agent-demo/.env`:
 ```bash
 CRONOS_RPC_URL=https://evm-t3.cronos.org
 FLOWPAY_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
-MNEE_TOKEN=0x8DA26C2b004f5962c0846f57d193de12f2F62612
+# Legacy token address removed - using native TCRO now
 ```
 
 ### 3. Testing
@@ -146,7 +142,6 @@ Follow the instructions in `TEST_REPORT.md` for each remaining task.
 
 ## Quick Links
 
-- **MockMNEE on Explorer:** https://explorer.cronos.org/testnet/address/0x8DA26C2b004f5962c0846f57d193de12f2F62612
 - **FlowPayStream on Explorer:** https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 - **Cronos Faucet:** https://cronos.org/faucet
 - **Cronos Testnet RPC:** https://evm-t3.cronos.org
@@ -162,7 +157,7 @@ Follow the instructions in `TEST_REPORT.md` for each remaining task.
 |------|---------------|--------------|
 | Network | Ethereum Sepolia | Cronos Testnet |
 | Chain ID | 11155111 | 338 |
-| MockMNEE | 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896 | 0x8DA26C2b004f5962c0846f57d193de12f2F62612 |
+| Legacy Token | 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896 | Removed (using native TCRO) |
 | FlowPayStream | 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035 | 0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87 |
 | Gas Token | ETH | TCRO |
 | Explorer | etherscan.io | explorer.cronos.org |
