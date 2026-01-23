@@ -68,8 +68,7 @@ The following tasks can now be completed with the deployed contracts:
 - Helper scripts created
 
 **Contract Deployment:** ✅ 100% Complete
-- MockMNEE deployed to Cronos testnet
-- PayStreamStream deployed to Cronos testnet
+- PayStreamStream deployed to Cronos testnet (native TCRO)
 - Addresses recorded in .env
 - Verified on Cronos Explorer
 
@@ -110,7 +109,7 @@ All prerequisites are met. You can now test:
    ```
 
 2. **Stream Creation (Task 12.3)**
-   - Use the frontend to mint MNEE tokens
+   - Use the frontend to get TCRO tokens from faucet
    - Create a payment stream
    - Verify on Cronos Explorer
 

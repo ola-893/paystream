@@ -491,7 +491,6 @@ DAILY_BUDGET=10
 **Expected output:**
 ```
 Deploying to cronos_testnet...
-MockMNEE deployed to: 0x1234...
 PayStreamStream deployed to: 0x5678...
 ```
 
@@ -517,7 +516,7 @@ PayStreamStream deployed to: 0x5678...
 ### Step 8: Test the Application
 - [ ] Start the frontend: `cd vite-project && npm run dev`
 - [ ] Connect MetaMask (should auto-detect Cronos Testnet)
-- [ ] Mint some MNEE tokens
+- [ ] Get TCRO tokens from Cronos faucet
 - [ ] Create a test payment stream
 - [ ] Verify the transaction on Cronos Explorer
 - [ ] Test withdrawing from the stream
@@ -606,9 +605,8 @@ Before deploying contracts to Cronos testnet:
    ```
 
 4. **Save Contract Addresses**:
-   The deployment script will output the deployed contract addresses:
+   The deployment script will output the deployed contract address:
    ```
-   MockMNEE deployed to: 0x1234567890abcdef...
    PayStreamStream deployed to: 0xabcdef1234567890...
    ```
    
@@ -627,9 +625,8 @@ Before deploying contracts to Cronos testnet:
 ### Deployment Costs
 
 Typical gas costs on Cronos testnet:
-- **MockMNEE deployment**: ~1,500,000 gas (~7.5 TCRO)
 - **PayStreamStream deployment**: ~2,000,000 gas (~10 TCRO)
-- **Total**: ~17.5 TCRO (free from faucet)
+- **Total**: ~10 TCRO (free from faucet)
 
 ### Troubleshooting Deployment
 

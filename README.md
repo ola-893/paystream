@@ -1,592 +1,94 @@
-# 💰 PayStream: x402 + Streaming Payments for AI Agents
-
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![TCRO](https://img.shields.io/badge/Powered%20by-TCRO%20Native-green.svg)
-![x402](https://img.shields.io/badge/x402-Compatible-purple.svg)
-![Cronos](https://img.shields.io/badge/Network-Cronos%20Testnet-blue.svg)
-
-> **🔄 Network Migration Notice**  
-> PayStream has migrated from Ethereum Sepolia to Cronos Testnet for lower fees and faster transactions. If you're upgrading from a previous version, please see the [**Cronos Migration Guide**](CRONOS_MIGRATION.md) for detailed instructions on updating your environment, deploying contracts, and configuring MetaMask.
-
-PayStream combines **x402's HTTP-native service discovery** with **continuous payment streaming** for AI agents using native TCRO tokens. The best of both worlds: standardized discovery + efficient streaming.
-
-**🏆 Built for the TCRO Migration: Native Token Payments for Agents, Commerce, and Automated Finance**
-
----
-
-## 📺 Live Demo & Video
-
-| Resource | Link |
-|----------|------|
-| **Live dApp** | https://paystream-dashboard.netlify.app |
-| **Demo Video** | [Watch on YouTube](https://youtu.be/d2uZi4Agi1o?si=MKlDp4BQpHHnh5d6) |
-| **GitHub Repo** | https://github.com/ola-893/paystream |
-| **TCRO Contract (Mainnet)** | Native TCRO - No contract needed |
-
----
-
-## 🏁 Quick Start (5 Minutes)
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) v18+
-- [MetaMask](https://metamask.io/) browser extension
-
-### Step 1: Clone & Install
-
-```bash
-git clone https://github.com/ola-893/paystream.git
-cd paystream
-npm run install:all
-```
-
-### Step 2: Run the App
-
-```bash
-npm run dev
-```
-
-Open http://localhost:5173 in your browser.
-
-### Step 3: Connect & Test
-
-1. **Add Cronos Testnet to MetaMask** (if not already added):
-   - Network: Cronos Testnet
-   - RPC: `https://evm-t3.cronos.org`
-   - Chain ID: `338`
-
-2. **Get TCRO** for gas fees:
-   - [Cronos Faucet](https://cronos.org/faucet)
-
-3. **Connect wallet** and get TCRO from the faucet for native token payments
-
-4. **Create a stream** and watch payments flow in real-time!
-
-That's it! The contracts are already deployed on Cronos Testnet - no deployment needed.
-
----
-
-## 📋 Deployed Contracts (Cronos Testnet)
-
-| Contract | Address |
-| PayStreamStream | `TBD - Deploy yourself` |
-
----
-
-## �  Advanced Setup
-
-### Environment Variables (Optional)
-
-Copy `.env.example` to `.env` and fill in your values:
-
-```bash
-cp .env.example .env
-```
-
-```env
-# Only needed if deploying your own contracts
-CRONOS_RPC_URL="https://evm-t3.cronos.org"
-PRIVATE_KEY="YOUR_DEPLOYER_PRIVATE_KEY"
-
-# AI Features (Optional)
-GEMINI_API_KEY="your_gemini_api_key"
-```
-
-### Deploy Your Own Contracts
-
-```bash
-npm run deploy:cronos
-```
-
-This will deploy the PayStreamStream contract to Cronos Testnet for native TCRO payments.
-
-### Run Tests
-
-```bash
-npm test                    # Run all tests
-npm run test:contracts      # Smart contract tests only
-npm run test:sdk           # SDK tests only
-```
-
-### Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start frontend dev server |
-| `npm run build:web` | Build for production |
-| `npm run test` | Run all tests |
-| `npm run deploy:cronos` | Deploy contracts to Cronos Testnet |
-| `npm run demo:provider` | Run provider demo |
-| `npm run demo:consumer` | Run consumer demo |
-| `npm run demo:agent` | Run AI agent demo |
-
----
-
-## 🔄 The Hybrid Approach: x402 Discovery + TCRO Streaming
-
-### Why Both?
-
-| Approach | Best For | Limitation |
-|----------|----------|------------|
-| **x402 Per-Request** | Few API calls | Payment overhead per request |
-| **Streaming** | High-volume usage | Requires upfront deposit |
-| **PayStream Hybrid** | **Any usage pattern** | **None - best of both!** |
-
-### How It Works
-
-```
-1. Agent makes HTTP request to API
-2. Server returns HTTP 402 with x402-compatible payment requirements
-3. PayStream SDK parses requirements, uses Gemini AI to decide:
-   - Few requests expected? → Use x402 per-request mode
-   - Many requests expected? → Create TCRO payment stream
-4. Agent pays and accesses service
-5. AI continuously optimizes payment mode based on actual usage
-```
-
----
-
-## 🤖 The AI Agent Payment Problem
-
-**The Challenge:** AI agents need to make thousands of micropayments per second for:
-- API calls ($0.0001 per call)
-- Compute resources ($0.01/second)
-- Data feeds ($0.001/second)
-- Content consumption (per-token pricing)
-
-**Traditional Solutions Fail:**
-- ❌ Discrete transactions: Too expensive (gas fees exceed payment value)
-- ❌ Batching: Creates settlement delays (30+ seconds)
-- ❌ Off-chain solutions: Requires trusted intermediaries
-
-**PayStream Solution:**
-- ✅ x402 discovery: Standard HTTP 402 for universal agent interoperability
-- ✅ Streaming payments: Efficient for high-volume usage
-- ✅ TCRO native: Sub-cent fees + instant settlement
-- ✅ AI-powered: Gemini decides optimal payment mode
-
----
-
-## 🚀 Key Features
-
-### x402-Compatible Service Discovery
-- **HTTP 402 responses** - Standard payment required responses
-- **Universal interoperability** - Works with any x402-compatible agent
-- **Payment requirements** - Clear pricing in response headers
-- **Flexible modes** - Support both per-request and streaming
-
-### Efficient TCRO Payment Streaming
-- **Per-second value transfer** - Money flows continuously for high-volume usage
-- **Instant withdrawals** - Recipients claim funds anytime
-- **Live balance counters** - Watch payments stream in real-time
-- **Micropayment support** - Rates as low as $0.0001/second
-
-### x402 Express Middleware
-```javascript
-// Add payment requirements to any Express endpoint
-app.use(payStreamMiddleware({
-    endpoints: {
-        "GET /api/weather": {
-            price: "0.0001",
-            mode: "streaming",  // or "per-request"
-            minDeposit: "1.00",
-            description: "Real-time weather data"
-        }
-    }
-}));
-```
-
-### AI Agent SDK with x402 Support
-- **Automatic 402 handling** - SDK parses payment requirements automatically
-- **Smart mode selection** - Gemini AI chooses streaming vs per-request
-- **Auto-discovery** - Agents find and connect to services via HTTP 402
-- **Budget management** - Spending limits and safety controls
-
-### Intelligent Decision Making (Gemini AI)
-- **Payment mode optimization** - AI recommends streaming vs per-request
-- **Spending analysis** - Analyzes usage and recommends adjustments
-- **Service quality evaluation** - Automatically switch providers
-- **Natural language queries** - Ask your agent about payment status
-
-### Human Oversight Dashboard
-- **Real-time monitoring** - See all active streams with live updates
-- **x402 discovery logs** - Track payment requirement responses
-- **Agent console** - Configure and test AI agents
-- **Emergency controls** - Pause or cancel streams instantly
-
----
-
-## 🎯 Use Cases
-
-### 1. x402 Service Discovery + Streaming
-```javascript
-import { PayStreamAgent } from 'paystream-sdk';
-
-const agent = new PayStreamAgent({
-  privateKey: process.env.AGENT_PRIVATE_KEY,
-  geminiApiKey: process.env.GEMINI_API_KEY
-});
-
-// SDK automatically handles x402 flow:
-// 1. Makes request → receives HTTP 402
-// 2. Parses payment requirements
-// 3. AI decides: streaming (high volume) or per-request (low volume)
-// 4. Creates TCRO stream if streaming mode
-// 5. Retries request with payment proof
-const weather = await agent.fetch('https://api.weather-agent.com/forecast');
-console.log(await weather.json());
-```
-
-### 2. Provider with x402 Middleware
-```javascript
-import express from 'express';
-import { payStreamMiddleware } from 'paystream-sdk';
-
-const app = express();
-
-// One line to add payment requirements!
-app.use(payStreamMiddleware({
-    endpoints: {
-        "GET /api/weather": {
-            price: "0.0001",
-            mode: "streaming",
-            minDeposit: "1.00",
-            description: "Weather data API"
-        },
-        "POST /api/translate": {
-            price: "0.001",
-            mode: "per-request",
-            description: "Translation service"
-        }
-    },
-    tcroAddress: process.env.TCRO_ADDRESS,
-    payStreamContract: process.env.PAYSTREAM_CONTRACT
-}));
-
-app.get('/api/weather', (req, res) => {
-    // Only reached if payment verified!
-    res.json({ temp: 28, city: 'Lagos' });
-});
-```
-
-### 3. AI-Powered Payment Mode Selection
-```javascript
-// Gemini analyzes usage and recommends optimal mode
-const agent = new PayStreamAgent({
-  geminiApiKey: process.env.GEMINI_API_KEY,
-  dailyBudget: '50.00'
-});
-
-// First request: AI analyzes expected usage
-// "I expect to make 1000 API calls" → Streaming mode (more efficient)
-// "I need just one translation" → Per-request mode (simpler)
-
-const recommendation = await agent.recommendPaymentMode({
-  service: 'weather-api',
-  expectedCalls: 1000,
-  duration: '1 hour'
-});
-
-console.log(recommendation);
-// { mode: 'streaming', reason: 'High volume usage - streaming saves 90% on gas' }
-```
-
-### 4. GPU Compute with Streaming
-```javascript
-// Rent GPU resources with real-time payment
-const computeStream = await agent.createStream({
-  recipient: gpuProviderAddress,
-  ratePerSecond: '0.01', // $36/hour
-  deposit: '36.00',      // 1 hour prepaid
-  metadata: { purpose: 'ML training' }
-});
-
-// Cancel early? Get unused funds back automatically
-await computeStream.cancel(); // Refunds remaining deposit
-```
-
----
-
-## 💡 Why x402 + TCRO Streaming?
-
-| Feature | x402 Only | Streaming Only | PayStream Hybrid |
-|---------|-----------|----------------|----------------|
-| Discovery | ✅ Standard HTTP 402 | ❌ Custom | ✅ Standard HTTP 402 |
-| Low-volume efficiency | ✅ Pay per request | ❌ Deposit overhead | ✅ Per-request mode |
-| High-volume efficiency | ❌ Gas per request | ✅ One stream | ✅ Streaming mode |
-| AI optimization | ❌ | ❌ | ✅ Gemini selects mode |
-| Interoperability | ✅ x402 ecosystem | ❌ Custom | ✅ x402 compatible |
-| TCRO native | ❌ Generic | ✅ | ✅ |
-
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    PayStream Hybrid Architecture                   │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌──────────────┐         HTTP Request          ┌────────────┐ │
-│  │   Consumer   │ ─────────────────────────────▶│  Provider  │ │
-│  │    Agent     │                               │    API     │ │
-│  └──────┬───────┘                               └─────┬──────┘ │
-│         │                                             │        │
-│         │ ◀─────── HTTP 402 Payment Required ─────────┘        │
-│         │          (x402 compatible headers)                    │
-│         │                                                       │
-│         ▼                                                       │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │                    PayStream SDK                            │  │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐  │  │
-│  │  │ x402 Parser │  │ Gemini AI   │  │ Payment Manager │  │  │
-│  │  │             │  │ Mode Select │  │ Stream/Request  │  │  │
-│  │  └─────────────┘  └─────────────┘  └─────────────────┘  │  │
-│  └──────────────────────────┬───────────────────────────────┘  │
-│                             │                                   │
-│         ┌───────────────────┼───────────────────┐              │
-│         │                   │                   │              │
-│  ┌──────▼──────┐    ┌──────▼──────┐    ┌──────▼──────┐       │
-│  │   PayStream   │    │    TCRO     │    │    Web      │       │
-│  │  Contract   │◀──▶│   Native    │    │  Dashboard  │       │
-│  │  (Streams)  │    │  (Native)   │    │ (Oversight) │       │
-│  └─────────────┘    └─────────────┘    └─────────────┘       │
-│                                                                  │
-│                    Cronos Testnet                                │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### x402 Payment Flow
-
-```
-Consumer Agent                Provider API                PayStream Contract
-      │                            │                            │
-      │──── GET /api/weather ─────▶│                            │
-      │                            │                            │
-      │◀─── 402 Payment Required ──│                            │
-      │     X-Payment-Required:    │                            │
-      │     X-PayStream-Mode: stream │                            │
-      │     X-PayStream-Rate: 0.0001 │                            │
-      │                            │                            │
-      │ [SDK parses, AI decides]   │                            │
-      │                            │                            │
-      │────────── createStream ────────────────────────────────▶│
-      │◀───────── Stream #1234 ─────────────────────────────────│
-      │                            │                            │
-      │── GET /api/weather ───────▶│                            │
-      │   X-PayStream-Stream: 1234   │                            │
-      │                            │── verify stream ──────────▶│
-      │                            │◀─ balance OK ──────────────│
-      │◀─── 200 OK + Data ─────────│                            │
-      │                            │                            │
-```
-
----
-
-## 🛠️ Technology Stack
-
-| Component | Technology |
-|-----------|------------|
-| Blockchain | Cronos Testnet |
-| Token | TCRO Native Token |
-| Discovery Protocol | x402 (HTTP 402 standard) |
-| Smart Contracts | Solidity, Hardhat |
-| Agent SDK | TypeScript |
-| Server Middleware | Express.js |
-| AI Integration | Google Gemini API |
-| Frontend | React (Vite), JavaScript |
-| Blockchain Interaction | Ethers.js v6 |
-| Styling | Tailwind CSS |
-
----
-
-## 🔄 Mainnet Migration
-
-When ready for production with real TCRO:
-
-| Feature | Testnet (Cronos) | Mainnet |
-|---------|-------------------|---------|
-| Token | TCRO (testnet faucet) | Real TCRO |
-| Network | Cronos Testnet (338) | Cronos Mainnet (25) |
-| Gas | Free testnet TCRO | Real TCRO |
-
-**TCRO Mainnet:** Native token - no contract address needed
-
-Update `vite-project/src/contactInfo.js` with mainnet addresses and deploy PayStreamStream to mainnet.
-
----
-
-## 🤖 Agent SDK Usage
-
-### Basic Stream Creation
-
-```javascript
-import { PayStreamAgent } from 'paystream-sdk';
-
-const agent = new PayStreamAgent({
-  privateKey: process.env.AGENT_PRIVATE_KEY,
-  network: 'cronos_testnet'
-});
-
-// Create a payment stream
-const stream = await agent.createStream({
-  recipient: '0x1234...5678',
-  ratePerSecond: '0.0001',
-  deposit: '10.00',
-  metadata: {
-    agentId: 'weather_bot_01',
-    purpose: 'API Metering'
-  }
-});
-
-console.log(`Stream #${stream.id} created!`);
-```
-
-### AI-Powered Agent
-
-```javascript
-import { PayStreamAgent } from 'paystream-sdk';
-
-const agent = new PayStreamAgent({
-  privateKey: process.env.AGENT_PRIVATE_KEY,
-  geminiApiKey: process.env.GEMINI_API_KEY,
-  dailyBudget: '50.00'
-});
-
-// Let AI optimize your spending
-const decision = await agent.optimizeSpending();
-console.log(`AI Decision: ${decision.action}`);
-console.log(`Reasoning: ${decision.reasoning}`);
-
-// Natural language queries
-const response = await agent.ask("Should I subscribe to the translation API?");
-console.log(response);
-```
-
----
-
-## 📊 Demo Scenario
-
-**Watch two AI agents transact autonomously:**
-
-1. **Agent Alice** (Consumer) needs weather data
-2. **Agent Bob** (Provider) offers weather API at $0.0001/call
-3. Alice opens a PayStream stream to Bob
-4. Alice makes 1,000 API calls over 10 minutes
-5. Bob's balance increases in real-time: $0.00 → $0.10
-6. Bob withdraws earnings anytime
-7. Alice cancels stream when done, gets unused deposit back
-
-**All payments happen automatically, no human intervention!**
-
----
-
-## 🔒 Security Features
-
-- **Spending Limits**: Daily and per-stream caps
-- **Emergency Pause**: Instantly stop all agent activity
-- **Auto-cancellation**: Streams cancel when services fail
-- **Suspicious Activity Detection**: AI monitors for anomalies
-- **Human Override**: Dashboard controls for manual intervention
-
----
-
-## 📁 Project Structure
-
-```
-paystream/
-├── contracts/
-│   ├── PayStreamStream.sol      # TCRO streaming contract
-├── scripts/
-│   └── deploy.js              # Deployment script
-├── sdk/
-│   └── src/
-│       ├── PayStreamSDK.ts      # Agent SDK with x402 handling
-│       ├── GeminiPaymentBrain.ts  # AI payment decisions
-│       └── SpendingMonitor.ts # Budget management
-├── server/
-│   └── middleware/
-│       └── payStreamMiddleware.js  # x402 Express middleware
-├── demo/
-│   ├── consumer.ts            # AI agent demo (consumer)
-│   └── provider.ts            # API provider demo
-├── vite-project/
-│   ├── src/
-│   │   ├── components/        # React components
-│   │   ├── pages/             # Dashboard, Streams, Docs
-│   │   ├── context/           # Wallet context
-│   │   └── contactInfo.js     # Contract addresses
-│   └── netlify.toml           # Deployment config
-├── test/
-│   └── PayStreamStream.test.js  # Contract tests
-├── hardhat.config.js
-├── package.json
-├── LICENSE                    # MIT License
-└── README.md
-```
-
----
-
-## 🏆 Hackathon Track
-
-**AI & Agent Payments** - Agents or automated systems paying for services or data
-
-### How TCRO is Used
-
-PayStream uses native TCRO tokens for all streaming payments:
-- **Payment Streams**: TCRO tokens are sent directly to the PayStreamStream smart contract and streamed per-second to recipients
-- **x402 Protocol**: AI agents pay for API access using TCRO via the x402 HTTP payment negotiation standard
-- **Testnet**: Uses native TCRO on Cronos Testnet (get from faucet)
-- **Mainnet Ready**: Designed to work with real TCRO on Cronos Mainnet
-
-PayStream demonstrates:
-- ✅ x402-compatible service discovery (HTTP 402 standard)
-- ✅ AI agents transacting autonomously with TCRO
-- ✅ Hybrid payment modes (per-request + streaming)
-- ✅ Intelligent decision-making with Gemini AI
-- ✅ Multi-agent service coordination
-- ✅ Human oversight and safety controls
-
-### Why PayStream Stands Out
-
-1. **x402 Compatibility** - Works with the emerging agent payment ecosystem
-2. **Streaming Efficiency** - 90% gas savings for high-volume usage
-3. **AI-Powered** - Gemini automatically optimizes payment mode
-4. **TCRO Native** - Built specifically for TCRO native tokens
-5. **Production Ready** - Express middleware for easy integration
-
----
-
-## 📋 Third-Party Disclosures
-
-| Dependency | Purpose | License |
-|------------|---------|---------|
-| [Ethers.js](https://docs.ethers.org/) | Blockchain interaction | MIT |
-| [React](https://react.dev/) | Frontend framework | MIT |
-| [Vite](https://vitejs.dev/) | Build tool | MIT |
-| [Tailwind CSS](https://tailwindcss.com/) | Styling | MIT |
-| [Hardhat](https://hardhat.org/) | Smart contract development | MIT |
-| [Google Gemini API](https://ai.google.dev/) | AI payment decisions | Google API Terms |
-| [Axios](https://axios-http.com/) | HTTP client | MIT |
-
-All third-party dependencies are used in accordance with their respective licenses.
-
----
-
-## 📜 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## 🙏 Acknowledgments
-
-- [TCRO](https://cronos.org) - Native token powering this project
-- [Google Gemini](https://ai.google.dev) - AI decision-making capabilities
-- [Ethereum](https://ethereum.org) - Blockchain infrastructure
-
----
-
-**Built with 💙 for the TCRO Migration**
-
-*Enabling the autonomous economy, one stream at a time.*
+# PayStream
+
+## Inspiration
+While **Cronos** offers exceptionally low fees and fast finality, the "N+1 Transaction Problem" remains a fundamental bottleneck for autonomous AI agents. 
+
+If an agent needs to make 10,000 API calls daily, the traditional model forces it to sign and broadcast 10,000 separate transactions. Even with cheap gas, this creates:
+1.  **Latency**: Waiting 5-6 seconds for block confirmation on *every* single request paralyzes high-speed AI decision loops.
+2.  **Ledger Bloat**: Spamming the chain with thousands of micro-transactions is inefficient and unscalable.
+3.  **Variable Costs**: Fees fluctuate with network congestion, making operational costs unpredictable for high-volume agents.
+
+PayStream solves this by combining Cronos's efficiency with payment streaming—enabling agents to transact at the speed of thought, not the speed of blocks.
+
+## What it does
+PayStream turns the payment model upside down. Instead of paying per-request, agents open a payment stream — a single on-chain transaction that authorizes continuous value transfer over time.
+
+The efficiency gains on Cronos are massive at scale:
+- **Traditional**: 1,000 API calls = 1,000 transactions = ~100+ TCRO in gas & hours of confirmation time.
+- **PayStream**: 1,000 API calls = 2 transactions (open + close) = **~1 TCRO in gas** & instant settlement.
+
+## How it works
+1. **Agent hits a paywall** (HTTP 402 response)
+2. **SDK automatically negotiates** and opens a **TCRO** payment stream on Cronos (1 transaction)
+3. **Agent makes unlimited requests** against that stream (0 transactions, 0 latency)
+4. **Stream closes when done**, unused funds refund automatically (1 transaction)
+
+## Key Features
+- **Cronos Native**: Optimized for Cronos EVM (Chain ID 338), using native **TCRO** for seamless value transfer.
+- **Zero-Latency Payments**: Value streams continuously off-chain (cryptographically verified), removing block time waits for API consumption.
+- **x402 Compliance**: Standard HTTP 402 "Payment Required" negotiation ensuring interoperability.
+- **AI-Powered Optimization**: **Gemini 1.5 Flash** analyzes traffic patterns to recommend the optimal payment mode (Stream vs. Direct).
+- **Human Oversight**: Dashboard with real-time spending visibility and emergency stop controls.
+
+## Live Demo & Deployments
+- 🌐 **Live Dashboard**: [flowpay-dashboard.netlify.app](https://flowpay-dashboard.netlify.app)
+- 💻 **GitHub**: [github.com/ola-893/flowpay](https://github.com/ola-893/flowpay)
+
+### Smart Contracts on Cronos Testnet
+
+| Contract | Address | Explorer |
+|----------|---------|----------|
+| **PayStreamStream** | `0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87` | [View on Cronos Explorer](https://explorer.cronos.org/testnet/address/0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87) |
+| **Native Token** | **TCRO** (Gas Token) | N/A |
+
+## How we built it
+### Smart Contracts (Solidity on Cronos)
+- **PayStreamStream.sol**: The heart of the system. We optimized the streaming logic for the Cronos EVM to ensure minimal gas consumption even for stream lifecycle events.
+- **Native Efficiency**: By using native TCRO instead of ERC-20 tokens, we removed the need for `approve()` transactions—simplifying the UX and further reducing gas costs.
+
+### SDK (TypeScript)
+- **PayStreamSDK**: Abstract complex blockchain interactions. A developer simply calls `agent.fetch(url)` and the SDK handles x402 negotiation, signing, and stream management.
+- **GeminiPaymentBrain**: We integrated **Gemini 1.5 Flash** to give agents financial intelligence, allowing them to predict costs and choose the most efficient payment method dynamically.
+
+### Server Middleware
+- **x402-Express**: Middleware that sits in front of any API, protecting routes and validating incoming Cronos payment streams in real-time.
+
+## Architecture
+Agent → API Request → 402 Response → SDK Negotiates → 
+Open Stream on Cronos (1 tx) → Unlimited Requests (0 tx, Instant) → 
+Close Stream (1 tx) → Refund Unused
+
+## Challenges we ran into
+- **Cronos Migration**: Moving from Sepolia to Cronos involved architectural changes to support native TCRO value transfers (`msg.value`) versus the previous ERC-20 `transferFrom` pattern. This simplified the contract but required SDK rewrites.
+- **Time Synchronization**: Calculating continuous payments requires precise time-sync between the blockchain (block.timestamp) and the off-chain application state to ensure every second is paid for accurately.
+- **AI Latency**: We initially used larger models which slowed down the decision process. Switching to **Gemini 1.5 Flash** reduced decision latency to milliseconds, matching Cronos's speed.
+
+## Accomplishments we're proud of
+- **Cronos Native**: A fully functional payment streaming protocol live on Cronos Testnet.
+- **>99% Gas & Latency Reduction**: Proving that streams are superior to direct payments for high-frequency agent commerce.
+- **Frictionless UX**: By removing ERC-20 approvals and using native tokens, agents can start paying instantly.
+
+## What's next for PayStream
+- **Cronos Mainnet**: Deploying to production constraints.
+- **Inter-Agent Economy**: Standardizing the x402 protocol so any agent on Cronos can sell services to any other agent permissionlessly.
+- **Prediction Markets for Streams**: Using AI to trade streaming rights based on future service demand.
+
+
+## Team
+We are a team of developers, AI specialists, and full-stack engineers with proven experience building decentralized platforms and dApps. Our expertise spans smart contract development, AI-driven automation, DeFi protocols, and cross-chain integrations. Alongside our technical strength, we bring marketing and product strategy skills to scale PayStream into a global payment standard for the autonomous agent economy.
+
+## Built With
+- **Blockchain**: Cronos Testnet, Solidity, Hardhat
+- **Backend**: Node.js, Express, TypeScript
+- **Frontend**: React, Vite, TailwindCSS
+- **AI**: Google Gemini API (1.5 Flash)
+- **Tokens**: TCRO (Native)
+- **Protocol**: x402 (HTTP 402 Payment Required)
+
+## Documentation
+
+- [Getting Started](docs/getting-started.md)
+- [Architecture](docs/architecture.md)
+- [Smart Contracts](docs/contracts.md)
+- [SDK Reference](docs/sdk.md)
+- [Deployment Guide](docs/deployment.md)

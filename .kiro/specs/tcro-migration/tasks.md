@@ -137,13 +137,13 @@ This implementation plan completes the TCRO migration by updating the remaining 
   - Update mock configurations to exclude token addresses
   - _Requirements: 7.1, 7.4_
 
-- [-] 8. Documentation Updates
+- [x] 8. Documentation Updates
 - [x] 8.1 Update deployment script messages
   - ✅ Deploy script already shows TCRO usage message
   - Verify all console output references TCRO correctly
   - _Requirements: 5.1, 5.2_
 
-- [-] 8.2 Scan and update remaining documentation
+- [x] 8.2 Scan and update remaining documentation
   - Search for any remaining legacy token references in README files
   - Update code comments to reference TCRO
   - Ensure setup instructions mention TCRO faucet
@@ -188,7 +188,7 @@ This implementation plan completes the TCRO migration by updating the remaining 
   - **Property 5: Environment Configuration Completeness**
   - **Validates: Requirements 1.1, 1.3, 1.4**
 
-- [ ] 11. Final checkpoint - Ensure all tests pass
+- [x] 11. Final checkpoint - Ensure all tests pass
 - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

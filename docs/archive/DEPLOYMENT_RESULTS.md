@@ -76,16 +76,11 @@ PAYSTREAM_CONTRACT=0x62E0EC7483E779DA0fCa9B701872e4af8a0FEd87
 
 Both contracts are live and verifiable on Cronos Explorer:
 
-1. **MockMNEE Token**
+1. **PayStreamStream Contract**
    - ✅ Contract bytecode present
    - ✅ Creation transaction visible
    - ✅ Network: Cronos Testnet (338)
-
-2. **PayStreamStream Contract**
-   - ✅ Contract bytecode present
-   - ✅ Creation transaction visible
-   - ✅ Network: Cronos Testnet (338)
-   - ✅ Constructor parameter: MNEE token address
+   - ✅ Native TCRO payment functionality
 
 ### Deployment Output
 

@@ -288,3 +288,207 @@ For issues or questions:
 ## License
 
 MIT License - See LICENSE file for details
+# Deployment Overview
+
+PayStream can be deployed to various EVM-compatible networks.
+
+## Supported Networks
+
+| Network | Status | Chain ID |
+|---------|--------|----------|
+| Cronos Testnet | ✅ Active | 338 |
+| Cronos Mainnet | 🔜 Coming | 25 |
+
+## Current Deployment
+
+**Cronos Testnet:**
+
+| Contract | Address |
+|----------|---------|
+| PayStreamStream | `TBD - Deploy yourself` |
+
+## Deployment Guides
+
+- [Cronos Testnet](cronos-testnet.md) - Development and testing
+- [Production Checklist](production.md) - Mainnet preparation
+
+## Quick Deploy
+
+```bash
+# Deploy to Cronos Testnet
+npm run deploy:cronos
+
+# Or manually
+npx hardhat run scripts/deploy.js --network cronos_testnet
+```
+
+## Architecture
+
+```
+┌─────────────────────────────────────────┐
+│           Deployment Stack              │
+├─────────────────────────────────────────┤
+│                                         │
+│         ┌─────────────────┐             │
+│         │  PayStreamStream  │             │
+│         │   (Streaming)   │             │
+│         └─────────────────┘             │
+│                  │                      │
+│                  ▼                      │
+│         ┌───────────────┐               │
+│         │    Cronos     │               │
+│         │   Network     │               │
+│         │ (Native TCRO) │               │
+│         └───────────────┘               │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+## Environment Variables
+
+Required for deployment:
+
+```bash
+PRIVATE_KEY=0x...          # Deployer wallet
+CRONOS_RPC_URL=https://...  # RPC endpoint (default: https://evm-t3.cronos.org)
+```
+
+## Post-Deployment
+
+After deploying:
+
+1. **Update frontend** with new addresses
+2. **Update SDK** configuration
+3. **Test** all functionality
+4. **Document** deployment details
+# Cronos Testnet Deployment
+
+Guide for deploying PayStream to Cronos testnet.
+
+## Current Deployment
+
+| Contract | Address |
+|----------|---------|
+| FlowPayStream | `TBD - Deploy yourself` |
+
+**Network:** Cronos Testnet (Chain ID: 338)
+
+## Prerequisites
+
+1. **Node.js** v18+
+2. **TCRO** for gas fees
+3. **Private Key** with TCRO
+
+### Getting TCRO
+
+Free testnet TCRO from faucet:
+- https://cronos.org/faucet
+
+## Deployment Steps
+
+### 1. Configure Environment
+
+Create `.env` in project root:
+
+```bash
+PRIVATE_KEY=0x...your_private_key
+CRONOS_RPC_URL=https://evm-t3.cronos.org
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Compile Contracts
+
+```bash
+npx hardhat compile
+```
+
+### 4. Deploy
+
+```bash
+npx hardhat run scripts/deploy.js --network cronos_testnet
+```
+
+**Expected Output:**
+```
+Deploying contracts with the account: 0x...
+FlowPayStream deployed to: 0x...
+```
+
+### 5. Update Frontend
+
+Update `vite-project/src/contactInfo.js`:
+
+```javascript
+export const contractAddress = "0x..."; // Your FlowPayStream address
+```
+
+## Network Configuration
+
+### Hardhat Config
+
+```javascript
+// hardhat.config.js
+module.exports = {
+  networks: {
+    cronos_testnet: {
+      url: process.env.CRONOS_RPC_URL,
+      accounts: [process.env.PRIVATE_KEY],
+      chainId: 338
+    }
+  }
+};
+```
+
+### MetaMask Setup
+
+Add Cronos Testnet to MetaMask:
+- Network Name: Cronos Testnet
+- RPC URL: https://evm-t3.cronos.org
+- Chain ID: 338
+- Currency Symbol: TCRO
+- Explorer: https://explorer.cronos.org/testnet
+
+## Testing Deployment
+
+### Run Contract Tests
+
+```bash
+npx hardhat test --network cronos_testnet
+```
+
+### Verify via Dashboard
+
+1. Open FlowPay dashboard
+2. Connect wallet (Cronos Testnet network)
+3. Create a test stream with TCRO
+4. Verify on Cronos Explorer
+
+## Troubleshooting
+
+### "Insufficient funds"
+
+Get more TCRO from the faucet: https://cronos.org/faucet
+
+### "Nonce too low"
+
+Reset MetaMask account or wait for pending transactions.
+
+### "Network mismatch"
+
+Switch MetaMask to Cronos Testnet network.
+
+## RPC Endpoints
+
+| Provider | URL |
+|----------|-----|
+| Public | https://evm-t3.cronos.org |
+
+## Block Explorer
+
+View transactions and contracts:
+https://explorer.cronos.org/testnet

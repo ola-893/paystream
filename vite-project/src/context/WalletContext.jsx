@@ -23,6 +23,7 @@ export function WalletProvider({ children }) {
   const [outgoingStreams, setOutgoingStreams] = useState([]);
   const [isLoadingStreams, setIsLoadingStreams] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [knownStreamIds, setKnownStreamIds] = useState(new Set());
 
   const contractWithProvider = useMemo(() => {
     if (!provider) return null;
@@ -110,37 +111,232 @@ export function WalletProvider({ children }) {
     if (!contractWithProvider || !provider) return { incoming: [], outgoing: [] };
     try {
       const filter = contractWithProvider.filters.StreamCreated();
-      // Limit block range to avoid RPC "exceed maximum block range" error
       const latestBlock = await provider.getBlockNumber();
-      const fromBlock = Math.max(0, latestBlock - 49000); // Stay under 50k block limit
-      const events = await contractWithProvider.queryFilter(filter, fromBlock, latestBlock);
-      const streamCards = await Promise.all(events.map(async (ev) => {
-        const streamId = ev.args.streamId;
-        const [sender, recipient, totalAmount, flowRate, startTime, stopTime, amountWithdrawn, isActive] = 
-          Object.values(await contractWithProvider.streams(streamId));
-        const now = Math.floor(Date.now() / 1000);
-        const elapsed = Math.max(0, Math.min(Number(stopTime), now) - Number(startTime));
-        const streamedSoFar = BigInt(elapsed) * BigInt(flowRate);
-        const claimable = isActive ? (streamedSoFar > BigInt(amountWithdrawn) ? streamedSoFar - BigInt(amountWithdrawn) : 0n) : 0n;
-        return { id: Number(streamId), sender, recipient, totalAmount: BigInt(totalAmount), flowRate: BigInt(flowRate),
-          startTime: Number(startTime), stopTime: Number(stopTime), amountWithdrawn: BigInt(amountWithdrawn),
-          isActive: Boolean(isActive), claimableInitial: claimable };
+      
+      // Cronos Testnet has a strict 2000 block limit for eth_getLogs
+      const MAX_BLOCK_RANGE = 1900; // Stay under the 2000 limit
+      const TOTAL_BLOCKS_TO_SCAN = 20000; // Scan last 20k blocks in chunks
+      
+      let allEvents = [];
+      let currentToBlock = latestBlock;
+      let blocksScanned = 0;
+      
+      console.log(`Starting paginated event fetch from block ${latestBlock}`);
+      
+      // Paginate through blocks in chunks of MAX_BLOCK_RANGE
+      while (blocksScanned < TOTAL_BLOCKS_TO_SCAN && currentToBlock > 0) {
+        const fromBlock = Math.max(0, currentToBlock - MAX_BLOCK_RANGE);
+        
+        try {
+          console.log(`Fetching events from blocks ${fromBlock} to ${currentToBlock}`);
+          const events = await contractWithProvider.queryFilter(filter, fromBlock, currentToBlock);
+          
+          if (events.length > 0) {
+            console.log(`Found ${events.length} events in range ${fromBlock}-${currentToBlock}`);
+            allEvents.push(...events);
+          }
+          
+          // Move to next chunk
+          currentToBlock = fromBlock - 1;
+          blocksScanned += MAX_BLOCK_RANGE;
+          
+        } catch (chunkError) {
+          console.warn(`Failed to fetch chunk ${fromBlock}-${currentToBlock}:`, chunkError);
+          // Try smaller chunk if this one fails
+          const smallerRange = Math.floor(MAX_BLOCK_RANGE / 2);
+          if (smallerRange >= 100) {
+            try {
+              const smallerFromBlock = Math.max(0, currentToBlock - smallerRange);
+              console.log(`Retrying with smaller range: ${smallerFromBlock} to ${currentToBlock}`);
+              const events = await contractWithProvider.queryFilter(filter, smallerFromBlock, currentToBlock);
+              if (events.length > 0) {
+                allEvents.push(...events);
+              }
+              currentToBlock = smallerFromBlock - 1;
+              blocksScanned += smallerRange;
+            } catch (smallerError) {
+              console.warn(`Smaller chunk also failed, skipping range:`, smallerError);
+              currentToBlock = Math.max(0, currentToBlock - MAX_BLOCK_RANGE);
+              blocksScanned += MAX_BLOCK_RANGE;
+            }
+          } else {
+            // Skip this range entirely
+            currentToBlock = Math.max(0, currentToBlock - MAX_BLOCK_RANGE);
+            blocksScanned += MAX_BLOCK_RANGE;
+          }
+        }
+        
+        // Add a small delay to avoid overwhelming the RPC
+        if (blocksScanned % (MAX_BLOCK_RANGE * 3) === 0) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      
+      console.log(`Completed event fetch: ${allEvents.length} total events found`);
+      
+      if (allEvents.length === 0) {
+        console.log('No StreamCreated events found in scanned blocks');
+        return { incoming: [], outgoing: [] };
+      }
+      
+      // Remove duplicates (in case of overlapping ranges)
+      const uniqueEvents = allEvents.filter((event, index, self) => 
+        index === self.findIndex(e => e.transactionHash === event.transactionHash && e.logIndex === event.logIndex)
+      );
+      
+      console.log(`Processing ${uniqueEvents.length} unique events`);
+      
+      const streamCards = await Promise.all(uniqueEvents.map(async (ev) => {
+        try {
+          const streamId = ev.args.streamId;
+          const streamData = await contractWithProvider.streams(streamId);
+          const [sender, recipient, totalAmount, flowRate, startTime, stopTime, amountWithdrawn, isActive] = 
+            Object.values(streamData);
+          
+          const now = Math.floor(Date.now() / 1000);
+          const elapsed = Math.max(0, Math.min(Number(stopTime), now) - Number(startTime));
+          const streamedSoFar = BigInt(elapsed) * BigInt(flowRate);
+          const claimable = isActive ? (streamedSoFar > BigInt(amountWithdrawn) ? streamedSoFar - BigInt(amountWithdrawn) : 0n) : 0n;
+          
+          return { 
+            id: Number(streamId), 
+            sender, 
+            recipient, 
+            totalAmount: BigInt(totalAmount), 
+            flowRate: BigInt(flowRate),
+            startTime: Number(startTime), 
+            stopTime: Number(stopTime), 
+            amountWithdrawn: BigInt(amountWithdrawn),
+            isActive: Boolean(isActive), 
+            claimableInitial: claimable 
+          };
+        } catch (streamError) {
+          console.error(`Failed to fetch stream ${ev.args.streamId}:`, streamError);
+          return null;
+        }
       }));
+      
+      // Filter out failed stream fetches
+      const validStreams = streamCards.filter(s => s !== null);
+      console.log(`Successfully processed ${validStreams.length} streams`);
+      
       const meLc = me?.toLowerCase();
-      return { incoming: streamCards.filter(s => s.recipient.toLowerCase() === meLc),
-               outgoing: streamCards.filter(s => s.sender.toLowerCase() === meLc) };
-    } catch (err) { console.error('Failed to fetch events:', err); return { incoming: [], outgoing: [] }; }
+      const result = { 
+        incoming: validStreams.filter(s => s.recipient.toLowerCase() === meLc),
+        outgoing: validStreams.filter(s => s.sender.toLowerCase() === meLc) 
+      };
+      
+      console.log(`Found ${result.incoming.length} incoming and ${result.outgoing.length} outgoing streams for ${me}`);
+      return result;
+    } catch (err) { 
+      console.error('Failed to fetch events:', err); 
+      return { incoming: [], outgoing: [] }; 
+    }
   }, [contractWithProvider, provider]);
 
-  const refreshStreams = useCallback(async () => {
+  // Direct stream lookup by ID (fallback method)
+  const fetchStreamById = useCallback(async (streamId) => {
+    if (!contractWithProvider) return null;
+    try {
+      const streamData = await contractWithProvider.streams(streamId);
+      const [sender, recipient, totalAmount, flowRate, startTime, stopTime, amountWithdrawn, isActive] = 
+        Object.values(streamData);
+      
+      // Check if this is a valid stream (sender is not zero address)
+      if (sender === '0x0000000000000000000000000000000000000000') {
+        return null;
+      }
+      
+      const now = Math.floor(Date.now() / 1000);
+      const elapsed = Math.max(0, Math.min(Number(stopTime), now) - Number(startTime));
+      const streamedSoFar = BigInt(elapsed) * BigInt(flowRate);
+      const claimable = isActive ? (streamedSoFar > BigInt(amountWithdrawn) ? streamedSoFar - BigInt(amountWithdrawn) : 0n) : 0n;
+      
+      return { 
+        id: Number(streamId), 
+        sender, 
+        recipient, 
+        totalAmount: BigInt(totalAmount), 
+        flowRate: BigInt(flowRate),
+        startTime: Number(startTime), 
+        stopTime: Number(stopTime), 
+        amountWithdrawn: BigInt(amountWithdrawn),
+        isActive: Boolean(isActive), 
+        claimableInitial: claimable 
+      };
+    } catch (error) {
+      console.error(`Failed to fetch stream ${streamId}:`, error);
+      return null;
+    }
+  }, [contractWithProvider]);
+
+  // Enhanced stream fetching with direct lookup fallback
+  const fetchAllStreams = useCallback(async (me) => {
+    // First try event-based fetching
+    const eventResult = await fetchStreamsFromEvents(me);
+    
+    // If we got streams from events, return them
+    if (eventResult.incoming.length > 0 || eventResult.outgoing.length > 0) {
+      return eventResult;
+    }
+    
+    // Fallback: Try direct lookup of known stream IDs first
+    console.log('Event fetching returned no results, trying direct stream lookup...');
+    const streams = [];
+    const meLc = me?.toLowerCase();
+    
+    // First check known stream IDs
+    if (knownStreamIds.size > 0) {
+      console.log(`Checking ${knownStreamIds.size} known stream IDs`);
+      for (const streamId of knownStreamIds) {
+        const stream = await fetchStreamById(streamId);
+        if (stream) {
+          streams.push(stream);
+        }
+      }
+    }
+    
+    // Then try looking up recent stream IDs (last 50)
+    console.log('Checking recent stream IDs...');
+    for (let i = 1; i <= 50; i++) {
+      if (!knownStreamIds.has(i)) { // Skip already checked IDs
+        const stream = await fetchStreamById(i);
+        if (stream) {
+          streams.push(stream);
+          // Add to known IDs for future reference
+          setKnownStreamIds(prev => new Set([...prev, i]));
+        }
+      }
+    }
+    
+    console.log(`Direct lookup found ${streams.length} total streams`);
+    
+    return {
+      incoming: streams.filter(s => s.recipient.toLowerCase() === meLc),
+      outgoing: streams.filter(s => s.sender.toLowerCase() === meLc)
+    };
+  }, [fetchStreamsFromEvents, fetchStreamById, knownStreamIds]);
+
+  const refreshStreams = useCallback(async (force = false) => {
     if (!walletAddress) return;
-    setIsLoadingStreams(true);
-    const { incoming, outgoing } = await fetchStreamsFromEvents(walletAddress);
+    
+    // Don't set loading if this is a forced refresh (like after stream creation)
+    if (!force) {
+      setIsLoadingStreams(true);
+    }
+    
+    console.log(`Refreshing streams for ${walletAddress}${force ? ' (forced)' : ''}`);
+    const { incoming, outgoing } = await fetchAllStreams(walletAddress);
     setIncomingStreams(incoming);
     setOutgoingStreams(outgoing);
-    setIsLoadingStreams(false);
-    setIsInitialLoad(false);
-  }, [walletAddress, fetchStreamsFromEvents]);
+    
+    if (!force) {
+      setIsLoadingStreams(false);
+      setIsInitialLoad(false);
+    }
+    
+    console.log(`Stream refresh complete: ${incoming.length} incoming, ${outgoing.length} outgoing`);
+  }, [walletAddress, fetchAllStreams]);
 
   const withdraw = async (streamId) => {
     if (!contractWithSigner) return;
@@ -153,7 +349,7 @@ export function WalletProvider({ children }) {
       toast.dismiss(loadingToast);
       setStatus('Withdrawn.');
       toast.success(`Withdrawn from Stream #${streamId}`, { title: 'Withdrawal Complete' });
-      await refreshStreams();
+      await refreshStreams(true);
     } catch (e) {
       console.error(e);
       setStatus(e?.shortMessage || e?.message || 'Withdraw failed.');
@@ -172,7 +368,7 @@ export function WalletProvider({ children }) {
       toast.dismiss(loadingToast);
       setStatus('Stream cancelled.');
       toast.stream.cancelled(streamId);
-      await refreshStreams();
+      await refreshStreams(true);
     } catch (e) {
       console.error(e);
       setStatus(e?.shortMessage || e?.message || 'Cancel failed.');
@@ -242,13 +438,22 @@ export function WalletProvider({ children }) {
       if (createdId !== null) {
         setStatus(`Stream created. ID #${createdId}`);
         toast.stream.created(createdId);
+        // Store the created stream ID for direct lookup
+        setKnownStreamIds(prev => new Set([...prev, createdId]));
       } else {
         setStatus('Stream created.');
         toast.success('Stream created successfully', { title: 'Stream Created' });
       }
       
-      await refreshStreams();
+      // Force refresh streams immediately after creation
+      await refreshStreams(true);
       await fetchTcroBalance(); // Refresh TCRO balance
+      
+      // Also do a delayed refresh to catch any delayed events
+      setTimeout(() => {
+        refreshStreams(true);
+      }, 2000);
+      
       return createdId;
     } catch (error) {
       console.error('Stream creation failed:', error);
